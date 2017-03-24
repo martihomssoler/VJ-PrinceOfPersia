@@ -1,0 +1,8 @@
+TILEMAP
+13 3						-- Size of tile map in tiles [Width - Hight]
+64 32 64 					-- Tile size [x·x] & block size [x·y]
+images/Wall.png 				-- Tilesheet
+2 4						-- Number of tiles in tilesheet
+7000000000002
+8000000000001
+3463546346645
