@@ -106,5 +106,15 @@ void Sprite::setPosition(const glm::vec2 &pos)
 	position = pos;
 }
 
+int Sprite::numberKeyFrames(int animation) const
+{
+	return animations[animation].keyframeDispl.size() - 1;
+}
+
+int Sprite::keyFrame() const
+{
+	return currentKeyframe;
+}
+
 
 

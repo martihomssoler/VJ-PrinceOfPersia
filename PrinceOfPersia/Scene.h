@@ -19,7 +19,7 @@ public:
 	Scene();
 	~Scene();
 
-	void init();
+	void init(string level);
 	void update(int deltaTime);
 	void render();
 
@@ -27,7 +27,9 @@ private:
 	void initShaders();
 
 private:
+	TileMap *backMap;
 	TileMap *map;
+	TileMap *wallMap;
 	Player *player;
 	ShaderProgram texProgram;
 	float currentTime;
