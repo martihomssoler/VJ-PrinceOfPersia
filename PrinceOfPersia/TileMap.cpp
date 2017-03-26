@@ -80,48 +80,22 @@ bool TileMap::loadLevel(const string &levelFile)
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 	
 	map = new int[mapSize.x * mapSize.y];
-	/*for(int j=0; j<mapsize.y; j++)
-	{
-		for(int i=0; i<mapsize.x; i++)
-		{
-			fin.get(tile);
-			if(tile == ' ')
-				map[j*mapsize.x+i] = 0;
-			else 
-			{
-				if (tile >= 'a')
-				{
-					map[j*mapsize.x + i] = tile - int('a') + 10;
-				}
-				else
-					map[j*mapsize.x + i] = tile - int('0');
-			}
-		}
-		fin.get(tile);
-#ifndef _win32
-		fin.get(tile);
-#endif
-	}
-	fin.close();*/
 
-	int j = 0;
-	while (j<mapSize.y)
+	for(int j=0; j<mapSize.y; j++)
 	{
 		getline(fin, line);
 		std::stringstream   linestream(line);
 		std::string         value;
 
-		int i = 0;
-		while (i<mapSize.x)
+		for(int i=0; i<mapSize.x; i++)
 		{
 			getline(linestream, value, ',');
 			int aux = atoi(value.c_str()) + 1;
 			map[j*mapSize.x + i] = aux;
-			i++;
 		}
-		j++;
 	}
 	fin.close();
+
 
 	return true;
 }
@@ -187,7 +161,7 @@ bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) c
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		if(map[y*mapSize.x+x] != 0 && map[y*mapSize.x + x] != 10)
 			return true;
 	}
 	
@@ -203,7 +177,7 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) 
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		if(map[y*mapSize.x+x] != 0 && map[y*mapSize.x + x] != 10)
 			return true;
 	}
 	
@@ -211,12 +185,12 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) 
 }
 
 bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const
-{
+{	
 	int x0, x1, y;
 	
 	x0 = pos.x / tileSize;
-	x1 = (pos.x + size.x - 1) / tileSize;
-	y = (pos.y + size.y - 1) / tileSize;
+	x1 = (pos.x + size.x) / tileSize;
+	y = (pos.y + size.y) / tileSize;
 	for(int x=x0; x<=x1; x++)
 	{
 		if(map[y*mapSize.x+x] != 0)

@@ -2,18 +2,16 @@
 #include <GL/glut.h>
 #include "Game.h"
 
-
 void Game::init()
 {
 	bPlay = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-	scene.init("level02");
+	scene.init("level01");
 }
 
 bool Game::update(int deltaTime)
 {
 	scene.update(deltaTime);
-	
 	return bPlay;
 }
 
@@ -27,6 +25,8 @@ void Game::keyPressed(int key)
 {
 	if(key == 27) // Escape code
 		bPlay = false;
+	if (key == 113) // Escape code
+		init();
 	keys[key] = true;
 }
 
