@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <string>
 #include "TileMap.h"
 
 #include <windows.h>
@@ -188,19 +189,15 @@ bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, i
 {	
 	int x0, x1, y;
 	
-	x0 = pos.x / tileSize;
-	x1 = (pos.x + size.x) / tileSize;
-	y = (pos.y + size.y) / tileSize;
+	// player initial position
+	x0 = pos.x / blockSizex;
+	x1 = (pos.x + size.x - 1) / blockSizex;
+	y = (pos.y + size.y) / blockSizey - 1;
 	for(int x=x0; x<=x1; x++)
 	{
-		if(map[y*mapSize.x+x] != 0)
-		{
-			if(*posY - tileSize * y + size.y <= 4)
-			{
-				*posY = tileSize * y - size.y;
-				return true;
-			}
-		}
+		int aux = map[y*mapSize.x + x];
+		if (aux != 0)
+			return true;
 	}
 	
 	return false;
