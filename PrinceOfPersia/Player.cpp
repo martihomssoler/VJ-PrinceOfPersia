@@ -141,7 +141,7 @@ void Player::update(int deltaTime)
 	else if (sprite->animation() == DRIFT_L) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(DRIFT_L)) sprite->changeAnimation(RUN_L);
 	}
-	else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
+	else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT) && !wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) {
 		if (sprite->animation() == STAND_R) sprite->changeAnimation(TURN_L);
 		else if (sprite->animation() == STAND_L) sprite->changeAnimation(MOVE_L);
 		else if (sprite->animation() == MOVE_L) sprite->changeAnimation(RUN_L);
@@ -151,7 +151,7 @@ void Player::update(int deltaTime)
 			++posPlayer.x;
 		}
 	}
-	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) {
+	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) && !wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) {
 		if (sprite->animation() == STAND_L) sprite->changeAnimation(TURN_R);
 		else if (sprite->animation() == STAND_R) sprite->changeAnimation(MOVE_R);
 		else if (sprite->animation() == MOVE_R) sprite->changeAnimation(RUN_R);
