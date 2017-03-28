@@ -1,6 +1,8 @@
 # VJ-PrinceOfPersia
 
-## Animacions
+##TODO List
+
+### Animacions
 - Combat
 - Enemic
 - Salt "alt"
@@ -10,16 +12,16 @@
 - Mort (espasa, trampa puntxes, tampa guillotina)
 - Ajustar les animacions a les col·lisions (continua corrent quan xoca contra una paret).
 
-## Gameplay
+### Gameplay
 - Combat
 - Enemic IA
 - Damage (combat i caigudes)
 - Diferents nivells
 
-## Interfície
+### Interfície
 - GUI
 
-## Feature
+### Feature
 - Main menu
 - Disparar boles de foc
 - Música i efectes especials
