@@ -17,6 +17,7 @@
 - Enemic IA
 - Damage (combat i caigudes)
 - Diferents nivells
+- Ajustar col·lisions
 
 ### Interfície
 - GUI
