@@ -1,5 +1,10 @@
 #include "Enemy.h"
 
+#define SPRITESHEET_X 1.f/15.f
+#define SPRITESHEET_Y 1.f/38.f
+
+#define MIRRORED 19
+
 void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram)
 {
 }
