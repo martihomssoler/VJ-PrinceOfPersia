@@ -3,7 +3,6 @@
 ## TODO List
 
 ### Animacions
-- Combat
 - Enemic
 - Salt "alt"
 - Salt "llarg"
@@ -24,5 +23,9 @@
 
 ### Feature
 - Main menu
-- Disparar boles de foc
 - Música i efectes especials
+
+### Creativity 
+- Disparar boles de foc
+
+### Sons (fmod)
