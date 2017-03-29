@@ -28,6 +28,7 @@ private:
 	void createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed);
 
 	bool bJumping;
+	int orientation;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY;
 	Texture spritesheet;

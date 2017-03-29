@@ -11,7 +11,7 @@ public:
 
 private:
 	Texture spritesheet;
-	Sprite *lifebar;
+	vector<Sprite*> lifebar;
 	int health;
 };
 
