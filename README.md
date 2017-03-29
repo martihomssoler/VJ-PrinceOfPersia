@@ -2,13 +2,16 @@
 
 ## TODO List
 
-### Animacions
+## Molt important
+animacions
 - Enemic
+- Mort (espasa, trampa puntxes, tampa guillotina)
+
+### Animacions
 - Salt "alt"
 - Salt "llarg"
 - Camina lent
 - Pujar escales (finalització del nivell)
-- Mort (espasa, trampa puntxes, tampa guillotina)
 - Ajustar les animacions a les col·lisions (continua corrent quan xoca contra una paret).
 
 ### Gameplay
