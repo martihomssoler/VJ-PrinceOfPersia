@@ -26,3 +26,6 @@
 - Main menu
 - Disparar boles de foc
 - Música i efectes especials
+
+
+### Sons (fmod)
