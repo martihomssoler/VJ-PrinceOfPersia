@@ -58,13 +58,13 @@ static void mouseCallback(int button, int state, int x, int y)
 	else if(state == GLUT_UP)
 		Game::instance().mouseRelease(button);
 }
-
+// render
 static void drawCallback()
 {
 	Game::instance().render();
 	glutSwapBuffers();
 }
-
+// logic
 static void idleCallback()
 {
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
