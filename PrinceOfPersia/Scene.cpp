@@ -11,6 +11,9 @@
 #define INIT_PLAYER_X_TILES 5
 #define INIT_PLAYER_Y_TILES 4
 
+#define ENEMY_1 0
+#define ENEMY_2 1
+
 
 Scene::Scene()
 {

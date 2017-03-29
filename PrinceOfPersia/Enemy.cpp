@@ -3,10 +3,26 @@
 #define SPRITESHEET_X 1.f/15.f
 #define SPRITESHEET_Y 1.f/38.f
 
+#define NB_ANIMATIONS 12
+
 #define MIRRORED 19
 
-void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram)
+enum PlayerAnims
 {
+	STAND_R, STAND_L,
+	MOVE_R, MOVE_L,
+	ATTACK_R, ATTACK_L,
+	FALL_R, FALL_L,
+	DIE_R, DIE_L,
+	SPEARS_R, SPEARS_L
+};
+
+void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, int enemy_type)
+{
+	this->enemy_type = enemy_type;
+	spritesheet.loadFromFile("images/sprite-atlas.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
+	sprite->setNumberAnimations(NB_ANIMATIONS);
 }
 
 void Enemy::update(int deltaTime)

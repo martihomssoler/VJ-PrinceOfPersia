@@ -10,7 +10,7 @@ class Enemy
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
+	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int enemy_type);
 	void update(int deltaTime);
 	void render();
 
@@ -29,6 +29,7 @@ private:
 	TileMap *backMap;
 	TileMap *map;
 	TileMap *wallMap;
+	int enemy_type;
 
 };
 

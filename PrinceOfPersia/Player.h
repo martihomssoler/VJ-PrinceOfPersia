@@ -4,6 +4,7 @@
 
 #include "Sprite.h"
 #include "TileMap.h"
+#include "HealthGUI.h"
 
 
 // Player is basically a Sprite that represents the player. As such it has
@@ -22,6 +23,10 @@ public:
 	void setTileBackMap(TileMap *tileMap);
 	void setTileWallMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
+
+	void setHealthGUI(HealthGUI *lifebar);
+	void cure();
+	void damage();
 	
 private:
 
@@ -36,6 +41,7 @@ private:
 	TileMap *backMap;
 	TileMap *map;
 	TileMap *wallMap;
+	HealthGUI *lifebar;
 
 };
 

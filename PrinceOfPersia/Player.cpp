@@ -36,9 +36,9 @@ enum PlayerAnims
 	DEFEND_R, DEFEND_L,
 	TURN_R, TURN_L,
 	DEADLY_FALL_R, DEADLY_FALL_L,
-	UNKNOWN1_R, UNKNOWN1_L,
+	SPEARS_DEATH_R, SPEARS_DEATH_L,
 	SWORD_DEATH_R, SWORD_DEATH_L,
-	UNKNOWN2_R, UNKNOWN2_L,
+	SLICED_DEATH_R, SLICED_DEATH_L,
 	UP_R, UP_L,
 	STAIRS_R, STAIRS_L,
 	ATTACK_R, ATTACK_L,
@@ -86,9 +86,9 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	createAnimation(DEFEND_R, DEFEND_L, 1, 10, 4, 10);
 	createAnimation(TURN_R, TURN_L, 0, 11, 6, 10);
 	createAnimation(DEADLY_FALL_R, DEADLY_FALL_L, 0, 13, 2, 10); 
-	createAnimation(UNKNOWN1_R, UNKNOWN1_L, 2, 13, 3, 10);
+	createAnimation(SPEARS_DEATH_R, SPEARS_DEATH_L, 2, 13, 3, 10);
 	createAnimation(SWORD_DEATH_R, SWORD_DEATH_L, 5, 13, 5, 10);
-	createAnimation(UNKNOWN2_R, UNKNOWN2_L, 10, 13, 1, 10);
+	createAnimation(SLICED_DEATH_R, SLICED_DEATH_L, 10, 13, 1, 10);
 	createAnimation(UP_R, UP_L, 0, 16, 15, 10);
 	createAnimation(STAIRS_R, STAIRS_L, 0, 17, 15, 10);
 
@@ -308,104 +308,16 @@ void Player::setPosition(const glm::vec2 &pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
-/*sprite->setAnimationSpeed(STAND_LEFT, 8);
-sprite->addKeyframe(STAND_LEFT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 19));
+void Player::setHealthGUI(HealthGUI *lifebar) {
+	this->lifebar = lifebar;
+}
 
-sprite->setAnimationSpeed(STAND_RIGHT, 8);
-sprite->addKeyframe(STAND_RIGHT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 0));
+void Player::damage() {
+	lifebar->damage();
+}
 
-sprite->setAnimationSpeed(MOVE_LEFT, 8);
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(MOVE_LEFT, glm::vec2(SPRITESHEET_X * 6, SPRITESHEET_Y * (1+19)));
-
-sprite->setAnimationSpeed(MOVE_RIGHT, 10);
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 1));
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 1));
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * 1));
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * 1));
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * 1));
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y * 1));
-sprite->addKeyframe(MOVE_RIGHT, glm::vec2(SPRITESHEET_X * 6, SPRITESHEET_Y * 1));
-
-sprite->setAnimationSpeed(RUN_RIGHT, 10);
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 7, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 8, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 9, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 10, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 11, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 12, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 13, SPRITESHEET_Y * 1));
-sprite->addKeyframe(RUN_RIGHT, glm::vec2(SPRITESHEET_X * 14, SPRITESHEET_Y * 1));
-
-sprite->setAnimationSpeed(RUN_LEFT, 10);
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 7, SPRITESHEET_Y * (1+19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 8, SPRITESHEET_Y * (1 + 19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 9, SPRITESHEET_Y * (1 + 19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 10, SPRITESHEET_Y * (1 + 19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 11, SPRITESHEET_Y * (1 + 19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 12, SPRITESHEET_Y * (1 + 19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 13, SPRITESHEET_Y * (1 + 19)));
-sprite->addKeyframe(RUN_LEFT, glm::vec2(SPRITESHEET_X * 14, SPRITESHEET_Y * (1 + 19)));
-
-sprite->setAnimationSpeed(STOP_RIGHT, 10);
-sprite->addKeyframe(STOP_RIGHT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 8));
-sprite->addKeyframe(STOP_RIGHT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 8));
-sprite->addKeyframe(STOP_RIGHT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * 8));
-sprite->addKeyframe(STOP_RIGHT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * 8));
-sprite->addKeyframe(STOP_RIGHT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * 8));
-
-sprite->setAnimationSpeed(STOP_LEFT, 10);
-sprite->addKeyframe(STOP_LEFT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * (8+19)));
-sprite->addKeyframe(STOP_LEFT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * (8 + 19)));
-sprite->addKeyframe(STOP_LEFT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * (8 + 19)));
-sprite->addKeyframe(STOP_LEFT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * (8 + 19)));
-sprite->addKeyframe(STOP_LEFT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * (8 + 19)));
-
-sprite->setAnimationSpeed(TURN_RIGHT, 10);
-sprite->addKeyframe(TURN_RIGHT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 11));
-sprite->addKeyframe(TURN_RIGHT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 11));
-sprite->addKeyframe(TURN_RIGHT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * 11));
-sprite->addKeyframe(TURN_RIGHT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * 11));
-sprite->addKeyframe(TURN_RIGHT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * 11));
-sprite->addKeyframe(TURN_RIGHT, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y * 11));
-
-sprite->setAnimationSpeed(TURN_LEFT, 10);
-sprite->addKeyframe(TURN_LEFT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * (11 + 19)));
-sprite->addKeyframe(TURN_LEFT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * (11 + 19)));
-sprite->addKeyframe(TURN_LEFT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * (11 + 19)));
-sprite->addKeyframe(TURN_LEFT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * (11 + 19)));
-sprite->addKeyframe(TURN_LEFT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * (11 + 19)));
-sprite->addKeyframe(TURN_LEFT, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y * (11 + 19)));
-
-sprite->setAnimationSpeed(DRIFT_LEFT, 10);
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 6, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 7, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 8, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 9, SPRITESHEET_Y * 4));
-sprite->addKeyframe(DRIFT_LEFT, glm::vec2(SPRITESHEET_X * 10, SPRITESHEET_Y * 4));
-
-sprite->setAnimationSpeed(DRIFT_RIGHT, 10);
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 6, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 7, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 8, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 9, SPRITESHEET_Y * (4 + 19)));
-sprite->addKeyframe(DRIFT_RIGHT, glm::vec2(SPRITESHEET_X * 10, SPRITESHEET_Y * (4 + 19)));*/
+void Player::cure() {
+	lifebar->cure();
+}
 
 
