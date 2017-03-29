@@ -83,7 +83,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	createAnimation(DRAW_R, DRAW_L, 0, 7, 6, 10);
 	createAnimation(STOP_R, STOP_L, 0, 8, 6, 10);
 	createAnimation(FALL_R, FALL_L, 0, 9, 4, 10);
-	createAnimation(DEFEND_R, DEFEND_L, 3, 10, 1, 10);
+	createAnimation(DEFEND_R, DEFEND_L, 1, 10, 4, 10);
 	createAnimation(TURN_R, TURN_L, 0, 11, 6, 10);
 	createAnimation(DEADLY_FALL_R, DEADLY_FALL_L, 0, 13, 2, 10); 
 	createAnimation(UNKNOWN1_R, UNKNOWN1_L, 2, 13, 3, 10);
