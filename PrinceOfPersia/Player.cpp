@@ -55,7 +55,8 @@ enum PlayerAnims
 };
 
 
-void Player::createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed){
+void Player::createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed)
+{
 	sprite->setAnimationSpeed(r_animation, speed);
 	for (int i = x; i < x+size; ++i)
 		sprite->addKeyframe(r_animation, glm::vec2(SPRITESHEET_X * i, SPRITESHEET_Y * y));
@@ -308,16 +309,21 @@ void Player::setPosition(const glm::vec2 &pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
-void Player::setHealthGUI(HealthGUI *lifebar) {
+void Player::setHealthGUI(HealthGUI *lifebar) 
+{
 	this->lifebar = lifebar;
 }
 
-void Player::damage() {
-	lifebar->damage();
+void Player::damage(int amount) 
+{
+	lifebar->damage(amount);
+}
+
+glm::ivec2 Player::getPostion()
+{
+	return posPlayer;
 }
 
 void Player::cure() {
 	lifebar->cure();
 }
-
-
