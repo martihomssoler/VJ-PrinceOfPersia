@@ -31,6 +31,7 @@ private:
 	TileMap *map;
 	TileMap *wallMap;
 	Player *player;
+	HealthGUI *playerHealth;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;

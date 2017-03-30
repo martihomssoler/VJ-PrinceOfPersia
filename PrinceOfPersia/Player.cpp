@@ -14,7 +14,7 @@
 #define SPRITESHEET_Y 1.f/38.f
 
 #define MIRRORED 19
-#define NB_ANIMATIONS 58
+#define NB_ANIMATIONS 60
 
 #define RIGHT 0
 #define LEFT 1
@@ -36,6 +36,7 @@ enum PlayerAnims
 	DEFEND_R, DEFEND_L,
 	TURN_R, TURN_L,
 	DEADLY_FALL_R, DEADLY_FALL_L,
+	DEAD_R, DEAD_L,
 	SPEARS_DEATH_R, SPEARS_DEATH_L,
 	SWORD_DEATH_R, SWORD_DEATH_L,
 	SLICED_DEATH_R, SLICED_DEATH_L,
@@ -86,26 +87,13 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	createAnimation(DEFEND_R, DEFEND_L, 1, 10, 4, 10);
 	createAnimation(TURN_R, TURN_L, 0, 11, 6, 10);
 	createAnimation(DEADLY_FALL_R, DEADLY_FALL_L, 0, 13, 2, 10); 
+	createAnimation(DEAD_R, DEAD_L, 1, 13, 1, 10);
 	createAnimation(SPEARS_DEATH_R, SPEARS_DEATH_L, 2, 13, 3, 10);
 	createAnimation(SWORD_DEATH_R, SWORD_DEATH_L, 5, 13, 5, 10);
 	createAnimation(SLICED_DEATH_R, SLICED_DEATH_L, 10, 13, 1, 10);
 	createAnimation(UP_R, UP_L, 0, 16, 15, 10);
 	createAnimation(STAIRS_R, STAIRS_L, 0, 17, 15, 10);
-
-	sprite->setAnimationSpeed(ATTACK_R, 10);
-	sprite->addKeyframe(ATTACK_R, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * 18));
-	sprite->addKeyframe(ATTACK_R, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * 18));
-	sprite->addKeyframe(ATTACK_R, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * 18));
-	sprite->addKeyframe(ATTACK_R, glm::vec2(SPRITESHEET_X * 6, SPRITESHEET_Y * 18));
-	sprite->addKeyframe(ATTACK_R, glm::vec2(SPRITESHEET_X * 7, SPRITESHEET_Y * 18));
-
-	sprite->setAnimationSpeed(ATTACK_L, 10);
-	sprite->addKeyframe(ATTACK_L, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y * (18 + MIRRORED)));
-	sprite->addKeyframe(ATTACK_L, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y * (18 + MIRRORED)));
-	sprite->addKeyframe(ATTACK_L, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y * (18 + MIRRORED)));
-	sprite->addKeyframe(ATTACK_L, glm::vec2(SPRITESHEET_X * 6, SPRITESHEET_Y * (18 + MIRRORED)));
-	sprite->addKeyframe(ATTACK_L, glm::vec2(SPRITESHEET_X * 7, SPRITESHEET_Y * (18 + MIRRORED)));
-
+	createAnimation(ATTACK_R, ATTACK_L, 2, 18, 5, 10);
 	createAnimation(DRINK_R, DRINK_L, 0, 12, 15, 10);
 	createAnimation(JUMP_FAILED_R, JUMP_FAILED_L, 10, 14, 15, 10);
 	createAnimation(STAND_R, STAND_L, 0, 0, 1, 10);
@@ -126,14 +114,102 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
-	if (sprite->animation() == STOP_L) {
+
+	int anim = sprite->animation();
+
+	switch (anim % 30){
+	case 0: //DUCK
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim))  {
+			if (anim == DUCK_R) {
+				if (pick_potion) sprite->changeAnimation(DRINK_R);
+				else if (pick_sword) sprite->changeAnimation(SHOW_SWORD_R);
+				else sprite->changeAnimation(GET_UP_R);
+			}
+			else {
+				if (pick_potion) sprite->changeAnimation(DRINK_L);
+				else if (pick_sword) sprite->changeAnimation(SHOW_SWORD_L);
+				else sprite->changeAnimation(GET_UP_R);
+			}
+		}
+	case 1: //GET_UP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 2: //SHOW_SWORD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 3: //SAVE_SWORD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 4: //JUMP_FORWARD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 5: //DRIFT
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 6: //STEP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 7: //DRAW
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 8: //STOP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {
+			if (anim == STOP_R) {
+				sprite->changeAnimation(STAND_R);
+				++posPlayer.x;
+			}
+			else {
+				sprite->changeAnimation(STAND_L);
+				--posPlayer.x;
+			}
+		}
+	case 9: //FALL
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 10: //DEFEND
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 11: //TURN
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 12: //DEADLY_FALL
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 13: //DEAD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 14: //SPEARS_DEATH
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 15: //SWORD_DEATH
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 16: //SLICED_DEAD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 17: //UP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 18: //STAIRS
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 19: //ATTACK
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 20: //DRINK
+		if(sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 21: //JUMP_FAILED
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 22: //STAND
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 23: //MOVE
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 24: //RUN
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 25: //JUMP_RUNNING
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 26: //STAND_SWORD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 27: //MOVE_SWORD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 28: //JUMP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	case 29: //SWING
+		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
+	default:
+		break;
+
+	}
+	/*if (sprite->animation() == STOP_L) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(STOP_L)) sprite->changeAnimation(STAND_L);
 		--posPlayer.x;
 	}
 	else if (sprite->animation() == STOP_R) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(STOP_R)) sprite->changeAnimation(STAND_R);
 		++posPlayer.x;
-	}
+	}*/
 	else if (sprite->animation() == TURN_R) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(TURN_R)) sprite->changeAnimation(STAND_R);
 	}
@@ -161,8 +237,17 @@ void Player::update(int deltaTime)
 		if (sprite->keyFrame() == sprite->numberKeyFrames(DEFEND_R)) sprite->changeAnimation(STAND_SWORD_R);
 	}
 	else if (sprite->animation() == ATTACK_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R)) sprite->changeAnimation(STAND_SWORD_R);
+		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R)) {
+			sprite->changeAnimation(STAND_SWORD_R);
+			if (!lifebar->damage(1)) sprite->changeAnimation(SWORD_DEATH_R);
+		}
 		else ++posPlayer.x;
+	}
+	else if (sprite->animation() == SWORD_DEATH_R) {
+		if (sprite->keyFrame() == sprite->numberKeyFrames(SWORD_DEATH_R)) sprite->changeAnimation(DEAD_R);
+	}
+	else if (sprite->animation() == SWORD_DEATH_L) {
+		if (sprite->keyFrame() == sprite->numberKeyFrames(SWORD_DEATH_L)) sprite->changeAnimation(DEAD_L);
 	}
 	else if (sprite->animation() == SAVE_SWORD_R) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(SAVE_SWORD_R)) sprite->changeAnimation(STAND_R);
@@ -313,7 +398,7 @@ void Player::setHealthGUI(HealthGUI *lifebar) {
 }
 
 void Player::damage() {
-	lifebar->damage();
+	lifebar->damage(1);
 }
 
 void Player::cure() {

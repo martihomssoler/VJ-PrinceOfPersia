@@ -5,7 +5,7 @@
 
 #define NB_ANIMATIONS 12
 
-#define MIRRORED 19
+#define MIRRORED 2
 
 enum PlayerAnims
 {

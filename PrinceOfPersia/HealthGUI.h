@@ -16,5 +16,6 @@ private:
 	vector<Sprite*> lifebar;
 	vector<bool> lifebar_values;
 	int health;
+	glm::ivec2 tileMapDispl, posLifebar;
 };
 

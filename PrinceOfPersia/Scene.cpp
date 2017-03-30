@@ -42,6 +42,11 @@ void Scene::init(string level)
 	player->setTileBackMap(backMap);
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
+
+	playerHealth = new HealthGUI();
+	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram);
+
+	player->setHealthGUI(playerHealth);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
@@ -50,6 +55,7 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	playerHealth->update(deltaTime);
 }
 
 void Scene::render()
@@ -87,6 +93,14 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	wallMap->render();
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	playerHealth->render();
 
 	
 }
