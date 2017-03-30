@@ -56,7 +56,8 @@ enum PlayerAnims
 };
 
 
-void Player::createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed){
+void Player::createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed)
+{
 	sprite->setAnimationSpeed(r_animation, speed);
 	for (int i = x; i < x+size; ++i)
 		sprite->addKeyframe(r_animation, glm::vec2(SPRITESHEET_X * i, SPRITESHEET_Y * y));
@@ -117,7 +118,7 @@ void Player::update(int deltaTime)
 
 	int anim = sprite->animation();
 
-	switch (anim % 30){
+	/*switch (anim % 30){
 	case 0: //DUCK
 		if (sprite->keyFrame() == sprite->numberKeyFrames(anim))  {
 			if (anim == DUCK_R) {
@@ -201,15 +202,15 @@ void Player::update(int deltaTime)
 	default:
 		break;
 
-	}
-	/*if (sprite->animation() == STOP_L) {
+	}*/
+	if (sprite->animation() == STOP_L) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(STOP_L)) sprite->changeAnimation(STAND_L);
 		--posPlayer.x;
 	}
 	else if (sprite->animation() == STOP_R) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(STOP_R)) sprite->changeAnimation(STAND_R);
 		++posPlayer.x;
-	}*/
+	}
 	else if (sprite->animation() == TURN_R) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(TURN_R)) sprite->changeAnimation(STAND_R);
 	}
@@ -393,16 +394,26 @@ void Player::setPosition(const glm::vec2 &pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
-void Player::setHealthGUI(HealthGUI *lifebar) {
+void Player::setHealthGUI(HealthGUI *lifebar) 
+{
 	this->lifebar = lifebar;
 }
 
+<<<<<<< HEAD
 void Player::damage() {
 	lifebar->damage(1);
+=======
+void Player::damage(int amount) 
+{
+	lifebar->damage(amount);
+}
+
+glm::ivec2 Player::getPostion()
+{
+	return posPlayer;
+>>>>>>> 1b3f2a62b5ace474965e6fd5ee7db936310fba16
 }
 
 void Player::cure() {
 	lifebar->cure();
 }
-
-

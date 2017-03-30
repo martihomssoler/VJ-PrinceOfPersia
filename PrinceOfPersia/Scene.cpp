@@ -1,4 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
@@ -42,17 +46,36 @@ void Scene::init(string level)
 	player->setTileBackMap(backMap);
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
+<<<<<<< HEAD
 
 	playerHealth = new HealthGUI();
 	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram);
 
 	player->setHealthGUI(playerHealth);
+=======
+	initEnemies("levels/" + level + "Enemies.txt");
+>>>>>>> 1b3f2a62b5ace474965e6fd5ee7db936310fba16
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
 
 void Scene::update(int deltaTime)
 {
+	for (unsigned int i = 0; enemies.size() > i; ++i)
+	{
+		// Afegir la logica aplicada al enemics
+		// ara per ara el codi dels enemics esta buid!!!
+		if (enemies[i].getPosition().y == player->getPostion().y) // mateixa altura
+		{
+			if (abs(enemies[i].getPosition().x - player->getPostion().x) > 2) // hi ha distància horitzontal entre ells
+			{
+				enemies[i].walk(); // moure l'enemic cap al player
+			} else 
+			{
+				enemies[i].attack();
+			}
+		}
+	}
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	playerHealth->update(deltaTime);
@@ -133,6 +156,60 @@ void Scene::initShaders()
 	texProgram.bindFragmentOutput("outColor");
 	vShader.free();
 	fShader.free();
+}
+
+void Scene::initEnemies(const string & enemiesFile)
+{
+	ifstream fin;
+	string line;
+	stringstream sstream;
+	int numEnemies, maxEnemies, mapSizex, mapSizey;
+
+	fin.open(enemiesFile.c_str());
+	if (!fin.is_open())
+		return;
+	getline(fin, line);
+	if (line.compare(0, 7, "ENEMIES") != 0)
+		return;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> numEnemies;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> maxEnemies;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> mapSizex >> mapSizey;
+
+	int k = 0;
+	enemies = vector<Enemy>(numEnemies);
+
+	for (int j = 0; j<mapSizey && k<numEnemies; j++)
+	{
+		getline(fin, line);
+		std::stringstream   linestream(line);
+		std::string         value;
+
+		for (int i = 0; i<mapSizex && k<numEnemies; i++)
+		{
+			getline(linestream, value, ',');
+			int aux = atoi(value.c_str()) + 1;
+			if (aux != 0)
+			{
+				// Comprovar que el calcul de type i position es el correcte!
+				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
+				// altrement si és falç, l'enemic estarà mirant cap a la dreta (1)
+				enemies[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, aux % maxEnemies, 1 - 2 * (aux > maxEnemies));
+				enemies[k].setPosition(glm::vec2(i * 32, j * 64));
+				enemies[k].setTileBackMap(backMap);
+				enemies[k].setTileMap(map);
+				enemies[k].setTileWallMap(wallMap);				
+				++k;
+			}
+			
+		}
+	}
+	fin.close();
 }
 
 

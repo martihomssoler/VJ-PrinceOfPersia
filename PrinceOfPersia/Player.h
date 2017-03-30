@@ -26,7 +26,8 @@ public:
 
 	void setHealthGUI(HealthGUI *lifebar);
 	void cure();
-	void damage();
+	void damage(int amount);
+	glm::ivec2 getPostion();
 	
 private:
 

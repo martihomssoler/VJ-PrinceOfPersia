@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Enemy.h"
 
 
 // Scene contains all the entities of our game.
@@ -25,13 +26,17 @@ public:
 
 private:
 	void initShaders();
+	void initEnemies(const string &enemiesFile);
 
-private:
 	TileMap *backMap;
 	TileMap *map;
 	TileMap *wallMap;
 	Player *player;
+<<<<<<< HEAD
 	HealthGUI *playerHealth;
+=======
+	vector<Enemy> enemies;
+>>>>>>> 1b3f2a62b5ace474965e6fd5ee7db936310fba16
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
