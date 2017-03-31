@@ -34,6 +34,7 @@ private:
 	void createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed);
 
 	bool bJumping;
+	bool blocked;
 	bool pick_sword, pick_potion;
 	int orientation;
 	glm::ivec2 tileMapDispl, posPlayer;

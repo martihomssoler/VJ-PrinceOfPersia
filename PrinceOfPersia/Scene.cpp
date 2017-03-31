@@ -18,6 +18,10 @@
 #define ENEMY_1 0
 #define ENEMY_2 1
 
+#define ENEMY 0
+#define PRINCE 1
+
+
 #define TILE_X 32
 #define TILE_Y 64
 
@@ -48,8 +52,10 @@ void Scene::init(string level)
 	player->setTileBackMap(backMap);
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
+
+
 	playerHealth = new HealthGUI();
-	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram);
+	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, ENEMY);
 
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
