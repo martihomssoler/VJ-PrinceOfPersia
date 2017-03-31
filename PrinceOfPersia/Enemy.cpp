@@ -26,11 +26,11 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 	sprite->setNumberAnimations(NB_ANIMATIONS);
 
 	createAnimation(STAND_R, STAND_L, 0, 0, 1, 10);
-	createAnimation(MOVE_R, MOVE_L, 0, 1, 6, 10);
-	createAnimation(ATTACK_R, ATTACK_L, 0, 7, 8, 10);
-	createAnimation(FALL_R, FALL_L, 0, 15, 2, 10);
-	createAnimation(DIE_R, DIE_L, 0, 17, 5, 10);
-	createAnimation(SPEARS_R, SPEARS_L, 0, 22, 1, 10);
+	createAnimation(MOVE_R, MOVE_L, 1, 0, 6, 10);
+	createAnimation(ATTACK_R, ATTACK_L, 7, 0, 8, 10);
+	createAnimation(FALL_R, FALL_L, 15, 0, 2, 10);
+	createAnimation(DIE_R, DIE_L, 17, 0, 5, 10);
+	createAnimation(SPEARS_R, SPEARS_L, 22, 0, 1, 10);
 
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
