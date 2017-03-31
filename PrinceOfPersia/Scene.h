@@ -32,11 +32,9 @@ private:
 	TileMap *map;
 	TileMap *wallMap;
 	Player *player;
-<<<<<<< HEAD
+
 	HealthGUI *playerHealth;
-=======
 	vector<Enemy> enemies;
->>>>>>> 1b3f2a62b5ace474965e6fd5ee7db936310fba16
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
