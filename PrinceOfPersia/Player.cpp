@@ -442,9 +442,8 @@ void Player::setHealthGUI(HealthGUI *lifebar)
 }
 
 
-void Player::damage(int amount) 
-{
-	lifebar->damage(amount);
+bool Player::damage(int amount) {
+	return lifebar->damage(amount);
 }
 
 glm::ivec2 Player::getPostion()

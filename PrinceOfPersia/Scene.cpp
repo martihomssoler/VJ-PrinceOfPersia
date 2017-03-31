@@ -22,6 +22,9 @@
 #define PRINCE 1
 
 
+#define TILE_X 32
+#define TILE_Y 64
+
 Scene::Scene()
 {
 	map = NULL;
@@ -50,6 +53,7 @@ void Scene::init(string level)
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
 
+
 	playerHealth = new HealthGUI();
 	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, ENEMY);
 
@@ -61,22 +65,28 @@ void Scene::init(string level)
 
 void Scene::update(int deltaTime)
 {
+	currentTime += deltaTime;
+	glm::ivec2 playerPos = player->getPostion();
 	for (unsigned int i = 0; enemies.size() > i; ++i)
 	{
+		glm::ivec2 enemyPos = enemies[i].getPosition();
 		// Afegir la logica aplicada al enemics
 		// ara per ara el codi dels enemics esta buid!!!
-		if (enemies[i].getPosition().y == player->getPostion().y) // mateixa altura
+		if (enemyPos.y + 0.3 * TILE_Y > playerPos.y && playerPos.y > enemyPos.y - 0.3 * TILE_Y) // "mateixa" altura (diferencia de -0.3:+0.3)
 		{
-			if (abs(enemies[i].getPosition().x - player->getPostion().x) > 2) // hi ha distància horitzontal entre ells
-			{
-				enemies[i].walk(); // moure l'enemic cap al player
-			} else 
-			{
-				enemies[i].attack();
-			}
+			string action;
+			if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.y - 8 * TILE_X) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
+				action = "MOVE_LEFT";
+			else if (playerPos.x > enemyPos.y - TILE_X && enemyPos.x > playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
+				action = "ATTACK_LEFT";
+			else if (playerPos.x < enemyPos.y + 8 * TILE_X && enemyPos.x + TILE_X < playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
+				action = "MOVE_RIGHT";
+			else if (playerPos.x < enemyPos.y + TILE_X && enemyPos.x < playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
+				action = "ATTACK_RIGHT";
+			
+			//enemies[i].update(deltaTime, action);
 		}
 	}
-	currentTime += deltaTime;
 	player->update(deltaTime);
 	playerHealth->update(deltaTime);
 }
@@ -109,6 +119,17 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	player->render();
 
+	for (unsigned int i = 0; enemies.size() > i; ++i)
+	{
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", projection);
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		enemies[i].render();
+	}
+
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -124,7 +145,6 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
-
 	
 }
 
@@ -200,7 +220,7 @@ void Scene::initEnemies(const string & enemiesFile)
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
 				// altrement si és falç, l'enemic estarà mirant cap a la dreta (1)
 				enemies[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, aux % maxEnemies, 1 - 2 * (aux > maxEnemies));
-				enemies[k].setPosition(glm::vec2(i * 32, j * 64));
+				enemies[k].setPosition(glm::vec2(i * TILE_X, j * TILE_Y));
 				enemies[k].setTileBackMap(backMap);
 				enemies[k].setTileMap(map);
 				enemies[k].setTileWallMap(wallMap);				

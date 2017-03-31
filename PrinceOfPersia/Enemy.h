@@ -11,7 +11,7 @@ class Enemy
 
 public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int enemy_type, int direction);
-	void update(int deltaTime);
+	void update(int deltaTime, string action);
 	void render();
 
 	void setTileMap(TileMap *tileMap);

@@ -1,7 +1,7 @@
 #include "Enemy.h"
 
-#define SPRITESHEET_X 1.f/22.f
-#define SPRITESHEET_Y 1.f/4.f
+#define SPRITESHEET_X 1.f/23.f
+#define SPRITESHEET_Y 1.f/8.f
 
 #define NB_ANIMATIONS 12
 
@@ -21,7 +21,7 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 {
 	this->enemy_type = enemy_type;
 	this->direction = direction;
-	spritesheet.loadFromFile("images/sprite-atlas.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	spritesheet.loadFromFile("images/sprite-enemies.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(NB_ANIMATIONS);
 
@@ -32,14 +32,33 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 	createAnimation(DIE_R, DIE_L, 0, 17, 5, 10);
 	createAnimation(SPEARS_R, SPEARS_L, 0, 22, 1, 10);
 
-	// Put all the animations
-
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
-void Enemy::update(int deltaTime)
+void Enemy::update(int deltaTime, string action)
 {
+	sprite->update(deltaTime);
+
+	if (action == "MOVE_LEFT")
+	{
+		if (sprite->animation() != MOVE_L) 
+		{
+			sprite->changeAnimation(MOVE_L);
+			--posEnemy.x;
+		}
+	}
+	else if (action == "MOVE_RIGHT")
+	{
+	}
+	else if (action == "ATTACK_LEFT")
+	{
+	}
+	else if (action == "ATTACK_RIGHT")
+	{
+	}
+
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
 void Enemy::render()

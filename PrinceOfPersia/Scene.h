@@ -32,6 +32,7 @@ private:
 	TileMap *map;
 	TileMap *wallMap;
 	Player *player;
+
 	HealthGUI *playerHealth;
 	vector<Enemy> enemies;
 	ShaderProgram texProgram;
