@@ -14,16 +14,20 @@
 #define SPRITESHEET_Y 1.f/38.f
 
 #define MIRRORED 19
-#define NB_ANIMATIONS 60
+#define NB_ANIMATIONS 62
 
 #define RIGHT 0
 #define LEFT 1
 
+#define KEY_A 97
+#define KEY_S 115
+#define KEY_D 100
 
 
 enum PlayerAnims
 {
 	DUCK_R, DUCK_L,
+	LAND_R, LAND_L,
 	GET_UP_R, GET_UP_L,
 	SHOW_SWORD_R, SHOW_SWORD_L,
 	SAVE_SWORD_R, SAVE_SWORD_L,
@@ -76,6 +80,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setNumberAnimations(NB_ANIMATIONS);
 
 	createAnimation(DUCK_R, DUCK_L, 0, 0, 4, 10);
+	createAnimation(LAND_R, LAND_L, 1, 0, 3, 10);
 	createAnimation(GET_UP_R, GET_UP_L, 3, 0, 9, 10);
 	createAnimation(SHOW_SWORD_R, SHOW_SWORD_L, 0, 2, 9, 10);
 	createAnimation(SAVE_SWORD_R, SAVE_SWORD_L, 3, 2, 7, 10);
@@ -84,7 +89,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	createAnimation(STEP_R, STEP_L, 0, 6, 8, 10);
 	createAnimation(DRAW_R, DRAW_L, 0, 7, 6, 10);
 	createAnimation(STOP_R, STOP_L, 0, 8, 6, 10);
-	createAnimation(FALL_R, FALL_L, 0, 9, 4, 10);
+	createAnimation(FALL_R, FALL_L, 0, 9, 3, 10);
 	createAnimation(DEFEND_R, DEFEND_L, 1, 10, 4, 10);
 	createAnimation(TURN_R, TURN_L, 0, 11, 6, 10);
 	createAnimation(DEADLY_FALL_R, DEADLY_FALL_L, 0, 13, 2, 10); 
@@ -116,12 +121,9 @@ void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
 
-	int anim = sprite->animation();
-
-	/*switch (anim % 30){
-	case 0: //DUCK
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim))  {
-			if (anim == DUCK_R) {
+	if (sprite->animation() == DUCK_R || sprite->animation() == DUCK_L) { //DUCK
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))  {
+			if (sprite->animation()== DUCK_R) {
 				if (pick_potion) sprite->changeAnimation(DRINK_R);
 				else if (pick_sword) sprite->changeAnimation(SHOW_SWORD_R);
 				else sprite->changeAnimation(GET_UP_R);
@@ -129,26 +131,54 @@ void Player::update(int deltaTime)
 			else {
 				if (pick_potion) sprite->changeAnimation(DRINK_L);
 				else if (pick_sword) sprite->changeAnimation(SHOW_SWORD_L);
-				else sprite->changeAnimation(GET_UP_R);
+				else sprite->changeAnimation(GET_UP_L);
 			}
 		}
-	case 1: //GET_UP
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 2: //SHOW_SWORD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 3: //SAVE_SWORD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 4: //JUMP_FORWARD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 5: //DRIFT
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 6: //STEP
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 7: //DRAW
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 8: //STOP
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {
-			if (anim == STOP_R) {
+	}
+	else if (sprite->animation() == LAND_R || sprite->animation() == LAND_L) {
+		if (sprite->keyFrame() == sprite->numberKeyFrames(LAND_R)) {
+			if (sprite->animation() == LAND_R) sprite->changeAnimation(GET_UP_R);
+			else sprite->changeAnimation(GET_UP_L);
+		}
+	}
+	else if (sprite->animation() == GET_UP_R || sprite->animation() == GET_UP_L) { //GET_UP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(GET_UP_R)) {
+			if (sprite->animation() == GET_UP_R) sprite->changeAnimation(STAND_R);
+			else sprite->changeAnimation(STAND_L);
+		}
+	}
+	else if (sprite->animation() == SHOW_SWORD_R || sprite->animation() == SHOW_SWORD_L) { //SHOW_SWORD
+
+	}
+	else if (sprite->animation() == SAVE_SWORD_R || sprite->animation() == SAVE_SWORD_L) { //SAVE_SWORD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== SAVE_SWORD_R) sprite->changeAnimation(STAND_R);
+			else sprite->changeAnimation(STAND_L);
+		}
+	}
+	else if (sprite->animation() == JUMP_FORWARD_R || sprite->animation() == JUMP_FORWARD_L) { //JUMP_FORWARD
+
+	}
+	else if (sprite->animation() == DRIFT_R || sprite->animation() == DRIFT_L) { //DRIFT
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== DRIFT_R) sprite->changeAnimation(RUN_R);
+			else sprite->changeAnimation(RUN_L);
+		}
+
+	}
+	else if (sprite->animation() == STEP_R || sprite->animation() == STEP_L) { //STEP
+
+	}
+	else if (sprite->animation() == DRAW_R || sprite->animation() == DRAW_L) { //DRAW
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== DRAW_R) sprite->changeAnimation(STAND_SWORD_R);
+			else sprite->changeAnimation(STAND_SWORD_L);
+		}
+
+	}
+	else if (sprite->animation() == STOP_R || sprite->animation() == STOP_L) { //STOP
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== STOP_R) {
 				sprite->changeAnimation(STAND_R);
 				++posPlayer.x;
 			}
@@ -157,183 +187,192 @@ void Player::update(int deltaTime)
 				--posPlayer.x;
 			}
 		}
-	case 9: //FALL
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 10: //DEFEND
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 11: //TURN
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 12: //DEADLY_FALL
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 13: //DEAD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 14: //SPEARS_DEATH
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 15: //SWORD_DEATH
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 16: //SLICED_DEAD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 17: //UP
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 18: //STAIRS
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 19: //ATTACK
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 20: //DRINK
-		if(sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 21: //JUMP_FAILED
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 22: //STAND
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 23: //MOVE
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 24: //RUN
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 25: //JUMP_RUNNING
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 26: //STAND_SWORD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 27: //MOVE_SWORD
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 28: //JUMP
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	case 29: //SWING
-		if (sprite->keyFrame() == sprite->numberKeyFrames(anim)) {}
-	default:
-		break;
-
-	}*/
-	if (sprite->animation() == STOP_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(STOP_L)) sprite->changeAnimation(STAND_L);
-		--posPlayer.x;
-	}
-	else if (sprite->animation() == STOP_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(STOP_R)) sprite->changeAnimation(STAND_R);
-		++posPlayer.x;
-	}
-	else if (sprite->animation() == TURN_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(TURN_R)) sprite->changeAnimation(STAND_R);
-	}
-	else if (sprite->animation() == TURN_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(TURN_L)) sprite->changeAnimation(STAND_L);
-	}
-	else if (sprite->animation() == DRIFT_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DRIFT_R)) sprite->changeAnimation(RUN_R);
-	}
-	else if (sprite->animation() == DRIFT_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DRIFT_L)) sprite->changeAnimation(RUN_L);
-	}
-	else if (sprite->animation() == DRAW_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DRAW_R)) sprite->changeAnimation(STAND_SWORD_R);
-	}
-	else if (sprite->animation() == DRAW_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DRAW_L)) sprite->changeAnimation(STAND_SWORD_L);
-	}
-	else if (sprite->animation() == MOVE_SWORD_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(MOVE_SWORD_R)) sprite->changeAnimation(STAND_SWORD_R);
-		else if (orientation == RIGHT) ++posPlayer.x;
-		else if (orientation == LEFT) --posPlayer.x;
-	}
-	else if (sprite->animation() == DEFEND_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DEFEND_R)) sprite->changeAnimation(STAND_SWORD_R);
-	}
-	else if (sprite->animation() == ATTACK_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R)) {
-			sprite->changeAnimation(STAND_SWORD_R);
-			if (!lifebar->damage(1)) sprite->changeAnimation(SWORD_DEATH_R);
+		else {
+			if (sprite->animation() == STOP_R) {
+				++posPlayer.x;
+			}
+			else {
+				--posPlayer.x;
+			}
 		}
-		else ++posPlayer.x;
-	}
-	else if (sprite->animation() == SWORD_DEATH_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(SWORD_DEATH_R)) sprite->changeAnimation(DEAD_R);
-	}
-	else if (sprite->animation() == SWORD_DEATH_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(SWORD_DEATH_L)) sprite->changeAnimation(DEAD_L);
-	}
-	else if (sprite->animation() == SAVE_SWORD_R) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(SAVE_SWORD_R)) sprite->changeAnimation(STAND_R);
-	}
-
-	else if (sprite->animation() == MOVE_SWORD_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(MOVE_SWORD_L)) sprite->changeAnimation(STAND_SWORD_L);
-		else if (orientation == RIGHT) ++posPlayer.x;
-		else if (orientation == LEFT) --posPlayer.x;
-	}
-	else if (sprite->animation() == DEFEND_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DEFEND_L)) sprite->changeAnimation(STAND_SWORD_L);
-	}
-	else if (sprite->animation() == ATTACK_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L)) sprite->changeAnimation(STAND_SWORD_L);
-		else --posPlayer.x;
-	}
-	else if (sprite->animation() == SAVE_SWORD_L) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(SAVE_SWORD_L)) sprite->changeAnimation(STAND_L);
-	}
-	else if (Game::instance().getKey(115)) {
-		if (sprite->animation() == STAND_SWORD_R) sprite->changeAnimation(SAVE_SWORD_R);
-		else if (sprite->animation() == STAND_R) sprite->changeAnimation(DRAW_R);
-		else if (sprite->animation() == STAND_SWORD_L) sprite->changeAnimation(SAVE_SWORD_L);
-		else if (sprite->animation() == STAND_L) sprite->changeAnimation(DRAW_L);
-	}
-	else if (Game::instance().getKey(100)) {
-		if (sprite->animation() == STAND_SWORD_R) sprite->changeAnimation(DEFEND_R);
-		else if (sprite->animation() == STAND_SWORD_L) sprite->changeAnimation(DEFEND_L);
 
 	}
-	else if (Game::instance().getKey(97)) {
-		if (sprite->animation() == STAND_SWORD_R) sprite->changeAnimation(ATTACK_R);
-		else if (sprite->animation() == STAND_SWORD_L) sprite->changeAnimation(ATTACK_L);
+	else if (sprite->animation() == FALL_R || sprite->animation() == FALL_L) { //FALL
+		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64), &posPlayer.y)) {
+			if (sprite->animation() == FALL_R) sprite->changeAnimation(LAND_R);
+			else sprite->changeAnimation(LAND_L);
+		}
+	}
+	else if (sprite->animation() == DEFEND_R || sprite->animation() == DEFEND_L) { //DEFEND
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== DEFEND_R) sprite->changeAnimation(STAND_SWORD_R);
+			else sprite->changeAnimation(STAND_SWORD_L);
+		}
 
 	}
-	else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT) && !wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) {
-		if (sprite->animation() == STAND_R) sprite->changeAnimation(TURN_L);
-		else if (sprite->animation() == STAND_L) sprite->changeAnimation(MOVE_L);
-		else if (sprite->animation() == MOVE_L) sprite->changeAnimation(RUN_L);
-		else if (sprite->animation() == RUN_L) --posPlayer.x;
-		else if (sprite->animation() == RUN_R || sprite->animation() == MOVE_R) {
-			sprite->changeAnimation(DRIFT_L);
-			++posPlayer.x;
+	else if (sprite->animation() == TURN_R || sprite->animation() == TURN_L) { //TURN
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== TURN_R) sprite->changeAnimation(STAND_R);
+			else sprite->changeAnimation(STAND_L);
 		}
-		else if (sprite->animation() == STAND_SWORD_R) {
-			sprite->changeAnimation(MOVE_SWORD_R);
-			orientation = LEFT;
-		}
-		else if (sprite->animation() == STAND_SWORD_L) {
-			sprite->changeAnimation(MOVE_SWORD_L);
-			orientation = LEFT;
-		}
+
 	}
-	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) && !wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) {
-		if (sprite->animation() == STAND_L) sprite->changeAnimation(TURN_R);
-		else if (sprite->animation() == STAND_R) sprite->changeAnimation(MOVE_R);
-		else if (sprite->animation() == MOVE_R) sprite->changeAnimation(RUN_R);
-		else if (sprite->animation() == RUN_R) ++posPlayer.x;
-		else if (sprite->animation() == RUN_L || sprite->animation() == MOVE_L) {
-			sprite->changeAnimation(DRIFT_R);
-			--posPlayer.x;
+	else if (sprite->animation() == DEADLY_FALL_R || sprite->animation() == DEADLY_FALL_L) { //DEADLY_FALL
+
+	}
+	else if (sprite->animation() == DEAD_R || sprite->animation() == DEAD_L) { //DEAD
+
+	}
+	else if (sprite->animation() == SPEARS_DEATH_R || sprite->animation() == SPEARS_DEATH_L) { //SPEARS_DEATH
+
+	}
+	else if (sprite->animation() == SWORD_DEATH_R || sprite->animation() == SWORD_DEATH_L) { //SWORD_DEATH
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== SWORD_DEATH_R) sprite->changeAnimation(DEAD_R);
+			else sprite->changeAnimation(DEAD_L);
 		}
-		else if (sprite->animation() == STAND_SWORD_R) {
-			sprite->changeAnimation(MOVE_SWORD_R);
-			orientation = RIGHT;
+
+	}
+	else if (sprite->animation() == SLICED_DEATH_R || sprite->animation() == SLICED_DEATH_L) { //SLICED_DEAD
+
+	}
+	else if (sprite->animation() == UP_R || sprite->animation() == UP_L) { //UP
+
+	}
+	else if (sprite->animation() == STAIRS_R || sprite->animation() == STAIRS_L) { //STAIRS
+
+	}
+	else if (sprite->animation() == ATTACK_R || sprite->animation() == ATTACK_L) { //ATTACK
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== ATTACK_R) {
+				sprite->changeAnimation(STAND_SWORD_R);
+				if (!lifebar->damage(1)) sprite->changeAnimation(SWORD_DEATH_R);
+			}
+			else sprite->changeAnimation(STAND_SWORD_L);
 		}
-		else if (sprite->animation() == STAND_SWORD_L) {
-			sprite->changeAnimation(MOVE_SWORD_L);
-			orientation = RIGHT;
+		else {
+			if (sprite->animation()== ATTACK_R) ++posPlayer.x;
+			else --posPlayer.x;
 		}
+
 	}
-	else if (sprite->animation() == MOVE_R && !wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(MOVE_R)) sprite->changeAnimation(RUN_R);
+	else if (sprite->animation() == DRINK_R || sprite->animation() == DRINK_L) { //DRINK
+
 	}
-	else if (sprite->animation() == RUN_R && !wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(RUN_R)) sprite->changeAnimation(STOP_R);
-		++posPlayer.x;
+	else if (sprite->animation() == JUMP_FAILED_R || sprite->animation() == JUMP_FAILED_L) { //JUMP_FAILED
+
 	}
-	else if (sprite->animation() == MOVE_L && !wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(MOVE_L)) sprite->changeAnimation(RUN_L);
+	else if (sprite->animation() == STAND_R || sprite->animation() == STAND_L) { //STAND
+		if (sprite->animation()== STAND_R) {
+			if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(MOVE_R);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(TURN_L);
+			else if (Game::instance().getKey(KEY_S)) {
+				sprite->changeAnimation(DRAW_R);
+			}
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) {
+				if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) sprite->changeAnimation(UP_R);
+				else sprite->changeAnimation(JUMP_R);
+			}
+		}
+		else {
+			if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(MOVE_L);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(TURN_R);
+			else if (Game::instance().getKey(KEY_S)) {
+				sprite->changeAnimation(DRAW_L);
+			}
+		}
+
 	}
-	else if (sprite->animation() == RUN_L && !wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) {
-		if (sprite->keyFrame() == sprite->numberKeyFrames(RUN_L)) sprite->changeAnimation(STOP_L);
-		--posPlayer.x;
+	else if (sprite->animation() == MOVE_R || sprite->animation() == MOVE_L) { //MOVE
+		if (sprite->keyFrame() < sprite->numberKeyFrames(MOVE_R)) {
+			if (sprite->animation()== MOVE_R) {
+				if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) ) {
+					sprite->changeAnimation(RUN_R);
+				}
+			}
+			else {
+				if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(RUN_L);
+			}
+		}
+		else if (sprite->keyFrame() == sprite->numberKeyFrames(MOVE_R)) {
+			if (sprite->animation()== MOVE_R) sprite->changeAnimation(STOP_R);
+			else sprite->changeAnimation(STOP_L);
+		}
+
+	}
+	else if (sprite->animation() == RUN_R || sprite->animation() == RUN_L) { //RUN
+		bool hold = true;
+		if (sprite->animation() == RUN_R) {
+			if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(DRIFT_L);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) ++posPlayer.x;
+			else {
+				++posPlayer.x;
+				hold = false;
+			}
+		}
+		else {
+			if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(DRIFT_R);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) --posPlayer.x;
+			else {
+				--posPlayer.x;
+				hold = false;
+			}
+		}
+		if (sprite->keyFrame() == sprite->numberKeyFrames(RUN_R) && !hold) {
+			if (sprite->animation()== RUN_R) {
+				sprite->changeAnimation(STOP_R);
+				++posPlayer.x;
+			}
+			else {
+				sprite->changeAnimation(STOP_L);
+				--posPlayer.x;
+			}
+		}
+
+	}
+	else if (sprite->animation() == DUCK_R || sprite->animation() == DUCK_L) { //JUMP_RUNNING
+
+	}
+	else if (sprite->animation() == STAND_SWORD_R || sprite->animation() == STAND_SWORD_L) { //STAND_SWORD
+		if (sprite->animation() == STAND_SWORD_R) {
+			if (Game::instance().getKey(KEY_S)) sprite->changeAnimation(SAVE_SWORD_R);
+			else if (Game::instance().getKey(KEY_D)) sprite->changeAnimation(DEFEND_R);
+			else if (Game::instance().getKey(KEY_A)) sprite->changeAnimation(ATTACK_R);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) || Game::instance().getSpecialKey(GLUT_KEY_LEFT)){
+				sprite->changeAnimation(MOVE_SWORD_R);
+				if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
+				else orientation = LEFT;
+			}
+		}
+		else {
+			if (Game::instance().getKey(KEY_S)) sprite->changeAnimation(SAVE_SWORD_L);
+			else if (Game::instance().getKey(KEY_D)) sprite->changeAnimation(DEFEND_L);
+			else if (Game::instance().getKey(KEY_A)) sprite->changeAnimation(ATTACK_L);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) || Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
+				sprite->changeAnimation(MOVE_SWORD_L);
+				if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
+				else orientation = LEFT;
+			}
+				
+		}
+
+	}
+	else if (sprite->animation() == MOVE_SWORD_R || sprite->animation() == MOVE_SWORD_L) { //MOVE_SWORD
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			if (sprite->animation()== MOVE_SWORD_R) sprite->changeAnimation(STAND_SWORD_R);
+			else sprite->changeAnimation(STAND_SWORD_L);
+		}
+		else {
+			if (orientation == RIGHT) ++posPlayer.x;
+			else if (orientation == LEFT) --posPlayer.x;
+		}
+
+	}
+	else if (sprite->animation() == JUMP_R || sprite->animation() == JUMP_L) { //JUMP
+
+	}
+	else if (sprite->animation() == SWING_R || sprite->animation() == SWING_L) { //SWING
+
 	}
 
 	if (bJumping)
@@ -362,8 +401,11 @@ void Player::update(int deltaTime)
 				startY = posPlayer.y;
 			}
 		}
-		else
+		else {
 			posPlayer.y += FALL_STEP;
+			if (sprite->animation()%2 == 0) sprite->changeAnimation(FALL_R);
+			else sprite->changeAnimation(FALL_L);
+		}
 	}
 
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
@@ -399,10 +441,7 @@ void Player::setHealthGUI(HealthGUI *lifebar)
 	this->lifebar = lifebar;
 }
 
-<<<<<<< HEAD
-void Player::damage() {
-	lifebar->damage(1);
-=======
+
 void Player::damage(int amount) 
 {
 	lifebar->damage(amount);
@@ -411,7 +450,6 @@ void Player::damage(int amount)
 glm::ivec2 Player::getPostion()
 {
 	return posPlayer;
->>>>>>> 1b3f2a62b5ace474965e6fd5ee7db936310fba16
 }
 
 void Player::cure() {

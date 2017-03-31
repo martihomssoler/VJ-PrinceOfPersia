@@ -18,6 +18,9 @@
 #define ENEMY_1 0
 #define ENEMY_2 1
 
+#define ENEMY 0
+#define PRINCE 1
+
 
 Scene::Scene()
 {
@@ -46,15 +49,12 @@ void Scene::init(string level)
 	player->setTileBackMap(backMap);
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
-<<<<<<< HEAD
 
 	playerHealth = new HealthGUI();
-	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram);
+	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, ENEMY);
 
 	player->setHealthGUI(playerHealth);
-=======
 	initEnemies("levels/" + level + "Enemies.txt");
->>>>>>> 1b3f2a62b5ace474965e6fd5ee7db936310fba16
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
