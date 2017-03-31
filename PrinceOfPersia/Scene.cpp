@@ -129,7 +129,6 @@ void Scene::render()
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 		enemies[i].render();
 	}
-
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -139,13 +138,15 @@ void Scene::render()
 	wallMap->render();
 
 	texProgram.use();
-	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
-	
+
+	glm::vec3 translation = glm::vec3(4 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
+	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), translation);
 }
 
 void Scene::initShaders()
