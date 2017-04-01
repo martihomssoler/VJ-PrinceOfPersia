@@ -19,6 +19,7 @@ static Game game; // This object represents our whole game
 static void keyboardDownCallback(unsigned char key, int x, int y)
 {
 	Game::instance().keyPressed(key);
+	if (glutGetModifiers() == GLUT_ACTIVE_SHIFT) Game::instance().shiftKeyPressed();
 }
 
 // If a key is released this callback is called
@@ -26,6 +27,7 @@ static void keyboardDownCallback(unsigned char key, int x, int y)
 static void keyboardUpCallback(unsigned char key, int x, int y)
 {
 	Game::instance().keyReleased(key);
+	if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) Game::instance().shiftKeyReleased();
 }
 
 // If a special key is pressed this callback is called

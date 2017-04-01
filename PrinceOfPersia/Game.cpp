@@ -5,6 +5,7 @@
 void Game::init()
 {
 	bPlay = true;
+	shift_key = false;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	scene.init("level01");
 }
@@ -40,6 +41,14 @@ void Game::specialKeyPressed(int key)
 	specialKeys[key] = true;
 }
 
+void Game::shiftKeyPressed() 
+{
+	shift_key = true;
+}
+void Game::shiftKeyReleased()
+{
+	shift_key = false;
+}
 void Game::specialKeyReleased(int key)
 {
 	specialKeys[key] = false;
@@ -65,6 +74,11 @@ bool Game::getKey(int key) const
 bool Game::getSpecialKey(int key) const
 {
 	return specialKeys[key];
+}
+
+bool Game::getShiftKey() const
+{
+	return shift_key;
 }
 
 
