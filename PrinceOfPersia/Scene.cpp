@@ -168,7 +168,6 @@ void Scene::eventHandler()
 						enemies[i].hit();
 						events[i] = 0;
 					}
-
 				}
 				else // RIGHT
 				{

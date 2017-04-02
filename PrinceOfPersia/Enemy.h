@@ -25,7 +25,7 @@ public:
 	glm::ivec2 getPosition();
 	int getDirection();
 	int swordHit();
-	void hit();
+	bool hit();
 
 private:
 

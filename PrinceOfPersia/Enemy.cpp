@@ -160,11 +160,11 @@ int Enemy::swordHit()
 		return 0;
 }
 
-void Enemy::hit()
+bool Enemy::hit()
 {
 	// the enemy has been hit
 	bool b = this->damage(1);
-	if (!b)
+	if (!b) // it is dead
 	{
 		// ha mort -> render animació de mort
 		if (direction == -1)
@@ -188,4 +188,5 @@ void Enemy::hit()
 			sprite->changeAnimation(STAND_R);
 		}
 	}
+	return b;
 }
