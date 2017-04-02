@@ -11,7 +11,7 @@
 #define PRINCE 1
 
 enum heartStates {
-	EMPTY,FULL
+	EMPTY,FULL,NONE
 };
 
 
@@ -48,7 +48,7 @@ void HealthGUI::init(const glm::ivec2 &pos, int points, ShaderProgram &shaderPro
 			lifebar[i]->addKeyframe(FULL, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 1));
 			lifebar[i]->addKeyframe(EMPTY, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 1));
 			lifebar[i]->changeAnimation(EMPTY);
-			lifebar[i]->setPosition(glm::vec2(float(tileMapDispl.x + 800 - 32 * i), float(tileMapDispl.y + 580)));
+			lifebar[i]->setPosition(glm::vec2(float(tileMapDispl.x + 100 - 32 * i), float(tileMapDispl.y + 580)));
 		}
 
 	}
@@ -58,7 +58,7 @@ void HealthGUI::init(const glm::ivec2 &pos, int points, ShaderProgram &shaderPro
 }
 
 void HealthGUI::update(int deltaTime) {
-
+	
 	switch (health) {
 	case 0:
 		lifebar[0]->changeAnimation(EMPTY);
@@ -83,6 +83,11 @@ void HealthGUI::update(int deltaTime) {
 	default: break;
 
 	}
+
+}
+
+void HealthGUI::show() {
+	for (int i = 0; i < maxHealth; ++i) lifebar[i]->changeAnimation(FULL);
 }
 
 void HealthGUI::render()
