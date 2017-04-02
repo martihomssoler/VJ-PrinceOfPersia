@@ -79,7 +79,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	bJumping = false;
 	pick_potion = false;
 	pick_sword = false;
-	spritesheet.loadFromFile("images/sprite-atlas.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	spritesheet.loadFromFile("images/onelinesprites.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(NB_ANIMATIONS);
 
@@ -105,7 +105,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	createAnimation(STAIRS_R, STAIRS_L, 0, 17, 15, 10);
 	createAnimation(ATTACK_R, ATTACK_L, 2, 18, 5, 10);
 	createAnimation(DRINK_R, DRINK_L, 0, 12, 15, 10);
-	createAnimation(JUMP_FAILED_R, JUMP_FAILED_L, 10, 14, 15, 10);
+	createAnimation(JUMP_FAILED_R, JUMP_FAILED_L, 10, 14, 2, 10);
 	createAnimation(STAND_R, STAND_L, 0, 0, 1, 10);
 	createAnimation(MOVE_R, MOVE_L, 0, 1, 7, 8);
 	createAnimation(RUN_R, RUN_L, 7, 1, 8, 10);
@@ -311,10 +311,9 @@ void Player::update(int deltaTime, int &events)
 			if (sprite->animation() == CLIMB_R) sprite->changeAnimation(STAND_R);
 			else sprite->changeAnimation(STAND_L);
 		}
-		else if (sprite->keyFrame() >= 1 && sprite->keyFrame() < 4) 
-			if(posPlayer.y > startY-64) posPlayer.y -=2;
-		else if (sprite->keyFrame() == 4) 
-			if (posPlayer.y > startY - 64) posPlayer.y -= 3;
+		else if (sprite->keyFrame() >= 0 && sprite->keyFrame() <= 3)
+			posPlayer.y = startY - 32;
+		else posPlayer.y = startY - 64;
 		if (sprite->keyFrame() > 4 ) {
 			if (sprite->animation() == CLIMB_R) posPlayer.x+=1;
 			else posPlayer.x-=1;
@@ -355,7 +354,7 @@ void Player::update(int deltaTime, int &events)
 	else if (sprite->animation() == JUMP_FAILED_R || sprite->animation() == JUMP_FAILED_L) { //JUMP_FAILED
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_FAILED_R)) {
 			if (sprite->animation() == JUMP_FAILED_R) sprite->changeAnimation(STAND_R);
-			else sprite->changeAnimation(STAND_R);
+			else sprite->changeAnimation(STAND_L);
 		}
 	}
 	else if (sprite->animation() == STAND_R || sprite->animation() == STAND_L) { //STAND
@@ -484,7 +483,7 @@ void Player::update(int deltaTime, int &events)
 					if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(RUN_R);
 					else sprite->changeAnimation(STOP_R);
 				}
-				else sprite->changeAnimation(FALL_R);
+				//else sprite->changeAnimation(FALL_R);
 				
 			}
 			else {
@@ -492,7 +491,7 @@ void Player::update(int deltaTime, int &events)
 					if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(RUN_L);
 					else sprite->changeAnimation(STOP_L);
 				}
-				else sprite->changeAnimation(FALL_L);
+				//else sprite->changeAnimation(FALL_L);
 			}
 			
 		}
@@ -500,15 +499,13 @@ void Player::update(int deltaTime, int &events)
 			if (sprite->animation() == JUMP_RUNNING_R) {
 				if (sprite->keyFrame() < 3) ++posPlayer.x;
 				else posPlayer.x += 2;
-				if (sprite->keyFrame() == 3 || sprite->keyFrame() == 4) --posPlayer.y;
-				else if (sprite->keyFrame() == 5 || sprite->keyFrame() == 6) ++posPlayer.y;
+				
 			}
 			else {
 				if (sprite->keyFrame() < 3) --posPlayer.x;
 				else posPlayer.x -= 2;
-				if (sprite->keyFrame() == 3 || sprite->keyFrame() == 4) --posPlayer.y;
-				else if (sprite->keyFrame() == 5 || sprite->keyFrame() == 6) ++posPlayer.y;
 			}
+			if (sprite->keyFrame() == 7) bJumping = false;
 		}
 	}
 	else if (sprite->animation() == STAND_SWORD_R || sprite->animation() == STAND_SWORD_L) { //STAND_SWORD
@@ -555,7 +552,6 @@ void Player::update(int deltaTime, int &events)
 				}
 				else if (map->collisionClimb(glm::ivec2(posPlayer.x + 32, startY - 64), glm::ivec2(32, 64))) {
 					sprite->changeAnimation(CLIMB_R);
-					posPlayer.y -= 18;
 					posPlayer.x += 2;
 				}
 				else sprite->changeAnimation(JUMP_FAILED_R);
@@ -563,13 +559,12 @@ void Player::update(int deltaTime, int &events)
 			else if (sprite->animation() == JUMP_L) {
 				if (map->collisionClimb(glm::ivec2(posPlayer.x - 32, startY - 64), glm::ivec2(32, 64))) {
 					sprite->changeAnimation(CLIMB_L);
-					posPlayer.y -= 18;
 					posPlayer.x -= 2;
 				}
 				else sprite->changeAnimation(JUMP_FAILED_L);
 			}
 		}
-		else if (sprite->keyFrame() > 6) --posPlayer.y;
+		//else if (sprite->keyFrame() > 6) --posPlayer.y;
 
 	}
 	else if (sprite->animation() == SWING_R || sprite->animation() == SWING_L) { //SWING
