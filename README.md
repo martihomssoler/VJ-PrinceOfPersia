@@ -1,5 +1,7 @@
 # VJ-PrinceOfPersia
 
+Problema amb les col·lisions de caure, si les intento arreglar el pj no pot escalar.
+
 ## TODO List
 
 ## Dimecres
