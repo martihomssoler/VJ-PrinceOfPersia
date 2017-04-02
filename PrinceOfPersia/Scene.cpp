@@ -58,7 +58,6 @@ void Scene::init(string level)
 
 	playerHealth = new HealthGUI();
 	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, PRINCE);
-
 	player->setHealthGUI(playerHealth);
 	initMiscellaneous("levels/" + level + "Miscellaneous.txt");
 
@@ -66,6 +65,7 @@ void Scene::init(string level)
 	events = vector<int>(enemies.size() + 1, 0);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
+	bShowEnemyLifebar = false;
 }
 
 void Scene::update(int deltaTime)
@@ -88,13 +88,25 @@ void Scene::update(int deltaTime)
 			if (r > MOVEMENT_300 && enemyPos.y + 12 >= playerPos.y && playerPos.y >= enemyPos.y - 12) // "mateixa" altura
 			{
 				if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.x - 8 * TILE_X) // si el jugador esta entre 1 a 4 blocks de distància a l'ESQUERRA
+				{
 					action = "MOVE_LEFT";
+					bShowEnemyLifebar = true;
+				}
 				else if (r > ATTACK_300 && playerPos.x >= enemyPos.x - TILE_X && enemyPos.x >= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
+				{
 					action = "ATTACK_LEFT";
+					bShowEnemyLifebar = true;
+				}
 				else if (playerPos.x < enemyPos.x + 8 * TILE_X && enemyPos.x + TILE_X < playerPos.x) // si el jugador esta entre 1 a 4 blocks de distància a la DRETA
+				{
 					action = "MOVE_RIGHT";
+					bShowEnemyLifebar = true;
+				}
 				else if (r > ATTACK_300 && playerPos.x <= enemyPos.x + TILE_X && enemyPos.x <= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
+				{
 					action = "ATTACK_RIGHT";
+					bShowEnemyLifebar = true;
+				}
 				
 			}
 			else
@@ -103,6 +115,7 @@ void Scene::update(int deltaTime)
 			}
 
 			enemies[i].update(deltaTime, action, events[i]);
+			enemyLifebars[i]->update(deltaTime);
 		}
 	}	
 	eventHandler();
@@ -164,6 +177,14 @@ void Scene::eventHandler()
 						}
 					}
 				}
+			}
+			break;
+		case 3:
+			// E pressed MAYBE AT THE DOOR
+			if ((playerPos.x >= door.x - 10 && door.x + 10 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
+			{
+				init("level02");
+				events[events.size() - 1] = 0;
 			}
 			break;
 		default:
@@ -238,6 +259,14 @@ void Scene::render()
 		texProgram.setUniformMatrix4f("modelview", modelview);
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 		enemies[i].render();
+
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		if (bShowEnemyLifebar) enemyLifebars[i]->render();
 	}
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
@@ -314,15 +343,15 @@ void Scene::initMiscellaneous(const string & enemiesFile)
 
 	int k = 0;
 	enemies = vector<Enemy>(numEnemies);
-	enemyLifebars = vector<HealthGUI>(numEnemies);
+	enemyLifebars = vector<HealthGUI*>(numEnemies);
 
-	for (int j = 0; j<mapSizey && k<numEnemies; j++)
+	for (int j = 0; j<mapSizey; j++)
 	{
 		getline(fin, line);
 		std::stringstream   linestream(line);
 		std::string         value;
 
-		for (int i = 0; i<mapSizex && k<numEnemies; i++)
+		for (int i = 0; i<mapSizex; i++)
 		{
 			getline(linestream, value, ',');
 			int aux = atoi(value.c_str()) + 1;
@@ -332,12 +361,13 @@ void Scene::initMiscellaneous(const string & enemiesFile)
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
 				// altrement si és falç, l'enemic estarà mirant cap a la dreta (1)
 				enemies[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, aux % maxEnemies, 1 - 2 * (aux > maxEnemies));
-				enemyLifebars[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, ENEMY);
-				enemies[k].setHealthGUI(&enemyLifebars[k]);
+				enemyLifebars[k] = new HealthGUI();
+				enemyLifebars[k]->init(glm::ivec2(SCREEN_X+ 800, SCREEN_Y), 3, texProgram, ENEMY);
+				enemies[k].setHealthGUI(enemyLifebars[k]);
 				enemies[k].setPosition(glm::vec2(i * TILE_X, j * TILE_Y));
 				enemies[k].setTileBackMap(backMap);
 				enemies[k].setTileMap(map);
-				enemies[k].setTileWallMap(wallMap);				
+				enemies[k].setTileWallMap(wallMap);
 				++k;
 			}
 			else if (aux < 0)
@@ -345,10 +375,10 @@ void Scene::initMiscellaneous(const string & enemiesFile)
 				switch (aux)
 				{
 					case -1: // -1 means doors
-						door = (glm::ivec2(i, j));
+						door = glm::ivec2(i * TILE_X, j * TILE_Y);
 						break;
 					case -2: // -2 means potion
-						potion.push_back(glm::ivec2(i, j));
+						potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 						break;
 					// -3 means sword
 					default:

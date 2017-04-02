@@ -7,6 +7,7 @@ public:
 
 	void init(const glm::ivec2 &pos, int points, ShaderProgram &shaderProgram, int type);
 	void update(int deltaTime);
+	void show();
 	void render();
 	bool damage(int amount);
 	void cure();

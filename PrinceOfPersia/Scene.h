@@ -34,14 +34,16 @@ private:
 	TileMap *wallMap;
 	Player *player;
 
-	HealthGUI *playerHealth;
+	HealthGUI* playerHealth;
+	HealthGUI* aux1;
 	vector<Enemy> enemies;
 	vector<glm::ivec2> potion;
 	glm::ivec2 door;
-	vector<HealthGUI> enemyLifebars;
+	vector<HealthGUI*> enemyLifebars;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+	bool bShowEnemyLifebar;
 
 	// idea per gestionar tots els events i accions que passen en una mateixa escena
 	vector<int> events;
