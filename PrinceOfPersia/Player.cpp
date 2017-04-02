@@ -383,6 +383,7 @@ void Player::update(int deltaTime, int &events)
 			}
 			else if (Game::instance().getKey(KEY_E))
 			{
+				events = 3;
 			}
 		}
 		else {

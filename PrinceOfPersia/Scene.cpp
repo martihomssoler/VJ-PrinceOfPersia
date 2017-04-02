@@ -59,10 +59,7 @@ void Scene::init(string level)
 	playerHealth = new HealthGUI();
 	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, PRINCE);
 	player->setHealthGUI(playerHealth);
-
-
-	initEnemies("levels/" + level + "Enemies.txt");
-
+	initMiscellaneous("levels/" + level + "Miscellaneous.txt");
 
 	// vector d'events pendents per gestionar al update d'una escèna
 	events = vector<int>(enemies.size() + 1, 0);
@@ -180,6 +177,14 @@ void Scene::eventHandler()
 						}
 					}
 				}
+			}
+			break;
+		case 3:
+			// E pressed MAYBE AT THE DOOR
+			if ((playerPos.x >= door.x - 10 && door.x + 10 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
+			{
+				init("level02");
+				events[events.size() - 1] = 0;
 			}
 			break;
 		default:
@@ -313,7 +318,7 @@ void Scene::initShaders()
 	fShader.free();
 }
 
-void Scene::initEnemies(const string & enemiesFile)
+void Scene::initMiscellaneous(const string & enemiesFile)
 {
 	ifstream fin;
 	string line;
@@ -340,17 +345,17 @@ void Scene::initEnemies(const string & enemiesFile)
 	enemies = vector<Enemy>(numEnemies);
 	enemyLifebars = vector<HealthGUI*>(numEnemies);
 
-	for (int j = 0; j<mapSizey && k<numEnemies; j++)
+	for (int j = 0; j<mapSizey; j++)
 	{
 		getline(fin, line);
 		std::stringstream   linestream(line);
 		std::string         value;
 
-		for (int i = 0; i<mapSizex && k<numEnemies; i++)
+		for (int i = 0; i<mapSizex; i++)
 		{
 			getline(linestream, value, ',');
 			int aux = atoi(value.c_str()) + 1;
-			if (aux != 0)
+			if (aux > 0)
 			{
 				// Comprovar que el calcul de type i position es el correcte!
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
@@ -364,7 +369,22 @@ void Scene::initEnemies(const string & enemiesFile)
 				enemies[k].setTileMap(map);
 				enemies[k].setTileWallMap(wallMap);
 				++k;
-			}			
+			}
+			else if (aux < 0)
+			{
+				switch (aux)
+				{
+					case -1: // -1 means doors
+						door = glm::ivec2(i * TILE_X, j * TILE_Y);
+						break;
+					case -2: // -2 means potion
+						potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+						break;
+					// -3 means sword
+					default:
+						break;
+				}
+			}
 		}
 	}
 	fin.close();

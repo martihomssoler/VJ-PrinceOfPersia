@@ -26,7 +26,7 @@ public:
 		return G;
 	}
 	
-	void init();
+	void init(string level);
 	bool update(int deltaTime);
 	void render();
 	
