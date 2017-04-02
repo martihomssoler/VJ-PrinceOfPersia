@@ -33,6 +33,7 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 	createAnimation(SPEARS_R, SPEARS_L, 22, 0, 1, 10);
 
 	tileMapDispl = tileMapPos;
+	sprite->changeAnimation(STAND_L);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
@@ -42,20 +43,47 @@ void Enemy::update(int deltaTime, string action)
 
 	if (action == "MOVE_LEFT")
 	{
-		if (sprite->animation() != MOVE_L) 
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
 		{
+			direction = -1;
 			sprite->changeAnimation(MOVE_L);
-			--posEnemy.x;
 		}
+		--posEnemy.x;
 	}
 	else if (action == "MOVE_RIGHT")
 	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		{
+			direction = 1;
+			sprite->changeAnimation(MOVE_R);
+		}
+		++posEnemy.x;
 	}
 	else if (action == "ATTACK_LEFT")
 	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		{
+			direction = -1;
+			sprite->changeAnimation(ATTACK_L);
+		}
 	}
 	else if (action == "ATTACK_RIGHT")
 	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		{
+			direction = 1;
+			sprite->changeAnimation(ATTACK_R);
+		}
+	}
+	else if (action == "STAND")
+	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		{
+			if (direction == -1)
+				sprite->changeAnimation(STAND_L);
+			else
+				sprite->changeAnimation(STAND_R);
+		}
 	}
 
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
@@ -87,30 +115,14 @@ void Enemy::setPosition(const glm::vec2 & pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
-// set the enemy animation to attacking
-void Enemy::attack()
+void Enemy::setHealthGUI(HealthGUI * lifebar)
 {
-	
-}
-// set the enemy animation to walking
-void Enemy::walk()
-{
-	
-}
-// set the enemy animation to dying
-void Enemy::die()
-{
-	
+	this->lifebar = lifebar;
 }
 
-// direction: -1 left | 1 right
-void Enemy::setDirection(int direction)
+bool Enemy::damage(int amount)
 {
-	if (this->direction != direction)
-	{
-		// change sprite sheet direction
-		this->direction = direction;
-	}
+	return lifebar->damage(1);
 }
 
 glm::ivec2 Enemy::getPosition()
@@ -126,4 +138,44 @@ void Enemy::createAnimation(int r_animation, int l_animation, int x, int y, int 
 	sprite->setAnimationSpeed(l_animation, speed);
 	for (int i = x; i < x + size; ++i)
 		sprite->addKeyframe(l_animation, glm::vec2(SPRITESHEET_X * i, SPRITESHEET_Y * (MIRRORED + y + enemy_type)));
+}
+
+int Enemy::swordHit()
+{
+	if (sprite->animation() == ATTACK_R && sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
+		return 1;
+	else if (sprite->animation() == ATTACK_L && sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L))
+		return -1;
+	else
+		return 0;
+}
+
+void Enemy::hit()
+{
+	// the enemy has been hit
+	bool b = this->damage(1);
+	if (!b)
+	{
+		// ha mort -> render animació de mort
+		if (direction == -1)
+		{
+			sprite->changeAnimation(DIE_L);
+		}
+		else 
+		{
+			sprite->changeAnimation(DIE_R);
+		}
+	}
+	else
+	{
+		// l'han impactat -> render animació de STAND
+		if (direction == -1)
+		{
+			sprite->changeAnimation(STAND_L);
+		}
+		else
+		{
+			sprite->changeAnimation(STAND_R);
+		}
+	}
 }

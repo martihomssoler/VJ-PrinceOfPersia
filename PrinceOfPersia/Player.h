@@ -28,6 +28,9 @@ public:
 	void cure();
 	bool damage(int amount);
 	glm::ivec2 getPostion();
+	int swordHit();
+	void hit();
+
 	
 private:
 

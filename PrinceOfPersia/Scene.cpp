@@ -12,7 +12,7 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 5
+#define INIT_PLAYER_X_TILES 10
 #define INIT_PLAYER_Y_TILES 4
 
 #define ENEMY_1 0
@@ -21,9 +21,11 @@
 #define ENEMY 0
 #define PRINCE 1
 
-
 #define TILE_X 32
 #define TILE_Y 64
+
+#define MOVEMENT_300 150
+#define ATTACK_300 295
 
 Scene::Scene()
 {
@@ -55,7 +57,7 @@ void Scene::init(string level)
 
 
 	playerHealth = new HealthGUI();
-	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, ENEMY);
+	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, PRINCE);
 
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
@@ -65,29 +67,82 @@ void Scene::init(string level)
 
 void Scene::update(int deltaTime)
 {
+	int r = rand() % 300 + 1;
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPostion();
-	for (unsigned int i = 0; enemies.size() > i; ++i)
+	string action;
+
+	player->update(deltaTime);
+
+	if (r > MOVEMENT_300)
 	{
-		glm::ivec2 enemyPos = enemies[i].getPosition();
-		// Afegir la logica aplicada al enemics
-		// ara per ara el codi dels enemics esta buid!!!
-		if (enemyPos.y + 0.3 * TILE_Y > playerPos.y && playerPos.y > enemyPos.y - 0.3 * TILE_Y) // "mateixa" altura (diferencia de -0.3:+0.3)
+		for (unsigned int i = 0; enemies.size() > i; ++i)
 		{
-			string action;
-			if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.y - 8 * TILE_X) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
-				action = "MOVE_LEFT";
-			else if (playerPos.x > enemyPos.y - TILE_X && enemyPos.x > playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
-				action = "ATTACK_LEFT";
-			else if (playerPos.x < enemyPos.y + 8 * TILE_X && enemyPos.x + TILE_X < playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
-				action = "MOVE_RIGHT";
-			else if (playerPos.x < enemyPos.y + TILE_X && enemyPos.x < playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
-				action = "ATTACK_RIGHT";
-			
-			//enemies[i].update(deltaTime, action);
+			glm::ivec2 enemyPos = enemies[i].getPosition();
+			// Afegir la logica aplicada al enemics
+			// ara per ara el codi dels enemics esta buid!!!
+			if (enemyPos.y + 12 >= playerPos.y && playerPos.y >= enemyPos.y - 12) // "mateixa" altura
+			{
+				if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.x - 8 * TILE_X) // si el jugador esta entre 1 a 4 blocks de distància a l'ESQUERRA
+					action = "MOVE_LEFT";
+				else if (r > ATTACK_300 && playerPos.x >= enemyPos.x - TILE_X && enemyPos.x >= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
+					action = "ATTACK_LEFT";
+				else if (playerPos.x < enemyPos.x + 8 * TILE_X && enemyPos.x + TILE_X < playerPos.x) // si el jugador esta entre 1 a 4 blocks de distància a la DRETA
+					action = "MOVE_RIGHT";
+				else if (r > ATTACK_300 && playerPos.x <= enemyPos.x + TILE_X && enemyPos.x <= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
+					action = "ATTACK_RIGHT";
+			}
+			enemies[i].update(deltaTime, action);
 		}
 	}
-	player->update(deltaTime);
+	else
+	{
+		for (unsigned int i = 0; enemies.size() > i; ++i)
+		{
+			enemies[i].update(deltaTime, "STAND");
+		}
+	}
+
+	//playerPos = player->getPostion();
+	//int direction = player->swordHit();
+	//if (direction != 0) // el princep ha acabat d'atacar
+	//{
+	//	for (unsigned int i = 0; enemies.size() > i; ++i)
+	//	{
+	//		glm::ivec2 enemyPos = enemies[i].getPosition();
+	//		if (direction == -1) // LEFT
+	//		{
+	//			if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
+	//				enemies[i].hit();
+
+	//		}
+	//		else // RIGHT
+	//		{
+	//			if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
+	//				enemies[i].hit();
+	//		}
+	//		
+	//	}
+	//}
+	//for (unsigned int i = 0; enemies.size() > i; ++i)
+	//{
+	//	glm::ivec2 enemyPos = enemies[i].getPosition();
+	//	direction = enemies[i].swordHit();
+	//	if (direction == -1) // LEFT
+	//	{
+	//		if (enemyPos.x - TILE_X <= playerPos.x && playerPos.x <= enemyPos.x)
+	//			player->hit();
+
+	//	}
+	//	else // RIGHT
+	//	{
+	//		if (enemyPos.x <= playerPos.x && playerPos.x <= enemyPos.x + TILE_X)
+	//			player->hit();
+	//	}
+
+	//}
+	
+
 	playerHealth->update(deltaTime);
 }
 
@@ -145,7 +200,7 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
 
-	glm::vec3 translation = glm::vec3(4 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
+	glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
 	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), translation);
 }
 
@@ -204,6 +259,7 @@ void Scene::initEnemies(const string & enemiesFile)
 
 	int k = 0;
 	enemies = vector<Enemy>(numEnemies);
+	enemyLifebars = vector<HealthGUI>(numEnemies);
 
 	for (int j = 0; j<mapSizey && k<numEnemies; j++)
 	{
@@ -221,13 +277,14 @@ void Scene::initEnemies(const string & enemiesFile)
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
 				// altrement si és falç, l'enemic estarà mirant cap a la dreta (1)
 				enemies[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, aux % maxEnemies, 1 - 2 * (aux > maxEnemies));
+				enemyLifebars[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, ENEMY);
+				enemies[k].setHealthGUI(&enemyLifebars[k]);
 				enemies[k].setPosition(glm::vec2(i * TILE_X, j * TILE_Y));
 				enemies[k].setTileBackMap(backMap);
 				enemies[k].setTileMap(map);
 				enemies[k].setTileWallMap(wallMap);				
 				++k;
-			}
-			
+			}			
 		}
 	}
 	fin.close();

@@ -4,6 +4,7 @@
 
 #include "Sprite.h"
 #include "TileMap.h"
+#include "HealthGUI.h"
 
 
 class Enemy
@@ -18,12 +19,12 @@ public:
 	void setTileBackMap(TileMap *tileMap);
 	void setTileWallMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
-	void attack();
-	void walk();
-	void die();
-	void setDirection(int direction);
 
+	void setHealthGUI(HealthGUI *lifebar);
+	bool damage(int amount);
 	glm::ivec2 getPosition();
+	int swordHit();
+	void hit();
 
 private:
 
@@ -37,6 +38,7 @@ private:
 	TileMap *wallMap;
 	int enemy_type;
 	int direction;
+	HealthGUI *lifebar;
 
 };
 

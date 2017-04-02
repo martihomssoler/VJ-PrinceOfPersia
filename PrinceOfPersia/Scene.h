@@ -35,6 +35,7 @@ private:
 
 	HealthGUI *playerHealth;
 	vector<Enemy> enemies;
+	vector<HealthGUI> enemyLifebars;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
