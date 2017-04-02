@@ -41,10 +41,24 @@ void Enemy::update(int deltaTime, string action, int &events)
 {
 	sprite->update(deltaTime);
 
-	if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
-		events = 1;
+	if (sprite->animation() == ATTACK_L || sprite->animation() == ATTACK_R)
+	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
+		{
+			events = 1;
+		}
+	}
+	else if (sprite->animation() == DIE_L || sprite->animation() == DIE_R)
+	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(DIE_L) || sprite->keyFrame() == sprite->numberKeyFrames(DIE_R))
+		{
+			events = -1; // problema amb el events -1, de tant en tant no funciona correctament
+		}
+	}
 	else
+	{
 		events = 0;
+	}
 
 	if (action == "MOVE_LEFT")
 	{
@@ -88,6 +102,16 @@ void Enemy::update(int deltaTime, string action, int &events)
 				sprite->changeAnimation(STAND_L);
 			else
 				sprite->changeAnimation(STAND_R);
+		}
+	}
+	else if (action == "DEAD")
+	{
+		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		{
+			if (direction == -1)
+				sprite->changeAnimation(DIE_L);
+			else
+				sprite->changeAnimation(DIE_R);
 		}
 	}
 

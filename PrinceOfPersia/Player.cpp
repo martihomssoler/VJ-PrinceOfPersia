@@ -22,6 +22,7 @@
 #define KEY_A 97
 #define KEY_S 115
 #define KEY_D 100
+#define KEY_E 101
 #define KEY_J 106
 
 
@@ -122,7 +123,6 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::update(int deltaTime, int &events)
 {
-	events = 0; // DEFAULT VALUE
 	sprite->update(deltaTime);
 	if (!bJumping) {
 		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64)))
@@ -250,8 +250,18 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == DEFEND_R || sprite->animation() == DEFEND_L) { //DEFEND
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
-			if (sprite->animation()== DEFEND_R) sprite->changeAnimation(STAND_SWORD_R);
-			else sprite->changeAnimation(STAND_SWORD_L);
+			if (sprite->animation() == DEFEND_R)
+			{
+				sprite->changeAnimation(STAND_SWORD_R);
+				// DEFEND
+				events = 2;
+			}
+			else
+			{
+				sprite->changeAnimation(STAND_SWORD_L);
+				// DEFEND
+				events = 2;
+			}
 		}
 
 	}
@@ -277,8 +287,18 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == SWORD_DEATH_R || sprite->animation() == SWORD_DEATH_L) { //SWORD_DEATH
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
-			if (sprite->animation()== SWORD_DEATH_R) sprite->changeAnimation(DEAD_R);
-			else sprite->changeAnimation(DEAD_L);
+			if (sprite->animation() == SWORD_DEATH_R)
+			{
+				sprite->changeAnimation(DEAD_R);
+				// DEAD
+				events = -1;
+			}
+			else
+			{
+				sprite->changeAnimation(DEAD_L);
+				// DEAD
+				events = -1;
+			}
 		}
 
 	}
@@ -309,11 +329,15 @@ void Player::update(int deltaTime, int &events)
 		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R)) {
 			if (sprite->animation()== ATTACK_R) {
 				sprite->changeAnimation(STAND_SWORD_R);
-				// mirar si hem donat a algú
+				// COMBAT
 				events = 1;
-				//if (!lifebar->damage(1)) sprite->changeAnimation(SWORD_DEATH_R);
 			}
-			else sprite->changeAnimation(STAND_SWORD_L);
+			else
+			{
+				sprite->changeAnimation(STAND_SWORD_L);
+				// COMBAT
+				events = 1;
+			}
 		}
 		else {
 			if (sprite->animation()== ATTACK_R) ++posPlayer.x;
@@ -354,7 +378,13 @@ void Player::update(int deltaTime, int &events)
 			else if (Game::instance().getKey(KEY_D)) {
 				sprite->changeAnimation(STEP_R);
 			}
-			else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) sprite->changeAnimation(DUCK_R);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
+			{
+				sprite->changeAnimation(DUCK_R);
+			}
+			else if (Game::instance().getKey(KEY_E))
+			{
+			}
 		}
 		else {
 			if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(MOVE_L);
@@ -632,11 +662,11 @@ void Player::hit()
 		// l'han impactat -> render animació de STAND
 		if (orientation == LEFT)
 		{
-			sprite->changeAnimation(STAND_L);
+			sprite->changeAnimation(STAND_SWORD_R);
 		}
 		else
 		{
-			sprite->changeAnimation(STAND_R);
+			sprite->changeAnimation(STAND_SWORD_L);
 		}
 	}
 }

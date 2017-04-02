@@ -73,22 +73,22 @@ void Scene::init(string level)
 
 void Scene::update(int deltaTime)
 {
-	int r = rand() % 300 + 1;
+	
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPostion();
-	string action;
-
 	player->update(deltaTime,events[events.size()-1]);
-
-	if (r > MOVEMENT_300)
+		
+	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
-		for (unsigned int i = 0; enemies.size() > i; ++i)
+		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu
 		{
+			string action = "";
+			int r = rand() % 300 + 1;
 			glm::ivec2 enemyPos = enemies[i].getPosition();
-			enemyLifebars[i]->update(deltaTime);
 			// Afegir la logica aplicada al enemics
 			// ara per ara el codi dels enemics esta buid!!!
-			if (enemyPos.y + 12 >= playerPos.y && playerPos.y >= enemyPos.y - 12) // "mateixa" altura
+			// si events[i] és igual a (-1) significa que l'enemic ha mort
+			if (r > MOVEMENT_300 && enemyPos.y + 12 >= playerPos.y && playerPos.y >= enemyPos.y - 12) // "mateixa" altura
 			{
 				if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.x - 8 * TILE_X) // si el jugador esta entre 1 a 4 blocks de distància a l'ESQUERRA
 				{
@@ -110,57 +110,17 @@ void Scene::update(int deltaTime)
 					action = "ATTACK_RIGHT";
 					bShowEnemyLifebar = true;
 				}
+				
 			}
+			else
+			{
+				action = "STAND";
+			}
+
 			enemies[i].update(deltaTime, action, events[i]);
+			enemyLifebars[i]->update(deltaTime);
 		}
-	}
-	else
-	{
-		for (unsigned int i = 0; enemies.size() > i; ++i)
-		{
-			enemies[i].update(deltaTime, "STAND", events[i]);
-		}
-	}
-
-	//playerPos = player->getPostion();
-	//int direction = player->swordHit();
-	//if (direction != 0) // el princep ha acabat d'atacar
-	//{
-	//	for (unsigned int i = 0; enemies.size() > i; ++i)
-	//	{
-	//		glm::ivec2 enemyPos = enemies[i].getPosition();
-	//		if (direction == -1) // LEFT
-	//		{
-	//			if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
-	//				enemies[i].hit();
-
-	//		}
-	//		else // RIGHT
-	//		{
-	//			if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
-	//				enemies[i].hit();
-	//		}
-	//		
-	//	}
-	//}
-	//for (unsigned int i = 0; enemies.size() > i; ++i)
-	//{
-	//	glm::ivec2 enemyPos = enemies[i].getPosition();
-	//	direction = enemies[i].swordHit();
-	//	if (direction == -1) // LEFT
-	//	{
-	//		if (enemyPos.x - TILE_X <= playerPos.x && playerPos.x <= enemyPos.x)
-	//			player->hit();
-
-	//	}
-	//	else // RIGHT
-	//	{
-	//		if (enemyPos.x <= playerPos.x && playerPos.x <= enemyPos.x + TILE_X)
-	//			player->hit();
-	//	}
-
-	//}
-	
+	}	
 	eventHandler();
 
 	playerHealth->update(deltaTime);
@@ -174,25 +134,52 @@ void Scene::eventHandler()
 	{
 		case 1:
 			// THE PRINCE CAN POSSIBLY HIT AN ENEMY
-			for (unsigned int i = 0; enemies.size() > i; ++i)
+			for (unsigned int i = 0; i < enemies.size(); ++i)
 			{
-				glm::ivec2 enemyPos = enemies[i].getPosition();
-				if (direction == -1) // LEFT
+				if (events[i] != -1) // l'enemic segueix viu
 				{
-					if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
+					glm::ivec2 enemyPos = enemies[i].getPosition();
+					if (direction == -1) // LEFT
 					{
-						enemies[i].hit();
-						events[i] = 0;
+						if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
+						{
+							enemies[i].hit();
+							events[i] = 0;
+						}
+					}
+					else // RIGHT
+					{
+						if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
+						{
+							enemies[i].hit();
+							events[i] = 0;
+						}
 					}
 				}
-				else // RIGHT
+			}
+			break;
+		case 2:
+			// THE PRINCE CAN POSSIBLY PARRIED AN ENEMY BLOW
+			for (unsigned int i = 0; i < enemies.size(); ++i)
+			{
+				if (events[i] != -1) // l'enemic segueix viu
 				{
-					if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
+					glm::ivec2 enemyPos = enemies[i].getPosition();
+					if (direction == -1) // LEFT
 					{
-						enemies[i].hit();
-						events[i] = 0;
+						if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
+						{
+							events[i] = 0;
+						}
 					}
-				}					
+					else // RIGHT
+					{
+						if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
+						{
+							events[i] = 0;
+						}
+					}
+				}
 			}
 			break;
 		default:
