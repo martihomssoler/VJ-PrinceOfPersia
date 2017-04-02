@@ -27,7 +27,7 @@ public:
 
 private:
 	void initShaders();
-	void initEnemies(const string &enemiesFile);
+	void initMiscellaneous(const string &enemiesFile);
 
 	TileMap *backMap;
 	TileMap *map;
@@ -36,6 +36,8 @@ private:
 
 	HealthGUI *playerHealth;
 	vector<Enemy> enemies;
+	vector<glm::ivec2> potion;
+	glm::ivec2 door;
 	vector<HealthGUI> enemyLifebars;
 	ShaderProgram texProgram;
 	float currentTime;

@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	glewInit();
 	
 	// Game instance initialization
-	Game::instance().init();
+	Game::instance().init("level01");
 	prevTime = glutGet(GLUT_ELAPSED_TIME);
 	// GLUT gains control of the application
 	glutMainLoop();
