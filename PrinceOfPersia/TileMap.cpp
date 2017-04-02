@@ -240,10 +240,14 @@ bool TileMap::collisionClimb(const glm::ivec2 &pos, const glm::ivec2 &size) cons
 		if (map[y*mapSize.x + x] != 0) {
 			return true;
 		}
-
 	}
 
 	return false;
+}
+
+void TileMap::changeTile(int i, int j, int tile)
+{
+	map[j*mapSize.x + i] = tile;
 }
 
 
