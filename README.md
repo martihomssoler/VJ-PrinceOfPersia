@@ -1,10 +1,11 @@
 # VJ-PrinceOfPersia
 
+Problema amb les col·lisions de caure, si les intento arreglar el pj no pot escalar.
+
 ## TODO List
 
 ## Dimecres
 Albert - animacions
-- Enemic
 - Mort (espasa, trampa puntxes, tampa guillotina)
 
 Marti - gameplay
@@ -19,12 +20,10 @@ Albert
 
 Marti
 - Combat
-- Damage (combat i caigudes)
 
 -------------------------------------------------
 
 ### Animacions
-- Enemic
 - Mort (espasa, trampa puntxes, tampa guillotina)
 - Salt "alt"
 - Salt "llarg"
@@ -36,13 +35,11 @@ Marti
 - Enemic IA
 - Morts PJ
 - Combat
-- Damage (combat i caigudes)
 - Diferents nivells
 - Ajustar col·lisions
 
 ### Interfície
 - Camera
-- GUI
 
 ### Feature
 - Main menu
@@ -50,5 +47,6 @@ Marti
 
 ### Creativity 
 - Disparar boles de foc
+- Estrella Supermario
 
 ### Sons (fmod)
