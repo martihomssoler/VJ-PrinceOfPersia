@@ -61,6 +61,9 @@ void Scene::init(string level)
 
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
+
+	// vector d'events pendents per gestionar al update d'una escèna
+	events = vector<int>(enemies.size() + 1, 0);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
@@ -72,7 +75,7 @@ void Scene::update(int deltaTime)
 	glm::ivec2 playerPos = player->getPostion();
 	string action;
 
-	player->update(deltaTime);
+	player->update(deltaTime,events[events.size()-1]);
 
 	if (r > MOVEMENT_300)
 	{
@@ -92,14 +95,14 @@ void Scene::update(int deltaTime)
 				else if (r > ATTACK_300 && playerPos.x <= enemyPos.x + TILE_X && enemyPos.x <= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
 					action = "ATTACK_RIGHT";
 			}
-			enemies[i].update(deltaTime, action);
+			enemies[i].update(deltaTime, action, events[i]);
 		}
 	}
 	else
 	{
 		for (unsigned int i = 0; enemies.size() > i; ++i)
 		{
-			enemies[i].update(deltaTime, "STAND");
+			enemies[i].update(deltaTime, "STAND", events[i]);
 		}
 	}
 
@@ -142,8 +145,74 @@ void Scene::update(int deltaTime)
 
 	//}
 	
+	eventHandler();
 
 	playerHealth->update(deltaTime);
+}
+
+void Scene::eventHandler()
+{
+	glm::ivec2 playerPos = player->getPostion();
+	int direction = player->getDirection();
+	switch (events[events.size() - 1])
+	{
+		case 1:
+			// THE PRINCE CAN POSSIBLY HIT AN ENEMY
+			for (unsigned int i = 0; enemies.size() > i; ++i)
+			{
+				glm::ivec2 enemyPos = enemies[i].getPosition();
+				if (direction == -1) // LEFT
+				{
+					if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
+					{
+						enemies[i].hit();
+						events[i] = 0;
+					}
+
+				}
+				else // RIGHT
+				{
+					if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
+					{
+						enemies[i].hit();
+						events[i] = 0;
+					}
+				}					
+			}
+			break;
+		default:
+			break;
+	}
+	
+
+	for (unsigned int i = 0; i < events.size() - 1; ++i) // des de 0 fins a events.size()-2 hi ha enemics, l'event del princep és el events.size()-1
+	{
+		glm::ivec2 enemyPos = enemies[i].getPosition();
+		int direction = enemies[i].getDirection();
+		switch (events[i])
+		{
+		case 1:
+			// THE PRINCE CAN POSSIBLY HIT AN ENEMY
+			if (direction == -1) // LEFT
+			{
+				if (enemyPos.x - TILE_X <= playerPos.x && playerPos.x <= enemyPos.x)
+				{
+					player->hit();
+				}
+
+			}
+			else // RIGHT
+			{
+				if (enemyPos.x <= playerPos.x && playerPos.x <= enemyPos.x + TILE_X)
+				{
+					player->hit();
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void Scene::render()

@@ -16,7 +16,7 @@ class Player
 
 public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
-	void update(int deltaTime);
+	void update(int deltaTime, int &events);
 	void render();
 	
 	void setTileMap(TileMap *tileMap);
@@ -28,6 +28,7 @@ public:
 	void cure();
 	bool damage(int amount);
 	glm::ivec2 getPostion();
+	int getDirection();
 	int swordHit();
 	void hit();
 

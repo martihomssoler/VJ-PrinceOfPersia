@@ -22,6 +22,7 @@ public:
 
 	void init(string level);
 	void update(int deltaTime);
+	void eventHandler();
 	void render();
 
 private:
@@ -39,6 +40,9 @@ private:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+
+	// idea per gestionar tots els events i accions que passen en una mateixa escena
+	vector<int> events;
 
 };
 

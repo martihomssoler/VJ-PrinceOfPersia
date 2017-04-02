@@ -37,9 +37,14 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
-void Enemy::update(int deltaTime, string action)
+void Enemy::update(int deltaTime, string action, int &events)
 {
 	sprite->update(deltaTime);
+
+	if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
+		events = 1;
+	else
+		events = 0;
 
 	if (action == "MOVE_LEFT")
 	{
@@ -128,6 +133,11 @@ bool Enemy::damage(int amount)
 glm::ivec2 Enemy::getPosition()
 {
 	return posEnemy;
+}
+
+int Enemy::getDirection()
+{
+	return direction;
 }
 
 void Enemy::createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed)

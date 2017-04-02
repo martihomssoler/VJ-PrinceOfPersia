@@ -12,7 +12,7 @@ class Enemy
 
 public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int enemy_type, int direction);
-	void update(int deltaTime, string action);
+	void update(int deltaTime, string action, int &events);
 	void render();
 
 	void setTileMap(TileMap *tileMap);
@@ -23,6 +23,7 @@ public:
 	void setHealthGUI(HealthGUI *lifebar);
 	bool damage(int amount);
 	glm::ivec2 getPosition();
+	int getDirection();
 	int swordHit();
 	void hit();
 

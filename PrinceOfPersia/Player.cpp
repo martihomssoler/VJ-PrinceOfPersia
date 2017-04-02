@@ -120,8 +120,9 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	
 }
 
-void Player::update(int deltaTime)
+void Player::update(int deltaTime, int &events)
 {
+	events = 0; // DEFAULT VALUE
 	sprite->update(deltaTime);
 	if (!bJumping) {
 		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64)))
@@ -309,6 +310,7 @@ void Player::update(int deltaTime)
 			if (sprite->animation()== ATTACK_R) {
 				sprite->changeAnimation(STAND_SWORD_R);
 				// mirar si hem donat a algú
+				events = 1;
 				//if (!lifebar->damage(1)) sprite->changeAnimation(SWORD_DEATH_R);
 			}
 			else sprite->changeAnimation(STAND_SWORD_L);
@@ -589,6 +591,14 @@ bool Player::damage(int amount) {
 glm::ivec2 Player::getPostion()
 {
 	return posPlayer;
+}
+
+int Player::getDirection()
+{
+	if (orientation == LEFT)
+		return -1;
+	else
+		return 1;
 }
 
 int Player::swordHit()
