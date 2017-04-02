@@ -35,9 +35,9 @@ private:
 	Player *player;
 
 	HealthGUI* playerHealth;
-	HealthGUI* aux1;
 	vector<Enemy> enemies;
 	vector<glm::ivec2> potion;
+	vector<glm::ivec2> spikes;
 	glm::ivec2 door;
 	vector<HealthGUI*> enemyLifebars;
 	ShaderProgram texProgram;

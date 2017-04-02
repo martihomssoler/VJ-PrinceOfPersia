@@ -247,6 +247,7 @@ void Player::update(int deltaTime, int &events)
 			if (sprite->animation() == FALL_R) sprite->changeAnimation(LAND_R);
 			else sprite->changeAnimation(LAND_L);
 		}
+		events = 4; //IS FALLING
 	}
 	else if (sprite->animation() == DEFEND_R || sprite->animation() == DEFEND_L) { //DEFEND
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
@@ -669,4 +670,14 @@ void Player::hit()
 
 void Player::cure() {
 	lifebar->cure();
+}
+
+void Player::enterDoor() {
+	if (sprite->animation() % 2 == 0) sprite->changeAnimation(STAIRS_R);
+	else sprite->changeAnimation(STAIRS_L);
+}
+
+void Player::spikes() {
+	if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R);
+	else sprite->changeAnimation(SPEARS_DEATH_L);
 }

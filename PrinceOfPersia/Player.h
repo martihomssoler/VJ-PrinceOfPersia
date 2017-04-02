@@ -31,6 +31,8 @@ public:
 	int getDirection();
 	int swordHit();
 	void hit();
+	void enterDoor();
+	void spikes();
 
 	
 private:

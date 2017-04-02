@@ -79,6 +79,7 @@ void Scene::update(int deltaTime)
 	{
 		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu
 		{
+			bShowEnemyLifebar = false;
 			string action = "";
 			int r = rand() % 300 + 1;
 			glm::ivec2 enemyPos = enemies[i].getPosition();
@@ -183,10 +184,24 @@ void Scene::eventHandler()
 			// E pressed MAYBE AT THE DOOR
 			if ((playerPos.x >= door.x - 10 && door.x + 10 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
 			{
+				player->enterDoor();
 				init("level02");
 				events[events.size() - 1] = 0;
 			}
 			break;
+
+		case 4:
+			//Player is falling 
+			for (int k = 0; k < spikes.size(); ++k) {
+				if (playerPos.x >= spikes[k].x - 10 && spikes[k].x + 10 >= playerPos.x) {
+					player->spikes();
+					player->damage(3);
+				}
+				player->damage(3);
+			}
+			//player->damage(3);
+			break;
+
 		default:
 			break;
 	}
@@ -381,6 +396,10 @@ void Scene::initMiscellaneous(const string & enemiesFile)
 						potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 						break;
 					// -3 means sword
+
+					case -4: //-4 means spikes
+						spikes.push_back(glm::ivec2(i * TILE_X, j *TILE_X));
+						break;
 					default:
 						break;
 				}
