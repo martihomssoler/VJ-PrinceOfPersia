@@ -27,7 +27,8 @@ public:
 
 private:
 	void initShaders();
-	void initMiscellaneous(const string &enemiesFile);
+	void initEnemies(const string &enemiesFile);
+	void initActivables(const string &activablesFile);
 
 	TileMap *backMap;
 	TileMap *map;
@@ -36,9 +37,7 @@ private:
 
 	HealthGUI* playerHealth;
 	vector<Enemy> enemies;
-	vector<glm::ivec2> potion;
-	vector<glm::ivec2> spikes;
-	glm::ivec2 door;
+	
 	vector<HealthGUI*> enemyLifebars;
 	ShaderProgram texProgram;
 	float currentTime;
@@ -48,6 +47,14 @@ private:
 	// idea per gestionar tots els events i accions que passen en una mateixa escena
 	vector<int> events;
 
+	// traps and activables
+	vector<glm::ivec2> potion;
+	vector<glm::ivec2> piercingTraps;
+	vector<glm::ivec2> fallingPlates;
+	vector<glm::ivec2> forcePlates;
+	vector<glm::ivec2> barredDoors;
+	vector<glm::ivec2> spikes;
+	glm::ivec2 door;
 };
 
 

@@ -559,7 +559,10 @@ void Player::update(int deltaTime, int &events)
 				else sprite->changeAnimation(JUMP_FAILED_R);
 			}
 			else if (sprite->animation() == JUMP_L) {
-				if (map->collisionClimb(glm::ivec2(posPlayer.x - 32, startY - 64), glm::ivec2(32, 64))) {
+				if (map->collisionMoveUp(glm::ivec2(posPlayer.x, posPlayer.y), glm::ivec2(32, 64), &posPlayer.y)) {
+					sprite->changeAnimation(JUMP_FAILED_L);
+				}
+				else if (map->collisionClimb(glm::ivec2(posPlayer.x - 32, startY - 64), glm::ivec2(32, 64))) {
 					sprite->changeAnimation(CLIMB_L);
 					posPlayer.x -= 2;
 				}

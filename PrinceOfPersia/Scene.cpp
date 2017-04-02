@@ -59,7 +59,8 @@ void Scene::init(string level)
 	playerHealth = new HealthGUI();
 	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, PRINCE);
 	player->setHealthGUI(playerHealth);
-	initMiscellaneous("levels/" + level + "Miscellaneous.txt");
+	initEnemies("levels/" + level + "Enemies.txt");
+	initActivables("levels/" + level + "Activables.txt");
 
 	// vector d'events pendents per gestionar al update d'una escèna
 	events = vector<int>(enemies.size() + 1, 0);
@@ -189,19 +190,6 @@ void Scene::eventHandler()
 				events[events.size() - 1] = 0;
 			}
 			break;
-
-		case 4:
-			//Player is falling 
-			for (int k = 0; k < spikes.size(); ++k) {
-				if (playerPos.x >= spikes[k].x - 10 && spikes[k].x + 10 >= playerPos.x) {
-					player->spikes();
-					player->damage(3);
-				}
-				player->damage(3);
-			}
-			//player->damage(3);
-			break;
-
 		default:
 			break;
 	}
@@ -333,7 +321,7 @@ void Scene::initShaders()
 	fShader.free();
 }
 
-void Scene::initMiscellaneous(const string & enemiesFile)
+void Scene::initEnemies(const string & enemiesFile)
 {
 	ifstream fin;
 	string line;
@@ -370,7 +358,7 @@ void Scene::initMiscellaneous(const string & enemiesFile)
 		{
 			getline(linestream, value, ',');
 			int aux = atoi(value.c_str()) + 1;
-			if (aux > 0)
+			if (aux != 0 && k < numEnemies)
 			{
 				// Comprovar que el calcul de type i position es el correcte!
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
@@ -385,24 +373,64 @@ void Scene::initMiscellaneous(const string & enemiesFile)
 				enemies[k].setTileWallMap(wallMap);
 				++k;
 			}
-			else if (aux < 0)
-			{
-				switch (aux)
-				{
-					case -1: // -1 means doors
-						door = glm::ivec2(i * TILE_X, j * TILE_Y);
-						break;
-					case -2: // -2 means potion
-						potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
-						break;
-					// -3 means sword
+		}
+	}
+	fin.close();
+}
 
-					case -4: //-4 means spikes
-						spikes.push_back(glm::ivec2(i * TILE_X, j *TILE_X));
-						break;
-					default:
-						break;
-				}
+void Scene::initActivables(const string & activablesFile)
+{
+	ifstream fin;
+	string line;
+	stringstream sstream;
+	int mapSizex, mapSizey;
+
+	fin.open(activablesFile.c_str());
+	if (!fin.is_open())
+		return;
+	getline(fin, line);
+	if (line.compare(0, 10, "ACTIVABLES") != 0)
+		return;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> mapSizex >> mapSizey;
+	
+	for (int j = 0; j < mapSizey; j++)
+	{
+		getline(fin, line);
+		std::stringstream   linestream(line);
+		std::string         value;
+
+		for (int i = 0; i < mapSizex; i++)
+		{
+			getline(linestream, value, ',');
+			int aux = atoi(value.c_str()) + 1;
+			
+			switch (aux)
+			{
+				case 1: //POTION
+					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 2: //SPIKES
+					spikes.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 3: // PIERCING TRAP
+					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 4: // FORCE PLATE
+					forcePlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 5: // FALLING PLATE
+					fallingPlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 8: // BARRED DOOR
+					barredDoors.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 9: // OUTDOOR STAIRS
+					door = glm::ivec2(i * TILE_X, j * TILE_Y);
+					break;
+				default:
+					break;
 			}
 		}
 	}
