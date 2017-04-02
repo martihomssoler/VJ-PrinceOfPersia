@@ -22,6 +22,7 @@
 #define KEY_A 97
 #define KEY_S 115
 #define KEY_D 100
+#define KEY_E 101
 #define KEY_J 106
 
 
@@ -122,7 +123,6 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::update(int deltaTime, int &events)
 {
-	events = 0; // DEFAULT VALUE
 	sprite->update(deltaTime);
 	if (!bJumping) {
 		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64)))
@@ -354,7 +354,13 @@ void Player::update(int deltaTime, int &events)
 			else if (Game::instance().getKey(KEY_D)) {
 				sprite->changeAnimation(STEP_R);
 			}
-			else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) sprite->changeAnimation(DUCK_R);
+			else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
+			{
+				sprite->changeAnimation(DUCK_R);
+			}
+			else if (Game::instance().getKey(KEY_E))
+			{
+			}
 		}
 		else {
 			if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(MOVE_L);
