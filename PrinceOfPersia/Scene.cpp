@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
+#include "Sprite.h"
 
 
 #define SCREEN_X 0
@@ -48,20 +49,19 @@ void Scene::init(string level)
 	backMap = TileMap::createTileMap("levels/" + level + "Back.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map = TileMap::createTileMap("levels/" + level + "Ground.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	wallMap = TileMap::createTileMap("levels/" + level + "Wall.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	spikeSpritesheet.loadFromFile("images/spike-trap.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileBackMap(backMap);
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
-
-
+	
 	playerHealth = new HealthGUI();
 	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, PRINCE);
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
 	initActivables("levels/" + level + "Activables.txt");
-
 	// vector d'events pendents per gestionar al update d'una escèna
 	events = vector<int>(enemies.size() + 1, 0);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
@@ -119,15 +119,16 @@ void Scene::update(int deltaTime)
 			enemyLifebars[i]->update(deltaTime);
 		}
 	}	
-	for (unsigned int i = 0; spikes.size(); ++i){
-		if (playerPos.x + 32 >= spikes[i].x && playerPos.x + 32 <= spikes[i].x + TILE_X &&
-			playerPos.y + 32 >= spikes[i].y && playerPos.y + 32 <= spikes[i].y + TILE_Y) {
-			spikeAnimation[i]->changeAnimation(0);
-
-		}
-	}
+	
 	eventHandler();
-
+	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
+		if (player->getPostion().x + 32 >= spikes[i].x && player->getPostion().x + 32 <= spikes[i].x + 64 && player->getPostion().y <= spikes[i].y) {
+			spikeAnimation[i]->activate();
+			if (player->getPostion().y == spikes[i].y) player->spikes();
+		}
+		else if (player->getPostion().x + 32 <= spikes[i].x || player->getPostion().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
+		spikeAnimation[i]->update(deltaTime);
+	}
 	playerHealth->update(deltaTime);
 }
 
@@ -193,10 +194,9 @@ void Scene::eventHandler()
 			break;
 		case 3:
 			// E pressed MAYBE AT THE DOOR
-			if ((playerPos.x >= door.x - 10 && door.x + 10 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
+			if ((playerPos.x >= door.x  && door.x + 64 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
 			{
 				player->enterDoor();
-				init("level02");
 				events[events.size() - 1] = 0;
 			}
 			break;
@@ -284,7 +284,17 @@ void Scene::render()
 		if (bShowEnemyLifebar) enemyLifebars[i]->render();
 	}
 
-	
+	for (unsigned int i = 0; i < spikeAnimation.size(); ++i)
+	{
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", projection);
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		if (spikeAnimation[i]->isActive()) spikeAnimation[i]->render();
+
+	}
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -293,17 +303,7 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	wallMap->render();
 
-	for (unsigned int i = 0; spikeAnimation.size() > i; ++i)
-	{
-		texProgram.use();
-		texProgram.setUniformMatrix4f("projection", projection);
-		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-		modelview = glm::mat4(1.0f);
-		texProgram.setUniformMatrix4f("modelview", modelview);
-		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-		spikeAnimation[i]->render();
-
-	}
+	
 
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
@@ -421,7 +421,6 @@ void Scene::initActivables(const string & activablesFile)
 	sstream.str(line);
 	sstream >> mapSizex >> mapSizey;
 
-	Sprite *sprite; 
 	Texture spritesheet;
 	
 	for (int j = 0; j < mapSizey; j++)
@@ -434,38 +433,17 @@ void Scene::initActivables(const string & activablesFile)
 		{
 			getline(linestream, value, ',');
 			int aux = atoi(value.c_str()) + 1;
-			
 			switch (aux)
 			{
 				case 1: //POTION
 					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
-				case 2: //SPIKES
+				case 3: //SPIKES
 					spikes.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
-					spritesheet.loadFromFile("images/spike-trap.png", TEXTURE_PIXEL_FORMAT_RGBA);
-					sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(0.2f, 1.f), &spritesheet, &texProgram);
-					spikeAnimation.push_back(sprite);
-					spikeAnimation.back()->setNumberAnimations(4);
-					spikeAnimation.back()->setAnimationSpeed(0, 8);
-					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 0));
-					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 1));
-					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 2));
-					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 3));
-					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 4));
-					spikeAnimation.back()->setAnimationSpeed(1, 8);
-					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 4));
-					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 3));
-					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 2));
-					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 1));
-					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 0));
-					spikeAnimation.back()->setAnimationSpeed(2, 8);
-					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 4));
-					spikeAnimation.back()->setAnimationSpeed(3, 8);
-					spikeAnimation.back()->addKeyframe(3, glm::vec2(0.0f, 0.2f * 0));
-					spikeAnimation.back()->changeAnimation(0);
-					spikeAnimation.back()->setPosition(glm::ivec2(i * TILE_X, j * TILE_Y));
+					spikeAnimation.push_back(new Activable());
+					spikeAnimation.back()->init(spikes.back(), texProgram, 0);
 					break;
-				case 3: // PIERCING TRAP
+				case 2: // PIERCING TRAP
 					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 4: // FORCE PLATE

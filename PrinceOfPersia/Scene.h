@@ -7,6 +7,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Activable.h"
 
 
 // Scene contains all the entities of our game.
@@ -54,7 +55,8 @@ private:
 	vector<glm::ivec2> forcePlates;
 	vector<glm::ivec2> barredDoors;
 	vector<glm::ivec2> spikes;
-	vector<Sprite*> spikeAnimation;
+	vector<Activable*> spikeAnimation;
+	Texture spikeSpritesheet;
 	glm::ivec2 door;
 };
 

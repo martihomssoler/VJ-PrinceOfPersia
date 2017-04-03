@@ -32,7 +32,7 @@ void HealthGUI::init(const glm::ivec2 &pos, int points, ShaderProgram &shaderPro
 	maxHealth = points;
 	lifebar = vector<Sprite*>(maxHealth);
 	lifebar_values = vector<bool>(maxHealth, false);
-	spritesheet.loadFromFile("images/life.png",TEXTURE_PIXEL_FORMAT_RGBA);
+	spritesheet.loadFromFile("images/Life.png",TEXTURE_PIXEL_FORMAT_RGBA);
 	for (int i = 0; i < maxHealth; ++i){
 		if (type == PRINCE) {
 			lifebar[i] = Sprite::createSprite(glm::vec2(32, 32), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
@@ -104,5 +104,4 @@ bool HealthGUI::damage(int amount)
 void HealthGUI::cure()
 {
 	if (health < maxHealth) ++health;
-
 }
