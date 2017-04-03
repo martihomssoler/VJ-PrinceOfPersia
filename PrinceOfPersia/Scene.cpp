@@ -14,7 +14,7 @@
 #define SCREEN_Y 0
 
 #define INIT_PLAYER_X_TILES 10
-#define INIT_PLAYER_Y_TILES 3
+#define INIT_PLAYER_Y_TILES 2
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -122,9 +122,12 @@ void Scene::update(int deltaTime)
 	
 	eventHandler();
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
-		if (player->getPostion().x + 32 >= spikes[i].x && player->getPostion().x + 32 <= spikes[i].x + 64 && player->getPostion().y <= spikes[i].y) {
+		if (player->getPostion().x + 32 > spikes[i].x && player->getPostion().x + 32 < spikes[i].x + 64 && player->getPostion().y <= spikes[i].y) {
 			spikeAnimation[i]->activate();
-			if (player->getPostion().y == spikes[i].y) player->spikes();
+			if (player->getPostion().x + 32 > spikes[i].x + 16 && player->getPostion().x + 32 < spikes[i].x + 48 && player->getPostion().y == spikes[i].y && !player->isJumping()) {
+				player->setPosition(spikes[i]);
+				player->spikes();
+			}
 		}
 		else if (player->getPostion().x + 32 <= spikes[i].x || player->getPostion().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
 		spikeAnimation[i]->update(deltaTime);
@@ -199,6 +202,9 @@ void Scene::eventHandler()
 				player->enterDoor();
 				events[events.size() - 1] = 0;
 			}
+			break;
+
+		case -1:
 			break;
 		default:
 			break;

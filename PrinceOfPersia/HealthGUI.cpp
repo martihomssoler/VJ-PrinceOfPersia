@@ -98,6 +98,7 @@ void HealthGUI::render()
 bool HealthGUI::damage(int amount)
 {
 	health -= amount;
+	if (health < 0) health = 0;
 	return health > 0;
 }
 

@@ -241,7 +241,7 @@ bool TileMap::collisionClimb(const glm::ivec2 &pos, const glm::ivec2 &size) cons
 			return true;
 		}
 	}
-
+	 
 	return false;
 }
 

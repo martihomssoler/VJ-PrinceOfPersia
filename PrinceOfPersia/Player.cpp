@@ -304,7 +304,6 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == SPEARS_DEATH_R || sprite->animation() == SPEARS_DEATH_L) { //SPEARS_DEATH
 
-		bAlive = lifebar->damage(3);
 
 	}
 	else if (sprite->animation() == SWORD_DEATH_R || sprite->animation() == SWORD_DEATH_L) { //SWORD_DEATH
@@ -386,6 +385,7 @@ void Player::update(int deltaTime, int &events)
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_FAILED_R)) {
 			if (sprite->animation() == JUMP_FAILED_R) sprite->changeAnimation(STAND_R);
 			else sprite->changeAnimation(STAND_L);
+			bJumping = false;
 		}
 	}
 	else if (sprite->animation() == STAND_R || sprite->animation() == STAND_L) { //STAND
@@ -477,7 +477,6 @@ void Player::update(int deltaTime, int &events)
 			if (sprite->animation()== MOVE_R) sprite->changeAnimation(STOP_R);
 			else sprite->changeAnimation(STOP_L);
 		}
-
 	}
 	else if (sprite->animation() == RUN_R || sprite->animation() == RUN_L) { //RUN
 		bool hold = true;
@@ -521,7 +520,6 @@ void Player::update(int deltaTime, int &events)
 				--posPlayer.x;
 			}
 		}
-
 	}
 	else if (sprite->animation() == JUMP_RUNNING_R || sprite->animation() == JUMP_RUNNING_L) { //JUMP_RUNNING
 		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)))
@@ -529,23 +527,18 @@ void Player::update(int deltaTime, int &events)
 		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R);
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_RUNNING_R)) {
-			//bJumping = false;
 			if (sprite->animation() == JUMP_RUNNING_R) {
 				if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64))) {
 					if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(RUN_R);
 					else sprite->changeAnimation(STOP_R);
-				}
-				//else sprite->changeAnimation(FALL_R);
-				
+				}	
 			}
 			else {
 				if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64))) {
 					if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(RUN_L);
 					else sprite->changeAnimation(STOP_L);
 				}
-				//else sprite->changeAnimation(FALL_L);
-			}
-			
+			}		
 		}
 		else {
 			if (sprite->animation() == JUMP_RUNNING_R) {
@@ -608,7 +601,6 @@ void Player::update(int deltaTime, int &events)
 				else if (map->collisionClimb(glm::ivec2(posPlayer.x + 32, startY - 64), glm::ivec2(32, 64))) {
 					sprite->changeAnimation(CLIMB_R);
 					posPlayer.x += 4;
-					//bJumping = false;
 				}
 				else sprite->changeAnimation(JUMP_FAILED_R);
 			}
@@ -619,13 +611,10 @@ void Player::update(int deltaTime, int &events)
 				else if (map->collisionClimb(glm::ivec2(posPlayer.x - 32, startY - 64), glm::ivec2(32, 64))) {
 					sprite->changeAnimation(CLIMB_L);
 					posPlayer.x -= 2;
-					//bJumping = false;
 				}
 				else sprite->changeAnimation(JUMP_FAILED_L);
 			}
 		}
-		//else if (sprite->keyFrame() > 6) --posPlayer.y;
-
 	}
 	else if (sprite->animation() == SWING_R || sprite->animation() == SWING_L) { //SWING
 		if (!Game::instance().getKey(KEY_A)) {
@@ -735,7 +724,13 @@ void Player::enterDoor() {
 }
 
 void Player::spikes() {
-	if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R);
-	else sprite->changeAnimation(SPEARS_DEATH_L);
-	
+	bAlive = lifebar->damage(3);
+	if (!bAlive) {
+		if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R);
+		else sprite->changeAnimation(SPEARS_DEATH_L);
+	}	
+}
+
+bool Player::isJumping(){
+	return bJumping;
 }
