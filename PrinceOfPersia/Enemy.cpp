@@ -39,83 +39,86 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 
 void Enemy::update(int deltaTime, string action, int &events)
 {
-	sprite->update(deltaTime);
+	if (events != -1)
+	{
+		sprite->update(deltaTime);
 
-	if (sprite->animation() == ATTACK_L || sprite->animation() == ATTACK_R)
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
+		if (sprite->animation() == ATTACK_L || sprite->animation() == ATTACK_R)
 		{
-			events = 1;
+			if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
+			{
+				events = 1;
+			}
 		}
-	}
-	else if (sprite->animation() == DIE_L || sprite->animation() == DIE_R)
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(DIE_L) || sprite->keyFrame() == sprite->numberKeyFrames(DIE_R))
+		else if (sprite->animation() == DIE_L || sprite->animation() == DIE_R)
 		{
-			events = -1; // problema amb el events -1, de tant en tant no funciona correctament
+			if (sprite->keyFrame() == sprite->numberKeyFrames(DIE_L) || sprite->keyFrame() == sprite->numberKeyFrames(DIE_R))
+			{
+				events = -1; // problema amb el events -1, de tant en tant no funciona correctament
+			}
 		}
-	}
-	else
-	{
-		events = 0;
-	}
+		else
+		{
+			events = 0;
+		}
 
-	if (action == "MOVE_LEFT")
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		if (action == "MOVE_LEFT")
 		{
-			direction = -1;
-			sprite->changeAnimation(MOVE_L);
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				direction = -1;
+				sprite->changeAnimation(MOVE_L);
+			}
+			--posEnemy.x;
 		}
-		--posEnemy.x;
-	}
-	else if (action == "MOVE_RIGHT")
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		else if (action == "MOVE_RIGHT")
 		{
-			direction = 1;
-			sprite->changeAnimation(MOVE_R);
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				direction = 1;
+				sprite->changeAnimation(MOVE_R);
+			}
+			++posEnemy.x;
 		}
-		++posEnemy.x;
-	}
-	else if (action == "ATTACK_LEFT")
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		else if (action == "ATTACK_LEFT")
 		{
-			direction = -1;
-			sprite->changeAnimation(ATTACK_L);
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				direction = -1;
+				sprite->changeAnimation(ATTACK_L);
+			}
 		}
-	}
-	else if (action == "ATTACK_RIGHT")
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		else if (action == "ATTACK_RIGHT")
 		{
-			direction = 1;
-			sprite->changeAnimation(ATTACK_R);
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				direction = 1;
+				sprite->changeAnimation(ATTACK_R);
+			}
 		}
-	}
-	else if (action == "STAND")
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		else if (action == "STAND" && sprite->animation() != DIE_L && sprite->animation() != DIE_R)
 		{
-			if (direction == -1)
-				sprite->changeAnimation(STAND_L);
-			else
-				sprite->changeAnimation(STAND_R);
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				if (direction == -1)
+					sprite->changeAnimation(STAND_L);
+				else
+					sprite->changeAnimation(STAND_R);
+			}
 		}
-	}
-	else if (action == "DEAD")
-	{
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+		else if (action == "DEAD")
 		{
-			if (direction == -1)
-				sprite->changeAnimation(DIE_L);
-			else
-				sprite->changeAnimation(DIE_R);
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				if (direction == -1)
+					sprite->changeAnimation(DIE_L);
+				else
+					sprite->changeAnimation(DIE_R);
+			}
 		}
-	}
 
-	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+	}	
 }
 
 void Enemy::render()

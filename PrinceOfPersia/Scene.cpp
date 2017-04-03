@@ -78,7 +78,7 @@ void Scene::update(int deltaTime)
 		
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
-		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu
+		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu i el personatge també
 		{
 			bShowEnemyLifebar = false;
 			string action = "";
@@ -140,18 +140,20 @@ void Scene::eventHandler()
 					glm::ivec2 enemyPos = enemies[i].getPosition();
 					if (direction == -1) // LEFT
 					{
-						if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
+						if (playerPos.x - (2 * TILE_X / 3) <= enemyPos.x && enemyPos.x <= playerPos.x + (TILE_X / 3))
 						{
 							enemies[i].hit();
 							events[i] = 0;
+							events[events.size() - 1] = 0;
 						}
 					}
 					else // RIGHT
 					{
-						if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
+						if (playerPos.x - (TILE_X / 3) <= enemyPos.x && enemyPos.x <= playerPos.x + (2 * TILE_X / 3))
 						{
 							enemies[i].hit();
 							events[i] = 0;
+							events[events.size() - 1] = 0;
 						}
 					}
 				}
@@ -169,6 +171,7 @@ void Scene::eventHandler()
 						if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
 						{
 							events[i] = 0;
+							events[events.size() - 1] = 0;
 						}
 					}
 					else // RIGHT
@@ -176,6 +179,7 @@ void Scene::eventHandler()
 						if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
 						{
 							events[i] = 0;
+							events[events.size() - 1] = 0;
 						}
 					}
 				}
@@ -208,6 +212,7 @@ void Scene::eventHandler()
 				if (enemyPos.x - TILE_X <= playerPos.x && playerPos.x <= enemyPos.x)
 				{
 					player->hit();
+					events[i] = 0;
 				}
 
 			}
@@ -216,6 +221,7 @@ void Scene::eventHandler()
 				if (enemyPos.x <= playerPos.x && playerPos.x <= enemyPos.x + TILE_X)
 				{
 					player->hit();
+					events[i] = 0;
 				}
 			}
 			break;
