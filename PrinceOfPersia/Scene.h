@@ -54,6 +54,7 @@ private:
 	vector<glm::ivec2> forcePlates;
 	vector<glm::ivec2> barredDoors;
 	vector<glm::ivec2> spikes;
+	vector<Sprite*> spikeAnimation;
 	glm::ivec2 door;
 };
 
