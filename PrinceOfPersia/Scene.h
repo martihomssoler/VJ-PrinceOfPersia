@@ -36,8 +36,8 @@ private:
 	Player *player;
 
 	HealthGUI* playerHealth;
-	HealthGUI* aux1;
 	vector<Enemy> enemies;
+	
 	vector<HealthGUI*> enemyLifebars;
 	ShaderProgram texProgram;
 	float currentTime;
@@ -53,6 +53,7 @@ private:
 	vector<glm::ivec2> fallingPlates;
 	vector<glm::ivec2> forcePlates;
 	vector<glm::ivec2> barredDoors;
+	vector<glm::ivec2> spikes;
 	glm::ivec2 door;
 };
 

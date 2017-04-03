@@ -80,6 +80,7 @@ void Scene::update(int deltaTime)
 	{
 		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu
 		{
+			bShowEnemyLifebar = false;
 			string action = "";
 			int r = rand() % 300 + 1;
 			glm::ivec2 enemyPos = enemies[i].getPosition();
@@ -184,6 +185,7 @@ void Scene::eventHandler()
 			// E pressed MAYBE AT THE DOOR
 			if ((playerPos.x >= door.x - 10 && door.x + 10 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
 			{
+				player->enterDoor();
 				init("level02");
 				events[events.size() - 1] = 0;
 			}
@@ -356,7 +358,7 @@ void Scene::initEnemies(const string & enemiesFile)
 		{
 			getline(linestream, value, ',');
 			int aux = atoi(value.c_str()) + 1;
-			if (aux != 0)
+			if (aux != 0 && k < numEnemies)
 			{
 				// Comprovar que el calcul de type i position es el correcte!
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
@@ -406,6 +408,12 @@ void Scene::initActivables(const string & activablesFile)
 			
 			switch (aux)
 			{
+				case 1: //POTION
+					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
+				case 2: //SPIKES
+					spikes.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					break;
 				case 3: // PIERCING TRAP
 					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
