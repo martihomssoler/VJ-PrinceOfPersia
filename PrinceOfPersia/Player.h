@@ -41,6 +41,7 @@ private:
 
 	bool bJumping;
 	bool blocked;
+	bool bFalling;
 	bool pick_sword, pick_potion;
 	int orientation;
 	glm::ivec2 tileMapDispl, posPlayer;

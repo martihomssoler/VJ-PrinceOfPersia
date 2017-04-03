@@ -79,6 +79,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	bJumping = false;
 	pick_potion = false;
 	pick_sword = false;
+	bFalling = false;
 	spritesheet.loadFromFile("images/onelinesprites.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(NB_ANIMATIONS);
@@ -118,35 +119,18 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->changeAnimation(STAND_R);
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
-	
+	startY = posPlayer.y;
 }
 
 void Player::update(int deltaTime, int &events)
 {
 	sprite->update(deltaTime);
-	/*
-	if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) 
-		if (sprite->animation() % 2 == 1) sprite->changeAnimation(STAND_L);
-	else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) 
-		if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R);
-	else if(wallMap->collisionMoveUp(posPlayer, glm::ivec2(32, 64),&posPlayer.y)) sprite->changeAnimation(STAND_R);
-	*/
 	if (!bJumping) {
-		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64)))
+		if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 64)))
 		{
-			if (startY + posPlayer.y <= 64 * 2 && startY + posPlayer.y > 64) lifebar->damage(1);
-			else if (startY + posPlayer.y > 64 * 2) lifebar->damage(3);
-			/*if (Game::instance().getSpecialKey(GLUT_KEY_UP))
-			{
-			bJumping = true;
-			jumpAngle = 0;
-			startY = posPlayer.y;
-			if (sprite->animation() % 2 == 0) sprite->changeAnimation(JUMP_R);
-			else sprite->changeAnimation(JUMP_L);
-			}*/
-		}
-		else {
+			if (!bFalling) startY = posPlayer.y;
 			posPlayer.y += FALL_STEP;
+			bFalling = true;
 			if (sprite->animation() % 2 == 0) sprite->changeAnimation(FALL_R);
 			else sprite->changeAnimation(FALL_L);
 		}
@@ -268,9 +252,19 @@ void Player::update(int deltaTime, int &events)
 
 	}
 	else if (sprite->animation() == FALL_R || sprite->animation() == FALL_L) { //FALL
+		bool dead = false;
 		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64))) {
-			if (sprite->animation() == FALL_R) sprite->changeAnimation(LAND_R);
-			else sprite->changeAnimation(LAND_L);
+			bFalling = false;
+			if (posPlayer.y - startY > 64 * 3) {
+				lifebar->damage(3);
+				dead = true;
+				if (sprite->animation() % 2 == 0) sprite->changeAnimation(DEADLY_FALL_R);
+				else sprite->changeAnimation(DEADLY_FALL_R);
+			}
+			else if (posPlayer.y - startY > 64) lifebar->damage(1);
+			if (sprite->animation() == FALL_R && !dead) sprite->changeAnimation(LAND_R);
+			else if(!dead) sprite->changeAnimation(LAND_L);
+
 		}
 		events = 4; //IS FALLING
 	}
@@ -335,6 +329,7 @@ void Player::update(int deltaTime, int &events)
 		if (sprite->keyFrame() == sprite->numberKeyFrames(CLIMB_R)) {
 			if (sprite->animation() == CLIMB_R) sprite->changeAnimation(STAND_R);
 			else sprite->changeAnimation(STAND_L);
+			startY = posPlayer.y;
 		}
 		else if (sprite->keyFrame() >= 0 && sprite->keyFrame() <= 3)
 			posPlayer.y = startY - 32;

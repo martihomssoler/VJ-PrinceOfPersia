@@ -284,6 +284,15 @@ void Scene::render()
 		if (bShowEnemyLifebar) enemyLifebars[i]->render();
 	}
 
+	
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	wallMap->render();
+
 	for (unsigned int i = 0; spikeAnimation.size() > i; ++i)
 	{
 		texProgram.use();
@@ -295,13 +304,6 @@ void Scene::render()
 		spikeAnimation[i]->render();
 
 	}
-	texProgram.use();
-	texProgram.setUniformMatrix4f("projection", projection);
-	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	wallMap->render();
 
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
@@ -442,26 +444,26 @@ void Scene::initActivables(const string & activablesFile)
 					spikes.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					spritesheet.loadFromFile("images/spike-trap.png", TEXTURE_PIXEL_FORMAT_RGBA);
 					sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(0.2f, 1.f), &spritesheet, &texProgram);
-					sprite->setNumberAnimations(4);
-					sprite->setAnimationSpeed(0, 8);
-					sprite->addKeyframe(0, glm::vec2(0.0f, 0.2f*0));
-					sprite->addKeyframe(0, glm::vec2(0.0f, 0.2f * 1));
-					sprite->addKeyframe(0, glm::vec2(0.0f, 0.2f * 2));
-					sprite->addKeyframe(0, glm::vec2(0.0f, 0.2f * 3));
-					sprite->addKeyframe(0, glm::vec2(0.0f, 0.2f * 4));
-					sprite->setAnimationSpeed(1, 8);
-					sprite->addKeyframe(2, glm::vec2(0.0f, 0.2f * 4));
-					sprite->addKeyframe(2, glm::vec2(0.0f, 0.2f * 3));
-					sprite->addKeyframe(2, glm::vec2(0.0f, 0.2f * 2));
-					sprite->addKeyframe(2, glm::vec2(0.0f, 0.2f * 1));
-					sprite->addKeyframe(2, glm::vec2(0.0f, 0.2f * 0));
-					sprite->setAnimationSpeed(2, 8);
-					sprite->addKeyframe(2, glm::vec2(0.0f, 0.2f * 4));
-					sprite->setAnimationSpeed(3, 8);
-					sprite->addKeyframe(3, glm::vec2(0.0f, 0.2f * 0));
-					sprite->changeAnimation(0);
-					sprite->setPosition(glm::ivec2(i * TILE_X, j * TILE_Y));
 					spikeAnimation.push_back(sprite);
+					spikeAnimation.back()->setNumberAnimations(4);
+					spikeAnimation.back()->setAnimationSpeed(0, 8);
+					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 0));
+					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 1));
+					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 2));
+					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 3));
+					spikeAnimation.back()->addKeyframe(0, glm::vec2(0.0f, 0.2f * 4));
+					spikeAnimation.back()->setAnimationSpeed(1, 8);
+					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 4));
+					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 3));
+					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 2));
+					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 1));
+					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 0));
+					spikeAnimation.back()->setAnimationSpeed(2, 8);
+					spikeAnimation.back()->addKeyframe(2, glm::vec2(0.0f, 0.2f * 4));
+					spikeAnimation.back()->setAnimationSpeed(3, 8);
+					spikeAnimation.back()->addKeyframe(3, glm::vec2(0.0f, 0.2f * 0));
+					spikeAnimation.back()->changeAnimation(0);
+					spikeAnimation.back()->setPosition(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 3: // PIERCING TRAP
 					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
