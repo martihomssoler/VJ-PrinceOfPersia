@@ -389,8 +389,14 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == STAND_R || sprite->animation() == STAND_L) { //STAND
 		if (sprite->animation()== STAND_R) {
-			if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(MOVE_R);
-			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(TURN_L);
+			if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
+			{
+				sprite->changeAnimation(MOVE_R);
+			}
+			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
+			{
+				sprite->changeAnimation(TURN_L);
+			}
 			else if (Game::instance().getKey(KEY_S)) {
 				sprite->changeAnimation(DRAW_R);
 			}
@@ -417,8 +423,14 @@ void Player::update(int deltaTime, int &events)
 			}
 		}
 		else {
-			if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(MOVE_L);
-			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(TURN_R);
+			if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
+			{
+				sprite->changeAnimation(MOVE_L);
+			}
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
+			{
+				sprite->changeAnimation(TURN_R);
+			}
 			else if (Game::instance().getKey(KEY_S)) {
 				sprite->changeAnimation(DRAW_L);
 			}
