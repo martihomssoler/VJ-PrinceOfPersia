@@ -550,7 +550,7 @@ void Player::update(int deltaTime, int &events)
 				if (sprite->keyFrame() < 3) --posPlayer.x;
 				else posPlayer.x -= 2;
 			}
-			if (sprite->keyFrame() == 7) bJumping = false;
+			if (sprite->keyFrame() == 8) bJumping = false;
 		}
 	}
 	else if (sprite->animation() == STAND_SWORD_R || sprite->animation() == STAND_SWORD_L) { //STAND_SWORD
@@ -592,7 +592,8 @@ void Player::update(int deltaTime, int &events)
 		}
 
 	}
-	else if (sprite->animation() == JUMP_R || sprite->animation() == JUMP_L) { //JUMP
+	//JUMP
+	else if (sprite->animation() == JUMP_R || sprite->animation() == JUMP_L) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_R)) {
 			if (sprite->animation() == JUMP_R) {
 				if (map->collisionMoveUp(glm::ivec2(posPlayer.x, posPlayer.y), glm::ivec2(32, 64), &startY)) {

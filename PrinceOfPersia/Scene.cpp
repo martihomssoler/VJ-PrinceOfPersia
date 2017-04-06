@@ -14,7 +14,7 @@
 #define SCREEN_Y 0
 
 #define INIT_PLAYER_X_TILES 10
-#define INIT_PLAYER_Y_TILES 2
+#define INIT_PLAYER_Y_TILES 3
 
 #define ENEMY_1 0
 #define ENEMY_2 1
