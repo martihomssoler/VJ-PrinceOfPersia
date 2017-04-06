@@ -407,6 +407,7 @@ void Player::update(int deltaTime, int &events)
 				startY = posPlayer.y;
 			}
 			else if (Game::instance().getKey(KEY_J)) {
+				PlaySound(TEXT("media/short-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				sprite->changeAnimation(JUMP_FORWARD_R);
 				bJumping = true;
 				startY = posPlayer.y;
@@ -441,6 +442,7 @@ void Player::update(int deltaTime, int &events)
 				startY = posPlayer.y;
 			}
 			else if (Game::instance().getKey(KEY_J)) {
+				PlaySound(TEXT("media/short-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				sprite->changeAnimation(JUMP_FORWARD_L);
 				bJumping = true;
 				startY = posPlayer.y;
@@ -483,6 +485,7 @@ void Player::update(int deltaTime, int &events)
 		if (sprite->animation() == RUN_R) {
 			if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) sprite->changeAnimation(STAND_R);
 			else if (Game::instance().getKey(KEY_J)) {
+				PlaySound(TEXT("media/long-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				sprite->changeAnimation(JUMP_RUNNING_R);
 				bJumping = true;
 				startY = posPlayer.y;
@@ -498,6 +501,7 @@ void Player::update(int deltaTime, int &events)
 		else {
 			if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) sprite->changeAnimation(STAND_L);
 			else if (Game::instance().getKey(KEY_J)) {
+				PlaySound(TEXT("media/long-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				sprite->changeAnimation(JUMP_RUNNING_L);
 				bJumping = true;
 				startY = posPlayer.y;
@@ -600,6 +604,7 @@ void Player::update(int deltaTime, int &events)
 					sprite->changeAnimation(JUMP_FAILED_R);
 				}
 				else if (map->collisionClimb(glm::ivec2(posPlayer.x + 32, startY - 64), glm::ivec2(32, 64))) {
+					PlaySound(TEXT("media/climb.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(CLIMB_R);
 					posPlayer.x += 4;
 				}
@@ -610,6 +615,7 @@ void Player::update(int deltaTime, int &events)
 					sprite->changeAnimation(JUMP_FAILED_L);
 				}
 				else if (map->collisionClimb(glm::ivec2(posPlayer.x - 32, startY - 64), glm::ivec2(32, 64))) {
+					PlaySound(TEXT("media/climb.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(CLIMB_L);
 					posPlayer.x -= 2;
 				}

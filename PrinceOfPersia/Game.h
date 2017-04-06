@@ -3,6 +3,8 @@
 
 
 #include "Scene.h"
+#include "Windows.h"
+#include "MMSystem.h"
 
 #define SCREEN_WIDTH 1280 //640
 #define SCREEN_HEIGHT 640 //480
