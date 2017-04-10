@@ -56,7 +56,8 @@ private:
 	vector<glm::ivec2> barredDoors;
 	vector<glm::ivec2> spikes;
 	vector<Activable*> spikeAnimation;
-	Texture spikeSpritesheet;
+	vector<Activable*> piercingTrapAnimation;
+	vector<Activable*> fallingPlatesAnimation;
 	glm::ivec2 door;
 };
 

@@ -148,6 +148,7 @@ void Player::update(int deltaTime, int &events)
 		}
 	}
 	else if (sprite->animation() == LAND_R || sprite->animation() == LAND_L) {
+		bJumping = false;
 		if (sprite->keyFrame() == sprite->numberKeyFrames(LAND_R)) {
 			if (sprite->animation() == LAND_R) sprite->changeAnimation(GET_UP_R);
 			else sprite->changeAnimation(GET_UP_L);
@@ -179,10 +180,16 @@ void Player::update(int deltaTime, int &events)
 		}
 	}
 	else if (sprite->animation() == JUMP_FORWARD_R || sprite->animation() == JUMP_FORWARD_L) { //JUMP_FORWARD
-		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)))
+		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) 
+		{
 			if (sprite->animation() % 2 == 1) sprite->changeAnimation(STAND_L);
+			bJumping = false;
+		}
 		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
+		{
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R);
+			bJumping = false;
+		}
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_FORWARD_R)) {
 			bJumping = false;
 			if (sprite->animation() == JUMP_FORWARD_R) sprite->changeAnimation(STAND_R);
@@ -257,11 +264,15 @@ void Player::update(int deltaTime, int &events)
 			if (posPlayer.y - startY > 64 * 3) bAlive = lifebar->damage(3);
 			else if (posPlayer.y - startY > 64) bAlive = lifebar->damage(1);
 			if (sprite->animation() % 2 == 0) {
-				if (!bAlive) sprite->changeAnimation(DEADLY_FALL_R);
+				if (!bAlive) {
+					sprite->changeAnimation(DEADLY_FALL_R);
+				}
 				else sprite->changeAnimation(LAND_R);
 			}
 			else {
-				if (!bAlive) sprite->changeAnimation(DEADLY_FALL_L);
+				if (!bAlive) {
+					sprite->changeAnimation(DEADLY_FALL_L);
+				}
 				else sprite->changeAnimation(LAND_L);
 			}
 
@@ -294,6 +305,7 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == DEADLY_FALL_R || sprite->animation() == DEADLY_FALL_L) { //DEADLY_FALL
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+			PlaySound(TEXT("media/crash.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			if (sprite->animation() == DEADLY_FALL_R) sprite->changeAnimation(DEAD_R);
 			else sprite->changeAnimation(DEAD_L);
 		}
@@ -303,7 +315,6 @@ void Player::update(int deltaTime, int &events)
 
 	}
 	else if (sprite->animation() == SPEARS_DEATH_R || sprite->animation() == SPEARS_DEATH_L) { //SPEARS_DEATH
-
 
 	}
 	else if (sprite->animation() == SWORD_DEATH_R || sprite->animation() == SWORD_DEATH_L) { //SWORD_DEATH
@@ -527,9 +538,15 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == JUMP_RUNNING_R || sprite->animation() == JUMP_RUNNING_L) { //JUMP_RUNNING
 		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)))
+		{
 			if (sprite->animation() % 2 == 1) sprite->changeAnimation(STAND_L);
+			bJumping = false;
+		}
 		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
+		{
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R);
+			bJumping = false;
+		}
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_RUNNING_R)) {
 			if (sprite->animation() == JUMP_RUNNING_R) {
 				if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64))) {
@@ -603,7 +620,7 @@ void Player::update(int deltaTime, int &events)
 				if (map->collisionMoveUp(glm::ivec2(posPlayer.x, posPlayer.y), glm::ivec2(32, 64), &startY)) {
 					sprite->changeAnimation(JUMP_FAILED_R);
 				}
-				else if (map->collisionClimb(glm::ivec2(posPlayer.x + 32, startY - 64), glm::ivec2(32, 64))) {
+				else if (map->collisionClimbRight(glm::ivec2(posPlayer.x, startY - 64), glm::ivec2(32, 64))) {
 					PlaySound(TEXT("media/climb.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(CLIMB_R);
 					posPlayer.x += 4;
@@ -614,7 +631,7 @@ void Player::update(int deltaTime, int &events)
 				if (map->collisionMoveUp(glm::ivec2(posPlayer.x+32, posPlayer.y), glm::ivec2(32, 64), &startY)) {
 					sprite->changeAnimation(JUMP_FAILED_L);
 				}
-				else if (map->collisionClimb(glm::ivec2(posPlayer.x - 32, startY - 64), glm::ivec2(32, 64))) {
+				else if (map->collisionClimbLeft(glm::ivec2(posPlayer.x, startY - 64), glm::ivec2(32, 64))) {
 					PlaySound(TEXT("media/climb.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(CLIMB_L);
 					posPlayer.x -= 2;
@@ -732,10 +749,18 @@ void Player::enterDoor() {
 
 void Player::spikes() {
 	bAlive = lifebar->damage(3);
-	if (!bAlive) {
+	if (!bAlive) {	
 		if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R);
 		else sprite->changeAnimation(SPEARS_DEATH_L);
 	}	
+}
+
+void Player::slice() {
+	bAlive = lifebar->damage(3);
+	if (!bAlive) {
+		if (sprite->animation() % 2 == 0) sprite->changeAnimation(SLICED_DEATH_R);
+		else sprite->changeAnimation(SLICED_DEATH_L);
+	}
 }
 
 bool Player::isJumping(){

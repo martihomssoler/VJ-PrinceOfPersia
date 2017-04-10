@@ -32,7 +32,8 @@ public:
 	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
-	bool collisionClimb(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	bool collisionClimbRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	bool collisionClimbLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 
 	void changeTile(int i, int j, int tile);
 	
@@ -44,11 +45,12 @@ private:
 	GLuint vao;
 	GLuint vbo;
 	GLint posLocation, texCoordLocation;
-	glm::ivec2 position, mapSize, tilesheetSize;
+	glm::ivec2 position, mapSize, tilesheetSize, minCoords;
 	int tileSize, blockSizex, blockSizey;
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 	int *map;
+	ShaderProgram program;
 
 };
 

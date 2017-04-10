@@ -5,6 +5,10 @@
 #include "Game.h"
 
 
+#define SPRITESHEET_X 1.f/5.f
+#define SPRITESHEET_Y 1.f/5.f
+
+
 Activable::Activable()
 {
 }
@@ -18,47 +22,83 @@ void Activable::init(const glm::ivec2 &pos, ShaderProgram &shaderProgram, int ty
 {
 	tileMapDispl = pos;
 	active = false;
-	spritesheet.loadFromFile("images/spike-trap.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	spikes = Sprite::createSprite(glm::vec2(64, 64), glm::vec2(1.f/5.f, 1.f/1.f), &spritesheet, &shaderProgram);
-	spikes->setNumberAnimations(4);
-	spikes->setAnimationSpeed(0, 8);
-	spikes->addKeyframe(0, glm::vec2(0.2f * 0, 0.f));
-	spikes->addKeyframe(0, glm::vec2(0.2f * 1, 0.f));
-	spikes->addKeyframe(0, glm::vec2(0.2f * 2, 0.f));
-	spikes->addKeyframe(0, glm::vec2(0.2f * 3, 0.f));
-	spikes->addKeyframe(0, glm::vec2(0.2f * 4, 0.f));
-	spikes->setAnimationSpeed(1, 8);
-	spikes->addKeyframe(1, glm::vec2(0.2f * 4, 0.f));
-	spikes->addKeyframe(1, glm::vec2(0.2f * 3, 0.f));
-	spikes->addKeyframe(1, glm::vec2(0.2f * 2, 0.f));
-	spikes->addKeyframe(1, glm::vec2(0.2f * 1, 0.f));
-	spikes->addKeyframe(1, glm::vec2(0.2f * 0, 0.f));
-	spikes->setAnimationSpeed(2, 8);
-	spikes->addKeyframe(2, glm::vec2(0.2f * 4, 0.0f));
-	spikes->setAnimationSpeed(3, 8);
-	spikes->addKeyframe(3, glm::vec2(0.2f * 0, 0.0f));
-	spikes->changeAnimation(3);
-	spikes->setPosition(glm::vec2(float(tileMapDispl.x), float(tileMapDispl.y)));
+	blocked = false;
+	if (type == 2) active = true;
+	auxCounter = 0;
+	this->type = type;
+	spritesheet.loadFromFile("images/Activables.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	sprite = Sprite::createSprite(glm::vec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
+	sprite->setNumberAnimations(4);
+	sprite->setAnimationSpeed(0, 8);
+	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
+	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
+	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
+	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
+	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+	sprite->setAnimationSpeed(1, 8);
+	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
+	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
+	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
+	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
+	sprite->setAnimationSpeed(2, 8);
+	sprite->addKeyframe(2, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+	sprite->setAnimationSpeed(3, 8);
+	sprite->addKeyframe(3, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y*type));
+	sprite->changeAnimation(3);
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x), float(tileMapDispl.y)));
+	
 }
 
 void Activable::update(int deltaTime) {
-	if (active && spikes->animation() == 3) spikes->changeAnimation(0);
-	else if (!active && spikes->animation() == 2) spikes->changeAnimation(1);
-	if (spikes->animation() == 0) {
-		if (spikes->keyFrame() == spikes->numberKeyFrames(0)) {
-			spikes->changeAnimation(2);
+		switch (type) {
+		default:
+			if (active && sprite->animation() == 3) {
+				sprite->changeAnimation(0);
+				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
+			else if (!active && sprite->animation() == 2) {
+				sprite->changeAnimation(1);
+			}
+			if (sprite->animation() == 0) {
+				if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
+					sprite->changeAnimation(2);
+				}
+			}
+			if (sprite->animation() == 1) {
+				if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
+					sprite->changeAnimation(3);
+				}
+			}
+			break;
+		case 2:
+			if (sprite->animation() == 3 && auxCounter >= 80) {
+				sprite->changeAnimation(0);
+				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				auxCounter = 0;
+			}
+			else if (sprite->animation() == 3) ++auxCounter;
+			else if (sprite->animation() == 2 && !blocked) {
+				sprite->changeAnimation(1);
+				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
+			else if (sprite->animation() == 0) {
+				if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
+					sprite->changeAnimation(2);
+				}
+			}
+			else if (sprite->animation() == 1) {
+				if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
+					sprite->changeAnimation(3);
+				}
+			}
+			break;
 		}
-	}
-	if (spikes->animation() == 1) {
-		if (spikes->keyFrame() == spikes->numberKeyFrames(1)) {
-			spikes->changeAnimation(3);
-		}
-	}
-	spikes->update(deltaTime);
+		sprite->update(deltaTime);
 }
 
 void Activable::render() {
-	spikes->render();
+	sprite->render();
 }
 
 void Activable::activate() {
@@ -69,12 +109,17 @@ void Activable::deactivate() {
 	active = false;
 }
 
+void Activable::block() {
+	blocked = true;
+}
+
 void Activable::setPosition(const glm::vec2 &pos)
 {
 	this->pos = pos;
-	spikes->setPosition(glm::vec2(float(tileMapDispl.x + this->pos.x), float(tileMapDispl.y + this->pos.y)));
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + this->pos.x), float(tileMapDispl.y + this->pos.y)));
 }
 
 bool Activable::isActive() {
-	return active || spikes->animation() == 1;
+	if (type == 2) return sprite->animation() == 0;
+	return active || sprite->animation() == 1;
 }

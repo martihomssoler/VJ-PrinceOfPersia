@@ -35,12 +35,12 @@ void HealthGUI::init(const glm::ivec2 &pos, int points, ShaderProgram &shaderPro
 	spritesheet.loadFromFile("images/Life.png",TEXTURE_PIXEL_FORMAT_RGBA);
 	for (int i = 0; i < maxHealth; ++i){
 		if (type == PRINCE) {
-			lifebar[i] = Sprite::createSprite(glm::vec2(16, 16), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
+			lifebar[i] = Sprite::createSprite(glm::vec2(8, 8), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 			lifebar[i]->setNumberAnimations(2);
 			lifebar[i]->addKeyframe(FULL, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 0));
 			lifebar[i]->addKeyframe(EMPTY, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 0));
 			lifebar[i]->changeAnimation(EMPTY);
-			lifebar[i]->setPosition(glm::vec2(float(tileMapDispl.x + 16 * i), float(tileMapDispl.y + 580)));
+			lifebar[i]->setPosition(glm::vec2(float(tileMapDispl.x + 20 + 8 * i), float(tileMapDispl.y-10)));
 		}
 		else {
 			lifebar[i] = Sprite::createSprite(glm::vec2(32, 32), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);

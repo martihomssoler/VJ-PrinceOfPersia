@@ -33,6 +33,7 @@ public:
 	void hit();
 	void enterDoor();
 	void spikes();
+	void slice();
 	bool isJumping();
 
 	

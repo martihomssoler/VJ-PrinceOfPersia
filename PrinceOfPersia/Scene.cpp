@@ -14,7 +14,7 @@
 #define SCREEN_Y 0
 
 #define INIT_PLAYER_X_TILES 10
-#define INIT_PLAYER_Y_TILES 3
+#define INIT_PLAYER_Y_TILES 2
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -49,7 +49,6 @@ void Scene::init(string level)
 	backMap = TileMap::createTileMap("levels/" + level + "Back.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map = TileMap::createTileMap("levels/" + level + "Ground.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	wallMap = TileMap::createTileMap("levels/" + level + "Wall.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	spikeSpritesheet.loadFromFile("images/spike-trap.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
@@ -58,7 +57,7 @@ void Scene::init(string level)
 	player->setTileWallMap(wallMap);
 	
 	playerHealth = new HealthGUI();
-	playerHealth->init(glm::ivec2(SCREEN_X, SCREEN_Y), 3, texProgram, PRINCE);
+	playerHealth->init(player->getPostion(), 3, texProgram, PRINCE);
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
 	initActivables("levels/" + level + "Activables.txt");
@@ -121,8 +120,14 @@ void Scene::update(int deltaTime)
 	}	
 	
 	eventHandler();
+	/*for (unsigned int i = 0; i < forcePlates.size(); ++i){
+		if (player->getPostion().x + 32 > forcePlates[i].x && player->getPostion().x + 32 < forcePlates[i].x + 64 && player->getPostion().y == forcePlates[i].y) {
+			map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 1);
+		}
+		else if (player->getPostion().x + 32 <= forcePlates[i].x || player->getPostion().x + 32 >= forcePlates[i].x + 64) map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 4);
+	}*/
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
-		if (player->getPostion().x + 32 > spikes[i].x && player->getPostion().x + 32 < spikes[i].x + 64 && player->getPostion().y <= spikes[i].y) {
+		if (player->getPostion().x + 32 > spikes[i].x && player->getPostion().x + 32 < spikes[i].x + 64 && player->getPostion().y <= spikes[i].y && spikes[i].y - player->getPostion().y <= TILE_Y*2) {
 			spikeAnimation[i]->activate();
 			if (player->getPostion().x + 32 > spikes[i].x + 16 && player->getPostion().x + 32 < spikes[i].x + 48 && player->getPostion().y == spikes[i].y && !player->isJumping()) {
 				player->setPosition(spikes[i]);
@@ -131,6 +136,25 @@ void Scene::update(int deltaTime)
 		}
 		else if (player->getPostion().x + 32 <= spikes[i].x || player->getPostion().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
 		spikeAnimation[i]->update(deltaTime);
+	}
+
+	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i){
+		if (player->getPostion().y == piercingTraps[i].y) {
+			if (piercingTrapAnimation[i]->isActive() && player->getPostion().x + 32 > piercingTraps[i].x && player->getPostion().x + 32 < piercingTraps[i].x + 64) {
+				player->setPosition(glm::ivec2(piercingTraps[i].x -32, piercingTraps[i].y));
+				player->slice();
+				piercingTrapAnimation[i]->block();
+			}
+		}
+		piercingTrapAnimation[i]->update(deltaTime);
+	}
+
+	for (unsigned int i = 0; i < fallingPlatesAnimation.size(); ++i){
+		if (player->getPostion().x + 32 > fallingPlates[i].x && player->getPostion().x + 32 < fallingPlates[i].x + 64 && player->getPostion().y == fallingPlates[i].y) {
+			map->changeTile(fallingPlates[i].x / TILE_X, fallingPlates[i].y / TILE_Y, 0);
+			fallingPlatesAnimation[i]->activate();
+		}
+		fallingPlatesAnimation[i]->update(deltaTime);
 	}
 	playerHealth->update(deltaTime);
 }
@@ -255,6 +279,18 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	backMap->render();
 
+	for (unsigned int i = 0; i < fallingPlatesAnimation.size(); ++i)
+	{
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", projection);
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		if (fallingPlatesAnimation[i]->isActive()) fallingPlatesAnimation[i]->render();
+
+	}
+
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -262,6 +298,19 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
+
+	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i)
+	{
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", projection);
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		//if (piercingTrapAnimation[i]->isActive()) 
+		piercingTrapAnimation[i]->render();
+
+	}
 
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
@@ -301,6 +350,10 @@ void Scene::render()
 		if (spikeAnimation[i]->isActive()) spikeAnimation[i]->render();
 
 	}
+
+	
+
+	
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -427,7 +480,14 @@ void Scene::initActivables(const string & activablesFile)
 	sstream.str(line);
 	sstream >> mapSizex >> mapSizey;
 
-	Texture spritesheet;
+	potion.clear();
+	piercingTraps.clear();
+	piercingTrapAnimation.clear();
+	spikes.clear();
+	spikeAnimation.clear();
+	fallingPlates.clear();
+	fallingPlatesAnimation.clear();
+	barredDoors.clear();
 	
 	for (int j = 0; j < mapSizey; j++)
 	{
@@ -444,25 +504,29 @@ void Scene::initActivables(const string & activablesFile)
 				case 1: //POTION
 					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
+				case 2: // PIERCING TRAP
+					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					piercingTrapAnimation.push_back(new Activable());
+					piercingTrapAnimation.back()->init(piercingTraps.back(), texProgram, 2);
+					break;
 				case 3: //SPIKES
 					spikes.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					spikeAnimation.push_back(new Activable());
 					spikeAnimation.back()->init(spikes.back(), texProgram, 0);
-					break;
-				case 2: // PIERCING TRAP
-					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 4: // FORCE PLATE
 					forcePlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 5: // FALLING PLATE
 					fallingPlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					fallingPlatesAnimation.push_back(new Activable());
+					fallingPlatesAnimation.back()->init(fallingPlates.back(), texProgram, 1);
 					break;
 				case 8: // BARRED DOOR
 					barredDoors.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 9: // OUTDOOR STAIRS
-					door = glm::ivec2(i * TILE_X, j * TILE_Y);
+					door = glm::ivec2(i * TILE_X , j * TILE_Y);
 					break;
 				default:
 					break;

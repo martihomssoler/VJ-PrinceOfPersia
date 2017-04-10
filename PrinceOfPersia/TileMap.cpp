@@ -23,6 +23,8 @@ TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProg
 {
 	loadLevel(levelFile);
 	prepareArrays(minCoords, program);
+	this->minCoords = minCoords;
+	this->program = program;
 }
 
 TileMap::~TileMap()
@@ -173,7 +175,7 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) 
 {
 	int x, y0, y1;
 	
-	x = (pos.x + size.x - 1) / blockSizex;
+	x = (pos.x + size.x) / blockSizex;
 	y0 = pos.y / blockSizey;
 	y1 = (pos.y + size.y) / blockSizey - 1;
 	for(int y=y0; y<=y1; y++)
@@ -213,7 +215,7 @@ bool TileMap::collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int
 	// player initial X position
 	x0 = pos.x / blockSizex;
 	// player final X position
-	x1 = (pos.x + size.x - 1) / blockSizex;
+	x1 = (pos.x + size.x -5) / blockSizex;
 	// player Y position
 	y = (pos.y - size.y) / blockSizey;
 	for (int x = x0; x <= x1; x++)
@@ -225,14 +227,14 @@ bool TileMap::collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int
 	return false;
 }
 
-bool TileMap::collisionClimb(const glm::ivec2 &pos, const glm::ivec2 &size) const
+bool TileMap::collisionClimbRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
 	int x0, x1, y;
 
 	// player initial X position
-	x0 = pos.x / blockSizex;
+	x0 = (pos.x + size.x + 16) / blockSizex;
 	// player final X position
-	x1 = (pos.x + size.x - 1) / blockSizex;
+	x1 = (pos.x + size.x + 16) / blockSizex;
 	// player Y position
 	y = (pos.y + size.y) / blockSizey - 1;
 	for (int x = x0; x <= x1; x++)
@@ -245,9 +247,30 @@ bool TileMap::collisionClimb(const glm::ivec2 &pos, const glm::ivec2 &size) cons
 	return false;
 }
 
+bool TileMap::collisionClimbLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const
+{
+	int x0, x1, y;
+
+	// player initial X position
+	x1 = (pos.x - size.x - 16)/ blockSizex;
+	// player final X position
+	x0 = (pos.x - size.x - 16) / blockSizex;
+	// player Y position
+	y = (pos.y + size.y) / blockSizey - 1;
+	for (int x = x0; x <= x1; x++)
+	{
+		if (map[y*mapSize.x + x] != 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void TileMap::changeTile(int i, int j, int tile)
 {
 	map[j*mapSize.x + i] = tile;
+	prepareArrays(minCoords, program);
 }
 
 

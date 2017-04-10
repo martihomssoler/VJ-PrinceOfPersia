@@ -16,13 +16,16 @@ public:
 	void activate();
 	void deactivate();
 	bool isActive();
+	void block();
 
 private:
 	Texture spritesheet;
-	Sprite* spikes;
+	Sprite* sprite;
 	int type;
+	int auxCounter;
 	glm::ivec2 tileMapDispl, pos;
 	bool active;
+	bool blocked;
 };
 
 #endif // _ACTIVABLE_INCLUDE
