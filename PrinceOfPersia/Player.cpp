@@ -580,9 +580,9 @@ void Player::update(int deltaTime, int &events)
 			else if (Game::instance().getKey(KEY_D)) sprite->changeAnimation(DEFEND_R);
 			else if (Game::instance().getKey(KEY_A)) sprite->changeAnimation(ATTACK_R);
 			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) || Game::instance().getSpecialKey(GLUT_KEY_LEFT)){
-				sprite->changeAnimation(MOVE_SWORD_R);
-				if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
-				else orientation = LEFT;
+					sprite->changeAnimation(MOVE_SWORD_R);
+					if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
+					else orientation = LEFT;
 			}
 		}
 		else {
@@ -590,20 +590,24 @@ void Player::update(int deltaTime, int &events)
 			else if (Game::instance().getKey(KEY_D)) sprite->changeAnimation(DEFEND_L);
 			else if (Game::instance().getKey(KEY_A)) sprite->changeAnimation(ATTACK_L);
 			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) || Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
-				sprite->changeAnimation(MOVE_SWORD_L);
-				if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
-				else orientation = LEFT;
+					sprite->changeAnimation(MOVE_SWORD_L);
+					if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
+					else orientation = LEFT;
 			}
 				
 		}
 
 	}
 	else if (sprite->animation() == MOVE_SWORD_R || sprite->animation() == MOVE_SWORD_L) { //MOVE_SWORD
-		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)))
-			if (sprite->animation() % 2 == 1) sprite->changeAnimation(STAND_SWORD_L);
-		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
-			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_SWORD_R);
-		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
+		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)) && orientation == LEFT) 
+		{
+			sprite->changeAnimation(STAND_SWORD_R);
+		}
+		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)) && orientation == RIGHT)
+		{	
+			sprite->changeAnimation(STAND_SWORD_L);
+		}
+		else if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
 			if (sprite->animation()== MOVE_SWORD_R) sprite->changeAnimation(STAND_SWORD_R);
 			else sprite->changeAnimation(STAND_SWORD_L);
 		}
@@ -617,10 +621,10 @@ void Player::update(int deltaTime, int &events)
 	else if (sprite->animation() == JUMP_R || sprite->animation() == JUMP_L) {
 		if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_R)) {
 			if (sprite->animation() == JUMP_R) {
-				if (map->collisionMoveUp(glm::ivec2(posPlayer.x, posPlayer.y), glm::ivec2(32, 64), &startY)) {
+				if (map->collisionMoveUp(glm::ivec2(posPlayer.x-16, posPlayer.y), glm::ivec2(32, 64), &startY)) {
 					sprite->changeAnimation(JUMP_FAILED_R);
 				}
-				else if (map->collisionClimbRight(glm::ivec2(posPlayer.x, startY - 64), glm::ivec2(32, 64))) {
+				else if (map->collisionClimbRight(glm::ivec2(posPlayer.x, startY), glm::ivec2(32, 64))) {
 					PlaySound(TEXT("media/climb.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(CLIMB_R);
 					posPlayer.x += 4;
@@ -628,10 +632,10 @@ void Player::update(int deltaTime, int &events)
 				else sprite->changeAnimation(JUMP_FAILED_R);
 			}
 			else if (sprite->animation() == JUMP_L) {
-				if (map->collisionMoveUp(glm::ivec2(posPlayer.x+32, posPlayer.y), glm::ivec2(32, 64), &startY)) {
+				if (map->collisionMoveUp(glm::ivec2(posPlayer.x+16, posPlayer.y), glm::ivec2(32, 64), &startY)) {
 					sprite->changeAnimation(JUMP_FAILED_L);
 				}
-				else if (map->collisionClimbLeft(glm::ivec2(posPlayer.x, startY - 64), glm::ivec2(32, 64))) {
+				else if (map->collisionClimbLeft(glm::ivec2(posPlayer.x, startY), glm::ivec2(32, 64))) {
 					PlaySound(TEXT("media/climb.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(CLIMB_L);
 					posPlayer.x -= 2;

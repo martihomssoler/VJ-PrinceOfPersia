@@ -213,9 +213,9 @@ bool TileMap::collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int
 	int x0, x1, y;
 
 	// player initial X position
-	x0 = pos.x / blockSizex;
+	x0 = (pos.x + size.x) / blockSizex;
 	// player final X position
-	x1 = (pos.x + size.x -5) / blockSizex;
+	x1 = (pos.x + size.x) / blockSizex;
 	// player Y position
 	y = (pos.y - size.y) / blockSizey;
 	for (int x = x0; x <= x1; x++)
@@ -229,6 +229,9 @@ bool TileMap::collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int
 
 bool TileMap::collisionClimbRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
+
+	return collisionMoveDown(glm::ivec2(pos.x + 48, pos.y - 64), size);
+	/*
 	int x0, x1, y;
 
 	// player initial X position
@@ -245,11 +248,13 @@ bool TileMap::collisionClimbRight(const glm::ivec2 &pos, const glm::ivec2 &size)
 	}
 	 
 	return false;
+	*/
 }
 
 bool TileMap::collisionClimbLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
-	int x0, x1, y;
+	return collisionMoveDown(glm::ivec2(pos.x - 16, pos.y - 64), size);
+	/*int x0, x1, y;
 
 	// player initial X position
 	x1 = (pos.x - size.x - 16)/ blockSizex;
@@ -264,7 +269,7 @@ bool TileMap::collisionClimbLeft(const glm::ivec2 &pos, const glm::ivec2 &size) 
 		}
 	}
 
-	return false;
+	return false;*/
 }
 
 void TileMap::changeTile(int i, int j, int tile)
