@@ -9,6 +9,7 @@ public:
 	void update(int deltaTime);
 	void show();
 	void render();
+	void setPosition(const glm::ivec2 &pos);
 	bool damage(int amount);
 	void cure();
 

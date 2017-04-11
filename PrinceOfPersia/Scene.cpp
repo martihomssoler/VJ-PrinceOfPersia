@@ -14,7 +14,7 @@
 #define SCREEN_Y 0
 
 #define INIT_PLAYER_X_TILES 10
-#define INIT_PLAYER_Y_TILES 2
+#define INIT_PLAYER_Y_TILES 3
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -116,6 +116,7 @@ void Scene::update(int deltaTime)
 
 			enemies[i].update(deltaTime, action, events[i]);
 			enemyLifebars[i]->update(deltaTime);
+			enemyLifebars[i]->setPosition(enemies[i].getPosition());
 		}
 	}	
 	
@@ -261,6 +262,9 @@ void Scene::eventHandler()
 				}
 			}
 			break;
+		case -1:
+			bShowEnemyLifebar = false;
+			break;
 		default:
 			break;
 		}
@@ -329,14 +333,6 @@ void Scene::render()
 		texProgram.setUniformMatrix4f("modelview", modelview);
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 		enemies[i].render();
-
-		texProgram.use();
-		texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
-		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-		modelview = glm::mat4(1.0f);
-		texProgram.setUniformMatrix4f("modelview", modelview);
-		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-		if (bShowEnemyLifebar) enemyLifebars[i]->render();
 	}
 
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i)
@@ -363,7 +359,17 @@ void Scene::render()
 	wallMap->render();
 
 	
-
+	for (unsigned int i = 0; enemies.size() > i; ++i)
+	{
+		
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		if (bShowEnemyLifebar) enemyLifebars[i]->render();
+	}
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -449,13 +455,13 @@ void Scene::initEnemies(const string & enemiesFile)
 				// si aux > maxEnemies és cert, l'enemic estarà mirant cap a l'esquerra (-1)
 				// altrement si és falç, l'enemic estarà mirant cap a la dreta (1)
 				enemies[k].init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, aux % maxEnemies, 1 - 2 * (aux > maxEnemies));
-				enemyLifebars[k] = new HealthGUI();
-				enemyLifebars[k]->init(glm::ivec2(SCREEN_X+ 800, SCREEN_Y), 3, texProgram, ENEMY);
-				enemies[k].setHealthGUI(enemyLifebars[k]);
 				enemies[k].setPosition(glm::vec2(i * TILE_X, j * TILE_Y));
 				enemies[k].setTileBackMap(backMap);
 				enemies[k].setTileMap(map);
 				enemies[k].setTileWallMap(wallMap);
+				enemyLifebars[k] = new HealthGUI();
+				enemyLifebars[k]->init(glm::vec2(i * TILE_X, j * TILE_Y), 3, texProgram, ENEMY);
+				enemies[k].setHealthGUI(enemyLifebars[k]);
 				++k;
 			}
 		}
