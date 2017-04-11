@@ -37,6 +37,9 @@ public:
 
 	void changeTile(int i, int j, int tile);
 	
+	int getWidth();
+	int getHeight();
+
 private:
 	bool loadLevel(const string &levelFile);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);

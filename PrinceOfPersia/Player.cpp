@@ -150,8 +150,14 @@ void Player::update(int deltaTime, int &events)
 	else if (sprite->animation() == LAND_R || sprite->animation() == LAND_L) {
 		bJumping = false;
 		if (sprite->keyFrame() == sprite->numberKeyFrames(LAND_R)) {
-			if (sprite->animation() == LAND_R) sprite->changeAnimation(GET_UP_R);
-			else sprite->changeAnimation(GET_UP_L);
+			if (sprite->animation() == LAND_R)
+			{				
+				sprite->changeAnimation(GET_UP_R);
+			}
+			else
+			{				
+				sprite->changeAnimation(GET_UP_L);
+			}
 		}
 	}
 	else if (sprite->animation() == GET_UP_R || sprite->animation() == GET_UP_L) { //GET_UP
@@ -267,13 +273,21 @@ void Player::update(int deltaTime, int &events)
 				if (!bAlive) {
 					sprite->changeAnimation(DEADLY_FALL_R);
 				}
-				else sprite->changeAnimation(LAND_R);
+				else
+				{
+					PlaySound(TEXT("media/land-fall.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					sprite->changeAnimation(LAND_R);
+				}
 			}
 			else {
 				if (!bAlive) {
 					sprite->changeAnimation(DEADLY_FALL_L);
 				}
-				else sprite->changeAnimation(LAND_L);
+				else
+				{
+					PlaySound(TEXT("media/land-fall.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					sprite->changeAnimation(LAND_L);
+				}
 			}
 
 		}
@@ -305,7 +319,7 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == DEADLY_FALL_R || sprite->animation() == DEADLY_FALL_L) { //DEADLY_FALL
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
-			PlaySound(TEXT("media/crash.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			PlaySound(TEXT("media/fall-impact.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			if (sprite->animation() == DEADLY_FALL_R) sprite->changeAnimation(DEAD_R);
 			else sprite->changeAnimation(DEAD_L);
 		}
@@ -323,13 +337,13 @@ void Player::update(int deltaTime, int &events)
 			{
 				sprite->changeAnimation(DEAD_R);
 				// DEAD
-				events = -1;
+				bAlive = false;
 			}
 			else
 			{
 				sprite->changeAnimation(DEAD_L);
 				// DEAD
-				events = -1;
+				bAlive = false;
 			}
 		}
 
@@ -578,7 +592,11 @@ void Player::update(int deltaTime, int &events)
 		if (sprite->animation() == STAND_SWORD_R) {
 			if (Game::instance().getKey(KEY_S)) sprite->changeAnimation(SAVE_SWORD_R);
 			else if (Game::instance().getKey(KEY_D)) sprite->changeAnimation(DEFEND_R);
-			else if (Game::instance().getKey(KEY_A)) sprite->changeAnimation(ATTACK_R);
+			else if (Game::instance().getKey(KEY_A))
+			{
+				PlaySound(TEXT("media/sword-slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				sprite->changeAnimation(ATTACK_R);
+			}
 			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) || Game::instance().getSpecialKey(GLUT_KEY_LEFT)){
 					sprite->changeAnimation(MOVE_SWORD_R);
 					if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;
@@ -588,7 +606,11 @@ void Player::update(int deltaTime, int &events)
 		else {
 			if (Game::instance().getKey(KEY_S)) sprite->changeAnimation(SAVE_SWORD_L);
 			else if (Game::instance().getKey(KEY_D)) sprite->changeAnimation(DEFEND_L);
-			else if (Game::instance().getKey(KEY_A)) sprite->changeAnimation(ATTACK_L);
+			else if (Game::instance().getKey(KEY_A))
+			{
+				PlaySound(TEXT("media/sword-slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				sprite->changeAnimation(ATTACK_L);
+			}
 			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) || Game::instance().getSpecialKey(GLUT_KEY_LEFT)) {
 					sprite->changeAnimation(MOVE_SWORD_L);
 					if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) orientation = RIGHT;

@@ -26,6 +26,8 @@ public:
 	void eventHandler();
 	void render();
 
+	glm::vec3 getTranslationMap();
+
 private:
 	void initShaders();
 	void initEnemies(const string &enemiesFile);

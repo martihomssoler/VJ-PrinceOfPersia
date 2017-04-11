@@ -13,8 +13,8 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 10
-#define INIT_PLAYER_Y_TILES 2
+#define INIT_PLAYER_X_TILES 1.5
+#define INIT_PLAYER_Y_TILES 1
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -166,6 +166,7 @@ void Scene::eventHandler()
 	switch (events[events.size() - 1])
 	{
 		case 1:
+			events[events.size() - 1] = 0;
 			// THE PRINCE CAN POSSIBLY HIT AN ENEMY
 			for (unsigned int i = 0; i < enemies.size(); ++i)
 			{
@@ -174,26 +175,25 @@ void Scene::eventHandler()
 					glm::ivec2 enemyPos = enemies[i].getPosition();
 					if (direction == -1) // LEFT
 					{
-						if (playerPos.x - (2 * TILE_X / 3) <= enemyPos.x && enemyPos.x <= playerPos.x + (TILE_X / 3))
+						if (playerPos.x - (2 * TILE_X / 3) <= enemyPos.x && enemyPos.x <= playerPos.x + (2 * TILE_X / 3))
 						{
 							enemies[i].hit();
-							events[i] = 0;
-							events[events.size() - 1] = 0;
+							events[i] = 0;							
 						}
 					}
 					else // RIGHT
 					{
-						if (playerPos.x - (TILE_X / 3) <= enemyPos.x && enemyPos.x <= playerPos.x + (2 * TILE_X / 3))
+						if (playerPos.x - (2 * TILE_X / 3) <= enemyPos.x && enemyPos.x <= playerPos.x + (2 * TILE_X / 3))
 						{
 							enemies[i].hit();
 							events[i] = 0;
-							events[events.size() - 1] = 0;
 						}
 					}
 				}
 			}
 			break;
 		case 2:
+			events[events.size() - 1] = 0;
 			// THE PRINCE CAN POSSIBLY PARRIED AN ENEMY BLOW
 			for (unsigned int i = 0; i < enemies.size(); ++i)
 			{
@@ -204,8 +204,7 @@ void Scene::eventHandler()
 					{
 						if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
 						{
-							events[i] = 0;
-							events[events.size() - 1] = 0;
+							events[i] = 0;							
 						}
 					}
 					else // RIGHT
@@ -213,22 +212,21 @@ void Scene::eventHandler()
 						if (playerPos.x <= enemyPos.x && enemyPos.x <= playerPos.x + TILE_X)
 						{
 							events[i] = 0;
-							events[events.size() - 1] = 0;
 						}
 					}
 				}
 			}
 			break;
 		case 3:
+			events[events.size() - 1] = 0;
 			// E pressed MAYBE AT THE DOOR
 			if ((playerPos.x >= door.x  && door.x + 64 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
 			{
-				player->enterDoor();
-				events[events.size() - 1] = 0;
+				player->enterDoor();				
 			}
 			break;
-
 		case -1:
+			// THE PLAYER IS DEAD
 			break;
 		default:
 			break;
@@ -242,13 +240,13 @@ void Scene::eventHandler()
 		switch (events[i])
 		{
 		case 1:
+			events[i] = 0;
 			// THE PRINCE CAN POSSIBLY HIT AN ENEMY
 			if (direction == -1) // LEFT
 			{
 				if (enemyPos.x - TILE_X <= playerPos.x && playerPos.x <= enemyPos.x)
 				{
-					player->hit();
-					events[i] = 0;
+					player->hit();					
 				}
 
 			}
@@ -257,7 +255,6 @@ void Scene::eventHandler()
 				if (enemyPos.x <= playerPos.x && playerPos.x <= enemyPos.x + TILE_X)
 				{
 					player->hit();
-					events[i] = 0;
 				}
 			}
 			break;
@@ -350,10 +347,7 @@ void Scene::render()
 		if (spikeAnimation[i]->isActive()) spikeAnimation[i]->render();
 
 	}
-
-	
-
-	
+		
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -361,9 +355,7 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	wallMap->render();
-
 	
-
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -372,8 +364,36 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
 
-	glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
-	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), translation);
+	//glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
+	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), getTranslationMap());
+}
+
+glm::vec3 Scene::getTranslationMap()
+{
+	int left = player->getPostion().x - SCREEN_WIDTH / 2;
+	int up = player->getPostion().y - SCREEN_HEIGHT / 2;
+
+	if (left < 0)
+	{
+		left = 0;
+	}
+	if (map->getWidth() < left + SCREEN_WIDTH)
+	{
+		left = map->getWidth() - SCREEN_WIDTH;
+	}
+
+	if (up < 0)
+	{
+		up = 0;
+	}
+	if (map->getHeight() < up + SCREEN_HEIGHT)
+	{
+		up = map->getHeight() - SCREEN_HEIGHT;
+	}
+
+	cout << left << " , " << up << endl;
+
+	return glm::vec3(-left, -up, 0);
 }
 
 void Scene::initShaders()

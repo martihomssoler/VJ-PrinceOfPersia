@@ -278,6 +278,16 @@ void TileMap::changeTile(int i, int j, int tile)
 	prepareArrays(minCoords, program);
 }
 
+int TileMap::getWidth()
+{
+	return blockSizex * mapSize.x;
+}
+
+int TileMap::getHeight()
+{
+	return blockSizey * mapSize.y;
+}
+
 
 
 
