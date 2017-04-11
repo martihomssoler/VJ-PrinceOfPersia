@@ -35,6 +35,8 @@ public:
 	void spikes();
 	void slice();
 	bool isJumping();
+	void powerUp();
+	void powerDown();
 
 	
 private:
@@ -45,6 +47,7 @@ private:
 	bool blocked;
 	bool bFalling;
 	bool bAlive;
+	int bPowered;
 	bool pick_sword, pick_potion;
 	int orientation;
 	glm::ivec2 tileMapDispl, posPlayer;

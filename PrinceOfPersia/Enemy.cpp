@@ -143,6 +143,7 @@ void Enemy::update(int deltaTime, string action, int &events)
 			}
 		}
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+		lifebar->setPosition(posEnemy);
 	}
 }
 
