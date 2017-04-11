@@ -7,6 +7,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Image.h"
 #include "Activable.h"
 
 
@@ -60,6 +61,7 @@ private:
 	vector<Activable*> spikeAnimation;
 	vector<Activable*> piercingTrapAnimation;
 	vector<Activable*> fallingPlatesAnimation;
+	Image *gameOver;
 	glm::ivec2 door;
 };
 

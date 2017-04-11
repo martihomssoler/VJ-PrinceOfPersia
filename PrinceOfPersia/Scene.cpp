@@ -67,6 +67,9 @@ void Scene::init(string level)
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 	bShowEnemyLifebar = false;
+
+	gameOver = new Image();
+	gameOver->init("images/GameOver.png", glm::ivec2(640, 320), texProgram);
 }
 
 void Scene::update(int deltaTime)
@@ -75,7 +78,7 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPostion();
 	player->update(deltaTime,events[events.size()-1]);
-		
+	//gameOver->update(deltaTime);
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
 		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu i el personatge també
@@ -373,6 +376,14 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	gameOver->render();
 
 	//glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
 	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), getTranslationMap());
