@@ -36,6 +36,7 @@ public:
 	void slice();
 	bool isJumping();
 	void powerUp();
+	void powerDown();
 
 	
 private:

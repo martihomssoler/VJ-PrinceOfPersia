@@ -833,3 +833,7 @@ void Player::powerUp() {
 	pick_potion = true;
 	bPowered = 1;
 }
+
+void Player::powerDown() {
+	bPowered = 0;
+}
