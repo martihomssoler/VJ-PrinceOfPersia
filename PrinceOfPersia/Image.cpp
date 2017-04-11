@@ -17,6 +17,7 @@ void Image::init(string file, const glm::ivec2 &size, ShaderProgram &shaderProgr
 	sprite->setNumberAnimations(1);
 	sprite->addKeyframe(0, glm::vec2(0.f, 0.f));
 	sprite->changeAnimation(0);
+	if (size.y == 320) sprite->setPosition(glm::vec2(0, 80));
 }
 
 void Image::update(int deltaTime)

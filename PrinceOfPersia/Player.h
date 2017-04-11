@@ -37,6 +37,7 @@ public:
 	bool isJumping();
 	void powerUp();
 	void powerDown();
+	bool isPowered();
 
 	
 private:

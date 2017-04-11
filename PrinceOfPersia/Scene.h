@@ -44,12 +44,14 @@ private:
 	
 	vector<HealthGUI*> enemyLifebars;
 	ShaderProgram texProgram;
+	string currentLevel;
 	float currentTime;
 	glm::mat4 projection;
 	bool bShowEnemyLifebar;
 
 	// idea per gestionar tots els events i accions que passen en una mateixa escena
 	vector<int> events;
+	int pjevent = 0;
 
 	// traps and activables
 	vector<glm::ivec2> potion;
@@ -62,6 +64,8 @@ private:
 	vector<Activable*> piercingTrapAnimation;
 	vector<Activable*> fallingPlatesAnimation;
 	Image *gameOver;
+	bool bShowGameOver;
+	int loseTime;
 	glm::ivec2 door;
 };
 

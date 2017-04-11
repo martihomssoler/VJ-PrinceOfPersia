@@ -82,6 +82,7 @@ void Player::createAnimation(int r_animation, int l_animation, int x, int y, int
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+	bAlive = true;
 	bJumping = false;
 	pick_potion = false;
 	pick_sword = false;
@@ -112,7 +113,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	createAnimation(CLIMB_R, CLIMB_L, 0, 16, 12, 10);
 	createAnimation(STAIRS_R, STAIRS_L, 0, 17, 15, 10);
 	createAnimation(ATTACK_R, ATTACK_L, 2, 18, 5, 10);
-	createAnimation(DRINK_R, DRINK_L, 0, 12, 15, 10);
+	createAnimation(DRINK_R, DRINK_L, 0, 12, 11, 10);
 	createAnimation(JUMP_FAILED_R, JUMP_FAILED_L, 10, 14, 2, 10);
 	createAnimation(STAND_R, STAND_L, 0, 0, 1, 10);
 	createAnimation(MOVE_R, MOVE_L, 0, 1, 7, 8);
@@ -148,15 +149,17 @@ void Player::update(int deltaTime, int &events)
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))  {
 			if (sprite->animation() % 2 == 0) {
 				if (pick_potion) {
-					sprite->changeAnimation(DRINK_R + POWERED*bPowered);
 					pick_potion = false;
+					bPowered = true;
+					sprite->changeAnimation(DRINK_R + POWERED*bPowered);	
 				}
 				else sprite->changeAnimation(GET_UP_R + POWERED*bPowered);
 			}
 			else {
 				if (pick_potion) {
-					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
 					pick_potion = false;
+					bPowered = true;
+					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
 				}
 				else sprite->changeAnimation(GET_UP_L + POWERED*bPowered);
 			}
@@ -296,8 +299,8 @@ void Player::update(int deltaTime, int &events)
 	else if (sprite->animation() == FALL_R + POWERED*bPowered || sprite->animation() == FALL_L + POWERED*bPowered) { //FALL
 		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 64))) {
 			bFalling = false;
-			if (posPlayer.y - startY > 64 * 3) bAlive = lifebar->damage(3);
-			else if (posPlayer.y - startY > 64) bAlive = lifebar->damage(1);
+			if (posPlayer.y - startY > 64 * 3 && !bPowered) bAlive = lifebar->damage(3);
+			else if (posPlayer.y - startY > 64 && !bPowered) bAlive = lifebar->damage(1);
 			if (sprite->animation() % 2 == 0) {
 				if (!bAlive) {
 					sprite->changeAnimation(DEADLY_FALL_R + POWERED*bPowered);
@@ -744,6 +747,7 @@ void Player::setHealthGUI(HealthGUI *lifebar)
 
 
 bool Player::damage(int amount) {
+	if (bPowered) return true;
 	return lifebar->damage(amount);
 }
 
@@ -773,29 +777,31 @@ int Player::swordHit()
 void Player::hit()
 {
 	// the enemy has been hit
-	bool b = this->damage(1);
-	if (!b)
-	{
-		// ha mort -> render animació de mort
-		if (orientation == LEFT)
+	if (!bPowered) {
+		bool b = this->damage(1);
+		if (!b)
 		{
-			sprite->changeAnimation(SWORD_DEATH_L + POWERED*bPowered);
+			// ha mort -> render animació de mort
+			if (orientation == LEFT)
+			{
+				sprite->changeAnimation(SWORD_DEATH_L + POWERED*bPowered);
+			}
+			else
+			{
+				sprite->changeAnimation(SWORD_DEATH_R + POWERED*bPowered);
+			}
 		}
 		else
 		{
-			sprite->changeAnimation(SWORD_DEATH_R + POWERED*bPowered);
-		}
-	}
-	else
-	{
-		// l'han impactat -> render animació de STAND
-		if (orientation == LEFT)
-		{
-			sprite->changeAnimation(STAND_SWORD_R + POWERED*bPowered);
-		}
-		else
-		{
-			sprite->changeAnimation(STAND_SWORD_L + POWERED*bPowered);
+			// l'han impactat -> render animació de STAND
+			if (orientation == LEFT)
+			{
+				sprite->changeAnimation(STAND_SWORD_R + POWERED*bPowered);
+			}
+			else
+			{
+				sprite->changeAnimation(STAND_SWORD_L + POWERED*bPowered);
+			}
 		}
 	}
 }
@@ -810,18 +816,23 @@ void Player::enterDoor() {
 }
 
 void Player::spikes() {
-	bAlive = lifebar->damage(3);
-	if (!bAlive) {	
-		if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R + POWERED*bPowered);
-		else sprite->changeAnimation(SPEARS_DEATH_L + POWERED*bPowered);
-	}	
+	if (!bPowered) {
+		bAlive = lifebar->damage(3);
+		if (!bAlive) {
+			if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R + POWERED*bPowered);
+			else sprite->changeAnimation(SPEARS_DEATH_L + POWERED*bPowered);
+		}
+	}
 }
 
 void Player::slice() {
-	bAlive = lifebar->damage(3);
-	if (!bAlive) {
-		if (sprite->animation() % 2 == 0) sprite->changeAnimation(SLICED_DEATH_R + POWERED*bPowered);
-		else sprite->changeAnimation(SLICED_DEATH_L + POWERED*bPowered);
+	if (!bPowered)
+	{
+		bAlive = lifebar->damage(3);
+		if (!bAlive) {
+			if (sprite->animation() % 2 == 0) sprite->changeAnimation(SLICED_DEATH_R + POWERED*bPowered);
+			else sprite->changeAnimation(SLICED_DEATH_L + POWERED*bPowered);
+		}
 	}
 }
 
@@ -831,9 +842,14 @@ bool Player::isJumping(){
 
 void Player::powerUp() {
 	pick_potion = true;
-	bPowered = 1;
+	if (sprite->animation() % 2 == 0)sprite->changeAnimation(DUCK_R);
+	else sprite->changeAnimation(DUCK_L);
 }
 
 void Player::powerDown() {
 	bPowered = 0;
+}
+
+bool Player::isPowered() {
+	return bPowered;
 }
