@@ -76,6 +76,7 @@ void Player::createAnimation(int r_animation, int l_animation, int x, int y, int
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+	bAlive = true;
 	bJumping = false;
 	pick_potion = false;
 	pick_sword = false;
@@ -212,8 +213,14 @@ void Player::update(int deltaTime, int &events)
 		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R);
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())) {
-			if (sprite->animation()== DRIFT_R) sprite->changeAnimation(RUN_R);
-			else sprite->changeAnimation(RUN_L);
+			if (sprite->animation() == DRIFT_R)
+			{
+				sprite->changeAnimation(RUN_R);
+			}
+			else
+			{
+				sprite->changeAnimation(RUN_L);
+			}
 		}
 
 	}
@@ -517,7 +524,10 @@ void Player::update(int deltaTime, int &events)
 				hold = false;
 			}
 			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) sprite->changeAnimation(DRIFT_L);
-			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) ++posPlayer.x;
+			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
+			{
+				++posPlayer.x;
+			}
 			else {
 				++posPlayer.x;
 				hold = false;
@@ -533,7 +543,10 @@ void Player::update(int deltaTime, int &events)
 				hold = false;
 			}
 			else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT)) sprite->changeAnimation(DRIFT_R);
-			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT)) --posPlayer.x;
+			else if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
+			{
+				--posPlayer.x;
+			}
 			else {
 				--posPlayer.x;
 				hold = false;

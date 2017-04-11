@@ -13,8 +13,8 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 1.5
-#define INIT_PLAYER_Y_TILES 1
+#define INIT_PLAYER_X_TILES 1.5		// 1.5		// 13
+#define INIT_PLAYER_Y_TILES 1		// 1		// 2
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -49,6 +49,7 @@ void Scene::init(string level)
 	backMap = TileMap::createTileMap("levels/" + level + "Back.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map = TileMap::createTileMap("levels/" + level + "Ground.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	wallMap = TileMap::createTileMap("levels/" + level + "Wall.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
@@ -61,8 +62,10 @@ void Scene::init(string level)
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
 	initActivables("levels/" + level + "Activables.txt");
+	
 	// vector d'events pendents per gestionar al update d'una escèna
-	events = vector<int>(enemies.size() + 1, 0);
+	events = vector<int>(enemies.size(), 0);
+
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 	bShowEnemyLifebar = false;
@@ -73,11 +76,11 @@ void Scene::update(int deltaTime)
 	
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPostion();
-	player->update(deltaTime,events[events.size()-1]);
+	player->update(deltaTime,pjevent);
 		
-	for (unsigned int i = 0; i < enemies.size(); ++i)
+	for (unsigned int i = 0; i < events.size(); ++i)
 	{
-		if (events[i] != -1 && events[events.size()-1] != -1) // l'enemic segueix viu i el personatge també
+		 if (events[i] != -1 && pjevent != -1) // l'enemic segueix viu i el personatge també
 		{
 			string action = "";
 			int r = rand() % 300 + 1;
@@ -113,7 +116,6 @@ void Scene::update(int deltaTime)
 			{
 				action = "STAND";
 			}
-
 			enemies[i].update(deltaTime, action, events[i]);
 			enemyLifebars[i]->update(deltaTime);
 		}
@@ -126,6 +128,8 @@ void Scene::update(int deltaTime)
 		}
 		else if (player->getPostion().x + 32 <= forcePlates[i].x || player->getPostion().x + 32 >= forcePlates[i].x + 64) map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 4);
 	}*/
+
+
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
 		if (player->getPostion().x + 32 > spikes[i].x && player->getPostion().x + 32 < spikes[i].x + 64 && player->getPostion().y <= spikes[i].y && spikes[i].y - player->getPostion().y <= TILE_Y*2) {
 			spikeAnimation[i]->activate();
@@ -137,6 +141,8 @@ void Scene::update(int deltaTime)
 		else if (player->getPostion().x + 32 <= spikes[i].x || player->getPostion().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
 		spikeAnimation[i]->update(deltaTime);
 	}
+
+
 
 	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i){
 		if (player->getPostion().y == piercingTraps[i].y) {
@@ -163,10 +169,10 @@ void Scene::eventHandler()
 {
 	glm::ivec2 playerPos = player->getPostion();
 	int direction = player->getDirection();
-	switch (events[events.size() - 1])
+	switch (pjevent)
 	{
 		case 1:
-			events[events.size() - 1] = 0;
+			pjevent = 0;
 			// THE PRINCE CAN POSSIBLY HIT AN ENEMY
 			for (unsigned int i = 0; i < enemies.size(); ++i)
 			{
@@ -193,7 +199,7 @@ void Scene::eventHandler()
 			}
 			break;
 		case 2:
-			events[events.size() - 1] = 0;
+			pjevent = 0;
 			// THE PRINCE CAN POSSIBLY PARRIED AN ENEMY BLOW
 			for (unsigned int i = 0; i < enemies.size(); ++i)
 			{
@@ -204,7 +210,7 @@ void Scene::eventHandler()
 					{
 						if (playerPos.x - TILE_X <= enemyPos.x && enemyPos.x <= playerPos.x)
 						{
-							events[i] = 0;							
+							events[i] = 0;
 						}
 					}
 					else // RIGHT
@@ -218,15 +224,12 @@ void Scene::eventHandler()
 			}
 			break;
 		case 3:
-			events[events.size() - 1] = 0;
+			pjevent = 0;
 			// E pressed MAYBE AT THE DOOR
 			if ((playerPos.x >= door.x  && door.x + 64 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
 			{
 				player->enterDoor();				
 			}
-			break;
-		case -1:
-			// THE PLAYER IS DEAD
 			break;
 		default:
 			break;
@@ -391,7 +394,7 @@ glm::vec3 Scene::getTranslationMap()
 		up = map->getHeight() - SCREEN_HEIGHT;
 	}
 
-	cout << left << " , " << up << endl;
+	//cout << left << " , " << up << endl;
 
 	return glm::vec3(-left, -up, 0);
 }

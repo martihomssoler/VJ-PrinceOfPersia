@@ -49,6 +49,7 @@ private:
 
 	// idea per gestionar tots els events i accions que passen en una mateixa escena
 	vector<int> events;
+	int pjevent = 0;
 
 	// traps and activables
 	vector<glm::ivec2> potion;

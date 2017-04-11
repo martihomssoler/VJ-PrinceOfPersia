@@ -31,6 +31,9 @@ private:
 
 	void createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed);
 
+	bool bAlive;
+	bool bFalling;
+	int startY;
 	glm::ivec2 tileMapDispl, posEnemy;
 	Texture spritesheet;
 	Sprite *sprite;
