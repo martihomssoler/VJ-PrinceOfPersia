@@ -50,11 +50,7 @@ void HealthGUI::init(const glm::ivec2 &pos, int points, ShaderProgram &shaderPro
 			lifebar[i]->changeAnimation(EMPTY);
 			lifebar[i]->setPosition(glm::ivec2(float(pos.x +20 + 8 * i), float(pos.y -10)));
 		}
-
-	}
-	
-	
-	
+	}	
 }
 
 void HealthGUI::update(int deltaTime) {

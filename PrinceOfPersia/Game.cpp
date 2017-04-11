@@ -28,7 +28,7 @@ void Game::keyPressed(int key)
 	if(key == 27) // Escape code
 		bPlay = false;
 	if (key == 49) // 1 code
-		init("level01");
+		init("level1");
 	if (key == 50) // 2 code
 		init("level02");
 	keys[key] = true;
