@@ -260,7 +260,7 @@ void Scene::eventHandler()
 		case 3:
 			pjevent = 0;
 			// E pressed MAYBE AT THE DOOR
-			if ((playerPos.x >= door.x  && door.x + 64 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
+			if ((playerPos.x >= door1.x  && door1.x + 64 >= playerPos.x) && (playerPos.y >= door1.y - 5 && door1.y + 5 >= playerPos.y))
 			{
 				player->enterDoor();				
 			}
@@ -575,7 +575,6 @@ void Scene::initActivables(const string & activablesFile)
 	spikeAnimation.clear();
 	fallingPlates.clear();
 	fallingPlatesAnimation.clear();
-	barredDoors.clear();
 	
 	for (int j = 0; j < mapSizey; j++)
 	{
@@ -611,11 +610,16 @@ void Scene::initActivables(const string & activablesFile)
 					fallingPlatesAnimation.back()->init(fallingPlates.back(), texProgram, 1);
 					break;
 				case 8: // BARRED DOOR
-					barredDoors.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					door0 = glm::ivec2(i * TILE_X, j * TILE_Y);
 					break;
 				case 9: // OUTDOOR STAIRS
-					door = glm::ivec2(i * TILE_X , j * TILE_Y);
+					door1 = glm::ivec2(i * TILE_X , j * TILE_Y);
 					break;
+				case 10:
+					door2 = glm::ivec2(i * TILE_X, j * TILE_Y);
+					break;
+				case 11:
+					windoor = glm::ivec2(i * TILE_X, j * TILE_Y);
 				default:
 					break;
 			}

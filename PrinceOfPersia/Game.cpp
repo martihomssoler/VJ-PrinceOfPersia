@@ -30,7 +30,7 @@ void Game::keyPressed(int key)
 	if (key == 49) // 1 code
 		init("level1");
 	if (key == 50) // 2 code
-		init("level02");
+		init("level2");
 	keys[key] = true;
 }
 
@@ -83,8 +83,3 @@ bool Game::getShiftKey() const
 {
 	return shift_key;
 }
-
-
-
-
-

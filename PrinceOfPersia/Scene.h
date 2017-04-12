@@ -58,7 +58,6 @@ private:
 	vector<glm::ivec2> piercingTraps;
 	vector<glm::ivec2> fallingPlates;
 	vector<glm::ivec2> forcePlates;
-	vector<glm::ivec2> barredDoors;
 	vector<glm::ivec2> spikes;
 	vector<Activable*> spikeAnimation;
 	vector<Activable*> piercingTrapAnimation;
@@ -66,7 +65,7 @@ private:
 	Image *gameOver;
 	bool bShowGameOver;
 	int loseTime;
-	glm::ivec2 door;
+	glm::ivec2 door0, door1, door2, windoor;
 };
 
 
