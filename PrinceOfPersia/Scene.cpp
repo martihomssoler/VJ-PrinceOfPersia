@@ -20,7 +20,7 @@
 #define INIT_PLAYER_Y_TILES_1 1		// 1		// 2
 
 #define INIT_PLAYER_X_TILES_2 1.5
-#define INIT_PLAYER_Y_TILES_2 2
+#define INIT_PLAYER_Y_TILES_2 4
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -207,12 +207,11 @@ void Scene::update(int deltaTime)
 	// OTHERS
 	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i){
 		if (player->getPosition().y == piercingTraps[i].y) {
-			if (piercingTrapAnimation[i]->isActive() && player->getPosition().x + 32 > piercingTraps[i].x && player->getPosition().x + 32 < piercingTraps[i].x + 64) {
+			if (piercingTrapAnimation[i]->isActive() && player->getPosition().x + 32 >= piercingTraps[i].x - 32 && player->getPosition().x + 32 >= piercingTraps[i].x) {
 				if (!player->isPowered())
 				{
 					player->setPosition(glm::ivec2(piercingTraps[i].x - 32, piercingTraps[i].y));
 					player->slice();
-					piercingTrapAnimation[i]->block();
 				}
 			}
 		}
@@ -304,14 +303,14 @@ void Scene::eventHandler()
 			}
 			else {
 				for (int i = 0; i < powerPotion.size(); ++i) {
-					if (playerPos.x >= powerPotion[i].x - 32 && playerPos.x <= powerPotion[i].x && playerPos.y == powerPotion[i].y)
+					if (powerPotionAnimation[i]->isActive() && playerPos.x >= powerPotion[i].x - 32 && playerPos.x <= powerPotion[i].x && playerPos.y == powerPotion[i].y)
 					{
 						player->powerUp();
 						powerPotionAnimation[i]->deactivate();
 					}
 				}
 				for (int i = 0; i < healPotion.size(); ++i) {
-					if (playerPos.x >= healPotion[i].x - 32 && playerPos.x <= healPotion[i].x && playerPos.y == healPotion[i].y)
+					if (healPotionAnimation[i]->isActive() && playerPos.x >= healPotion[i].x - 32 && playerPos.x <= healPotion[i].x && playerPos.y == healPotion[i].y)
 					{
 						player->cure();
 						healPotionAnimation[i]->deactivate();
