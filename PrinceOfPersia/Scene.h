@@ -48,7 +48,7 @@ private:
 	int levelNB;
 	float currentTime;
 	glm::mat4 projection;
-	bool bShowEnemyLifebar;
+	vector<bool> bShowEnemyLifebar;
 
 	// idea per gestionar tots els events i accions que passen en una mateixa escena
 	vector<int> events;

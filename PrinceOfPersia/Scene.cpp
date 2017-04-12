@@ -9,6 +9,8 @@
 #include "Game.h"
 #include "Sprite.h"
 
+using namespace std;
+
 
 #define SCREEN_X 0
 #define SCREEN_Y 0
@@ -20,7 +22,7 @@
 #define INIT_PLAYER_Y_TILES_1 1		// 1		// 2
 
 #define INIT_PLAYER_X_TILES_2 1.5
-#define INIT_PLAYER_Y_TILES_2 4
+#define INIT_PLAYER_Y_TILES_2 6
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -83,7 +85,7 @@ void Scene::init(string level)
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
-	bShowEnemyLifebar = false;
+	bShowEnemyLifebar = vector<bool> (enemies.size(),false);
 	
 	initScreen = new Image();
 	initScreen->init("images/InitScreen.png", glm::ivec2(640, 480), texProgram);
@@ -138,9 +140,9 @@ void Scene::update(int deltaTime)
 		bShowInstructions = !bShowInstructions;
 		pierdeTiempo(1);
 	}
-	if (bShowCredits) {
-		pierdeTiempo(5);
-		bShowCredits = false;
+	if (Game::instance().getKey(99)) {
+		bShowCredits = !bShowCredits;
+		pierdeTiempo(1);
 	}
 	for (unsigned int i = 0; i < events.size(); ++i)
 	{
@@ -149,7 +151,6 @@ void Scene::update(int deltaTime)
 			string action = "STAND";
 			int r = rand() % 300 + 1;
 			glm::ivec2 enemyPos = enemies[i].getPosition();
-			bShowEnemyLifebar = true;
 			// Afegir la logica aplicada al enemics
 			// ara per ara el codi dels enemics esta buid!!!
 			// si events[i] és igual a (-1) significa que l'enemic ha mort
@@ -158,24 +159,28 @@ void Scene::update(int deltaTime)
 				if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.x - 8 * TILE_X) // si el jugador esta entre 1 a 4 blocks de distància a l'ESQUERRA
 				{
 					action = "MOVE_LEFT";
+					bShowEnemyLifebar[i] = true;
 				}
 				else if (r > ATTACK_300 && playerPos.x >= enemyPos.x - TILE_X && enemyPos.x >= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
 				{
 					action = "ATTACK_LEFT";
+					bShowEnemyLifebar[i] = true;
 					
 				}
 				else if (playerPos.x < enemyPos.x + 8 * TILE_X && enemyPos.x + TILE_X < playerPos.x) // si el jugador esta entre 1 a 4 blocks de distància a la DRETA
 				{
 					action = "MOVE_RIGHT";
+					bShowEnemyLifebar[i] = true;
 				}
 				else if (r > ATTACK_300 && playerPos.x <= enemyPos.x + TILE_X && enemyPos.x <= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
 				{
 					action = "ATTACK_RIGHT";
+					bShowEnemyLifebar[i] = true;
 				}
 				
 			}
 
-			cout << "enemy nb: " << i << " tries to: " << action << endl;
+			//cout << "enemy nb: " << i << " tries to: " << action << endl;
 
 			enemies[i].update(deltaTime, action, events[i]);
 			enemyLifebars[i]->update(deltaTime);
@@ -225,7 +230,7 @@ void Scene::update(int deltaTime)
 	// OTHERS
 	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i){
 		if (player->getPosition().y == piercingTraps[i].y) {
-			if (piercingTrapAnimation[i]->isActive() && player->getPosition().x + 32 >= piercingTraps[i].x - 32 && player->getPosition().x + 32 >= piercingTraps[i].x) {
+			if (piercingTrapAnimation[i]->isActive() && player->getPosition().x + 32 >= piercingTraps[i].x && player->getPosition().x + 32 <= piercingTraps[i].x + 32) {
 				if (!player->isPowered())
 				{
 					player->setPosition(glm::ivec2(piercingTraps[i].x - 32, piercingTraps[i].y));
@@ -383,7 +388,7 @@ void Scene::eventHandler()
 			}
 			break;
 		case -1:
-			bShowEnemyLifebar = false;
+			bShowEnemyLifebar[i] = false;
 			break;
 		default:
 			break;
@@ -507,7 +512,7 @@ void Scene::render()
 		modelview = glm::mat4(1.0f);
 		texProgram.setUniformMatrix4f("modelview", modelview);
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-		if (bShowEnemyLifebar) enemyLifebars[i]->render();
+		if (bShowEnemyLifebar[i]) enemyLifebars[i]->render();
 	}
 
 	texProgram.use();
