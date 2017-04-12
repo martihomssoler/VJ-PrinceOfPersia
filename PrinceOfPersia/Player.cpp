@@ -162,11 +162,13 @@ void Player::update(int deltaTime, int &events)
 				if (pick_potion) {
 					pick_potion = false;
 					bPowered = true;
+					PlaySound(TEXT("media/powered-potion.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(DRINK_R + POWERED*bPowered);	
 				}
 				else if (pick_cure_potion) 
 				{
 					pick_cure_potion = false;
+					PlaySound(TEXT("media/heal-potion.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(DRINK_R + POWERED*bPowered);
 				}
 				else sprite->changeAnimation(GET_UP_R + POWERED*bPowered);
@@ -175,11 +177,13 @@ void Player::update(int deltaTime, int &events)
 				if (pick_potion) {
 					pick_potion = false;
 					bPowered = true; 
+					PlaySound(TEXT("media/powered-potion.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
 				}
 				else if (pick_cure_potion)
 				{
 					pick_cure_potion = false;
+					PlaySound(TEXT("media/heal-potion.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
 				}
 				else sprite->changeAnimation(GET_UP_L + POWERED*bPowered);

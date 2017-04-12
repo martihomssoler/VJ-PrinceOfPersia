@@ -28,6 +28,8 @@
 #define MOVEMENT_300 150
 #define ATTACK_300 295
 
+#define MAX_POWER_TIME 1000
+
 Scene::Scene()
 {
 	map = NULL;
@@ -113,12 +115,12 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPosition();
 	player->update(deltaTime,pjevent);
-	if (player->isPowered() && poweredTime >= 500)
+	if (player->isPowered() && poweredTime >= MAX_POWER_TIME)
 	{
 		player->powerDown();
 		poweredTime = 0;
 	}
-	else if (player->isPowered())++poweredTime;
+	else if (player->isPowered()) ++poweredTime;
 	if (bShowInitScreen) {
 		pierdeTiempo(3);
 		bShowInitScreen = false;
@@ -287,24 +289,23 @@ void Scene::eventHandler()
 		case 3:
 			pjevent = 0;
 			// E pressed MAYBE AT THE DOOR
-			if ((playerPos.x >= door.x  && door.x + 64 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
-			{	
-				string level = "level" + to_string(levelNB+1);
-				player->enterDoor(level);
+			if ((playerPos.x >= door1.x  && door1.x + 64 >= playerPos.x) && (playerPos.y >= door1.y - 5 && door1.y + 5 >= playerPos.y))
+			{
+				player->enterDoor("level2");				
 			}
 			else {
-				for (int i = 0; i < potion.size(); ++i) {
-					if (playerPos.x >= potion[i].x - 32 && playerPos.x <= potion[i].x + 32 && playerPos.y == potion[i].y)
+				for (int i = 0; i < powerPotion.size(); ++i) {
+					if (playerPos.x >= powerPotion[i].x - 32 && playerPos.x <= powerPotion[i].x + 32 && playerPos.y == powerPotion[i].y)
 					{
 						player->powerUp();
-						potionAnimation[i]->deactivate();
+						powerPotionAnimation[i]->deactivate();
 					}
 				}
-				for (int i = 0; i < curePotion.size(); ++i) {
-					if (playerPos.x >= curePotion[i].x - 32 && playerPos.x <= curePotion[i].x + 32 && playerPos.y == curePotion[i].y)
+				for (int i = 0; i < healPotion.size(); ++i) {
+					if (playerPos.x >= healPotion[i].x - 32 && playerPos.x <= healPotion[i].x + 32 && playerPos.y == healPotion[i].y)
 					{
 						player->cure();
-						curePotionAnimation[i]->deactivate();
+						healPotionAnimation[i]->deactivate();
 					}
 				}
 			}
@@ -439,7 +440,7 @@ void Scene::render()
 		if (spikeAnimation[i]->isActive()) spikeAnimation[i]->render();
 
 	}
-	for (unsigned int i = 0; i < potionAnimation.size(); ++i)
+	for (unsigned int i = 0; i < powerPotionAnimation.size(); ++i)
 	{
 		texProgram.use();
 		texProgram.setUniformMatrix4f("projection", projection);
@@ -447,11 +448,11 @@ void Scene::render()
 		modelview = glm::mat4(1.0f);
 		texProgram.setUniformMatrix4f("modelview", modelview);
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-		if (potionAnimation[i]->isActive()) potionAnimation[i]->render();
+		if (powerPotionAnimation[i]->isActive()) powerPotionAnimation[i]->render();
 
 	}
 
-	for (unsigned int i = 0; i < curePotionAnimation.size(); ++i)
+	for (unsigned int i = 0; i < healPotionAnimation.size(); ++i)
 	{
 		texProgram.use();
 		texProgram.setUniformMatrix4f("projection", projection);
@@ -459,7 +460,7 @@ void Scene::render()
 		modelview = glm::mat4(1.0f);
 		texProgram.setUniformMatrix4f("modelview", modelview);
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-		if (curePotionAnimation[i]->isActive()) curePotionAnimation[i]->render();
+		if (healPotionAnimation[i]->isActive()) healPotionAnimation[i]->render();
 
 	}
 		
@@ -665,14 +666,16 @@ void Scene::initActivables(const string & activablesFile)
 	sstream.str(line);
 	sstream >> mapSizex >> mapSizey;
 
-	potion.clear();
+	powerPotion.clear();
+	powerPotionAnimation.clear();
+	healPotion.clear();
+	healPotionAnimation.clear();
 	piercingTraps.clear();
 	piercingTrapAnimation.clear();
 	spikes.clear();
 	spikeAnimation.clear();
 	fallingPlates.clear();
 	fallingPlatesAnimation.clear();
-	barredDoors.clear();
 	
 	for (int j = 0; j < mapSizey; j++)
 	{
@@ -686,11 +689,11 @@ void Scene::initActivables(const string & activablesFile)
 			int aux = atoi(value.c_str()) + 1;
 			switch (aux)
 			{
-				case 1: //POTION
-					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
-					potionAnimation.push_back(new Activable());
-					potionAnimation.back()->init(potion.back(), texProgram, 4);
-					potionAnimation.back()->activate();
+				case 1: // POWER POTION
+					powerPotion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					powerPotionAnimation.push_back(new Activable());
+					powerPotionAnimation.back()->init(powerPotion.back(), texProgram, 4);
+					powerPotionAnimation.back()->activate();
 					break;
 				case 2: // PIERCING TRAP
 					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
@@ -702,11 +705,11 @@ void Scene::initActivables(const string & activablesFile)
 					spikeAnimation.push_back(new Activable());
 					spikeAnimation.back()->init(spikes.back(), texProgram, 0);
 					break;
-				case 4: // FORCE PLATE
-					curePotion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
-					curePotionAnimation.push_back(new Activable());
-					curePotionAnimation.back()->init(curePotion.back(), texProgram, 3);
-					curePotionAnimation.back()->activate();
+				case 4: // HEAL POTION
+					healPotion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					healPotionAnimation.push_back(new Activable());
+					healPotionAnimation.back()->init(healPotion.back(), texProgram, 3);
+					healPotionAnimation.back()->activate();
 					break;
 				case 5: // FALLING PLATE
 					fallingPlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
@@ -714,11 +717,16 @@ void Scene::initActivables(const string & activablesFile)
 					fallingPlatesAnimation.back()->init(fallingPlates.back(), texProgram, 1);
 					break;
 				case 8: // BARRED DOOR
-					barredDoors.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					door0 = glm::ivec2(i * TILE_X, j * TILE_Y);
 					break;
 				case 9: // OUTDOOR STAIRS
-					door = glm::ivec2(i * TILE_X , j * TILE_Y);
+					door1 = glm::ivec2(i * TILE_X , j * TILE_Y);
 					break;
+				case 10:
+					door2 = glm::ivec2(i * TILE_X, j * TILE_Y);
+					break;
+				case 11:
+					windoor = glm::ivec2(i * TILE_X, j * TILE_Y);
 				default:
 					break;
 			}
