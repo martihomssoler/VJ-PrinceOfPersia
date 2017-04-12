@@ -188,9 +188,10 @@ void Scene::update(int deltaTime)
 	eventHandler();
 	// PLAYER - SPIKE TRAP LOGIC
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
+		bool active = false;
 		if (player->getPosition().x + 32 > spikes[i].x && player->getPosition().x + 32 < spikes[i].x + 64 && player->getPosition().y <= spikes[i].y && spikes[i].y - player->getPosition().y <= TILE_Y*2) 
 		{
-			spikeAnimation[i]->activate();
+			active = true;
 			if (player->getPosition().x + 32 > spikes[i].x + 16 && player->getPosition().x + 32 < spikes[i].x + 48 && player->getPosition().y == spikes[i].y && !player->isJumping()) 
 			{
 				if (!player->isPowered())
@@ -201,7 +202,27 @@ void Scene::update(int deltaTime)
 				}
 			}
 		}
-		else if (player->getPosition().x + 32 <= spikes[i].x || player->getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
+		//else if (player->getPosition().x + 32 <= spikes[i].x || player->getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
+
+		for (unsigned int j = 0; j < enemies.size(); ++j)
+		{
+			if (enemies[j].getPosition().x + 32 > spikes[i].x && enemies[j].getPosition().x + 32 < spikes[i].x + 64 && enemies[j].getPosition().y <= spikes[i].y && spikes[i].y - enemies[j].getPosition().y <= TILE_Y * 2)
+			{
+				active = true;
+				if (enemies[j].getPosition().x + 32 > spikes[i].x + 16 && enemies[j].getPosition().x + 32 < spikes[i].x + 48 && enemies[j].getPosition().y == spikes[i].y)
+				{
+					enemies[j].setPosition(spikes[i]);
+					enemies[j].spikes();
+					spikeAnimation[i]->block();
+				}
+			}
+		}
+
+		if (active)
+			spikeAnimation[i]->activate();
+		else
+			spikeAnimation[i]->deactivate();
+
 		spikeAnimation[i]->update(deltaTime);
 	}
 	// OTHERS
