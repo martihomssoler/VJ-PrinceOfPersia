@@ -48,7 +48,7 @@ private:
 	int levelNB;
 	float currentTime;
 	glm::mat4 projection;
-	bool bShowEnemyLifebar;
+	vector<bool> bShowEnemyLifebar;
 
 	// idea per gestionar tots els events i accions que passen en una mateixa escena
 	vector<int> events;
@@ -75,6 +75,8 @@ private:
 	bool bShowInstructions;
 	Image *credits;
 	bool bShowCredits;
+	Image *finalScreen;
+	bool bShowFinalScreen;
 	int loseTime;
 	int poweredTime;
 	glm::ivec2 door0, door1, door2, windoor;
