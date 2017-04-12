@@ -13,8 +13,14 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 1.5		// 1.5		// 13
-#define INIT_PLAYER_Y_TILES 1		// 1		// 2
+#define INIT_PLAYER_X_TILES_0 1.5
+#define INIT_PLAYER_Y_TILES_0 5
+
+#define INIT_PLAYER_X_TILES_1 1.5	// 1.5		// 13
+#define INIT_PLAYER_Y_TILES_1 1		// 1		// 2
+
+#define INIT_PLAYER_X_TILES_2 1.5
+#define INIT_PLAYER_Y_TILES_2 2
 
 #define ENEMY_1 0
 #define ENEMY_2 1
@@ -58,7 +64,9 @@ void Scene::init(string level)
 
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
+	if (level == "level0") player->setPosition(glm::vec2(INIT_PLAYER_X_TILES_0 * map->getTileSize(), INIT_PLAYER_Y_TILES_0 * map->getTileSize()));
+	else if (level == "level1") player->setPosition(glm::vec2(INIT_PLAYER_X_TILES_1 * map->getTileSize(), INIT_PLAYER_Y_TILES_1 * map->getTileSize()));
+	else if (level == "level2") player->setPosition(glm::vec2(INIT_PLAYER_X_TILES_2 * map->getTileSize(), INIT_PLAYER_Y_TILES_2 * map->getTileSize()));
 	player->setTileBackMap(backMap);
 	player->setTileMap(map);
 	player->setTileWallMap(wallMap);
@@ -178,13 +186,6 @@ void Scene::update(int deltaTime)
 	}	
 	
 	eventHandler();
-	/*for (unsigned int i = 0; i < forcePlates.size(); ++i){
-		if (player->getPosition().x + 32 > forcePlates[i].x && player->getPosition().x + 32 < forcePlates[i].x + 64 && player->getPosition().y == forcePlates[i].y) {
-			map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 1);
-		}
-		else if (player->getPosition().x + 32 <= forcePlates[i].x || player->getPosition().x + 32 >= forcePlates[i].x + 64) map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 4);
-	}*/
-
 	// PLAYER - SPIKE TRAP LOGIC
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
 		if (player->getPosition().x + 32 > spikes[i].x && player->getPosition().x + 32 < spikes[i].x + 64 && player->getPosition().y <= spikes[i].y && spikes[i].y - player->getPosition().y <= TILE_Y*2) 
@@ -289,20 +290,28 @@ void Scene::eventHandler()
 		case 3:
 			pjevent = 0;
 			// E pressed MAYBE AT THE DOOR
-			if ((playerPos.x >= door1.x  && door1.x + 64 >= playerPos.x) && (playerPos.y >= door1.y - 5 && door1.y + 5 >= playerPos.y))
+			if ((playerPos.x >= door2.x - 32  && door2.x + 32 >= playerPos.x) && (playerPos.y == door2.y))
 			{
 				player->enterDoor("level2");				
 			}
+			else if ((playerPos.x >= door1.x - 32  && door1.x + 32 >= playerPos.x) && (playerPos.y == door1.y))
+			{
+				player->enterDoor("level1");
+			}
+			else if ((playerPos.x >= door0.x - 32  && door0.x + 32 >= playerPos.x) && (playerPos.y == door0.y))
+			{
+				player->enterDoor("level0");
+			}
 			else {
 				for (int i = 0; i < powerPotion.size(); ++i) {
-					if (playerPos.x >= powerPotion[i].x - 32 && playerPos.x <= powerPotion[i].x + 32 && playerPos.y == powerPotion[i].y)
+					if (playerPos.x >= powerPotion[i].x - 32 && playerPos.x <= powerPotion[i].x && playerPos.y == powerPotion[i].y)
 					{
 						player->powerUp();
 						powerPotionAnimation[i]->deactivate();
 					}
 				}
 				for (int i = 0; i < healPotion.size(); ++i) {
-					if (playerPos.x >= healPotion[i].x - 32 && playerPos.x <= healPotion[i].x + 32 && playerPos.y == healPotion[i].y)
+					if (playerPos.x >= healPotion[i].x - 32 && playerPos.x <= healPotion[i].x && playerPos.y == healPotion[i].y)
 					{
 						player->cure();
 						healPotionAnimation[i]->deactivate();
