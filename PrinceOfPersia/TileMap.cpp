@@ -230,7 +230,7 @@ bool TileMap::collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int
 bool TileMap::collisionClimbRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
 
-	return collisionMoveDown(glm::ivec2(pos.x + 48, pos.y - 64), size);
+	return collisionMoveDown(glm::ivec2(pos.x + 16, pos.y - 64), size);
 	/*
 	int x0, x1, y;
 
