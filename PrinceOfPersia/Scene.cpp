@@ -341,7 +341,7 @@ void Scene::eventHandler()
 			if (loseTime >= 50)
 			{
 				if (!bShowGameOver)
-					PlaySound(TEXT("media/game-over.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					PlaySound(TEXT("media/GAMEOVER.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 				bShowGameOver = true;
 				loseTime = 0;
 			}

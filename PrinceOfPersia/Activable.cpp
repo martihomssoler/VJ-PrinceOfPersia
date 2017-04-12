@@ -90,13 +90,13 @@ void Activable::update(int deltaTime) {
 	case 2:
 		if (sprite->animation() == 3 && auxCounter >= 80) {
 			sprite->changeAnimation(0);
-			PlaySound(TEXT("media/guillotine.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			PlaySound(TEXT("media/guillotine.wav"), NULL, SND_FILENAME | SND_NOSTOP | SND_ASYNC);
 			auxCounter = 0;
 		}
 		else if (sprite->animation() == 3) ++auxCounter;
 		else if (sprite->animation() == 2 && !blocked) {
 			sprite->changeAnimation(1);
-			PlaySound(TEXT("media/guillotine.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			PlaySound(TEXT("media/guillotine.wav"), NULL, SND_FILENAME | SND_NOSTOP | SND_ASYNC);
 		}
 		else if (sprite->animation() == 0) {
 			if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
