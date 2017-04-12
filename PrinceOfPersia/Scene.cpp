@@ -47,6 +47,9 @@ void Scene::init(string level)
 {
 	initShaders();
 	currentLevel = level;
+	if (level == "level0") levelNB = 0;
+	else if (level == "level1") levelNB = 1;
+	else levelNB = 2;
 	backMap = TileMap::createTileMap("levels/" + level + "Back.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map = TileMap::createTileMap("levels/" + level + "Ground.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	wallMap = TileMap::createTileMap("levels/" + level + "Wall.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -71,11 +74,36 @@ void Scene::init(string level)
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 	bShowEnemyLifebar = false;
+	
+	initScreen = new Image();
+	initScreen->init("images/InitScreen.png", glm::ivec2(640, 480), texProgram);
+	bShowInitScreen = false;
+
+	instructions = new Image();
+	instructions->init("images/instructions.png", glm::ivec2(640, 480), texProgram);
+	bShowInstructions = false;
+
+	credits = new Image();
+	credits->init("images/credits.png", glm::ivec2(640, 480), texProgram);
+	bShowCredits = false;
 
 	gameOver = new Image();
 	gameOver->init("images/GameOver.png", glm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), texProgram);
 	bShowGameOver = false;
 	loseTime = 0;
+
+	if (level == "level0") bShowInitScreen = true;
+}
+
+void pierdeTiempo(int secs) {
+	for (int k = 0; k < secs; ++k) {
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 10000000; ++i);
+	}
 }
 
 void Scene::update(int deltaTime)
@@ -84,7 +112,19 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPosition();
 	player->update(deltaTime,pjevent);
-		
+	if (bShowInitScreen) {
+		pierdeTiempo(3);
+		bShowInitScreen = false;
+	}
+	if (Game::instance().getKey(105)) 
+	{
+		bShowInstructions = !bShowInstructions;
+		pierdeTiempo(1);
+	}
+	if (bShowCredits) {
+		pierdeTiempo(5);
+		bShowCredits = false;
+	}
 	for (unsigned int i = 0; i < events.size(); ++i)
 	{
 		 if (events[i] != -1 && pjevent != -1) // l'enemic segueix viu i el personatge també
@@ -125,7 +165,6 @@ void Scene::update(int deltaTime)
 			}
 			enemies[i].update(deltaTime, action, events[i]);
 			enemyLifebars[i]->update(deltaTime);
-			enemyLifebars[i]->setPosition(enemies[i].getPosition());
 		}
 	}	
 	
@@ -262,11 +301,14 @@ void Scene::eventHandler()
 			// E pressed MAYBE AT THE DOOR
 			if ((playerPos.x >= door1.x  && door1.x + 64 >= playerPos.x) && (playerPos.y >= door1.y - 5 && door1.y + 5 >= playerPos.y))
 			{
-				player->enterDoor();				
+				player->enterDoor("level2");				
 			}
 			else {
 				player->powerUp();
 			}
+			//else {
+			//	player->powerUp();
+			//}
 			break;
 		case -1:
 
@@ -289,7 +331,7 @@ void Scene::eventHandler()
 	}
 	
 
-	for (unsigned int i = 0; i < events.size() - 1; ++i) // des de 0 fins a events.size()-2 hi ha enemics, l'event del princep és el events.size()-1
+	for (int i = 0; i < events.size(); ++i) // des de 0 fins a events.size()-2 hi ha enemics, l'event del princep és el events.size()-1
 	{
 		glm::ivec2 enemyPos = enemies[i].getPosition();
 		int direction = enemies[i].getDirection();
@@ -433,6 +475,39 @@ void Scene::render()
 		gameOver->render();
 	}
 
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	if (bShowGameOver) gameOver->render();
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	if (bShowInitScreen) initScreen->render();
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	if (bShowInstructions) instructions->render();
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	if (bShowCredits) credits->render();
+
+	//glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
 	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), getTranslationMap());
 }
 
@@ -569,7 +644,7 @@ void Scene::initActivables(const string & activablesFile)
 	sstream >> mapSizex >> mapSizey;
 
 	powerPotion.clear();
-	heal_Potion.clear();
+	healPotion.clear();
 	piercingTraps.clear();
 	piercingTrapAnimation.clear();
 	spikes.clear();

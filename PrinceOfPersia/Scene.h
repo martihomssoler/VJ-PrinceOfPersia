@@ -45,6 +45,7 @@ private:
 	vector<HealthGUI*> enemyLifebars;
 	ShaderProgram texProgram;
 	string currentLevel;
+	int levelNB;
 	float currentTime;
 	glm::mat4 projection;
 	bool bShowEnemyLifebar;
@@ -60,11 +61,18 @@ private:
 	vector<glm::ivec2> fallingPlates;
 	vector<glm::ivec2> forcePlates;
 	vector<glm::ivec2> spikes;
+	vector<Activable*> potionAnimation;
 	vector<Activable*> spikeAnimation;
 	vector<Activable*> piercingTrapAnimation;
 	vector<Activable*> fallingPlatesAnimation;
 	Image *gameOver;
 	bool bShowGameOver;
+	Image *initScreen;
+	bool bShowInitScreen;
+	Image *instructions;
+	bool bShowInstructions;
+	Image *credits;
+	bool bShowCredits;
 	int loseTime;
 	glm::ivec2 door0, door1, door2, windoor;
 };

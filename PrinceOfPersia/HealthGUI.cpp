@@ -35,20 +35,20 @@ void HealthGUI::init(const glm::ivec2 &pos, int points, ShaderProgram &shaderPro
 	spritesheet.loadFromFile("images/Life.png",TEXTURE_PIXEL_FORMAT_RGBA);
 	for (int i = 0; i < maxHealth; ++i){
 		if (type == PRINCE) {
-			lifebar[i] = Sprite::createSprite(glm::vec2(8, 8), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
+			lifebar[i] = Sprite::createSprite(glm::vec2(32, 32), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 			lifebar[i]->setNumberAnimations(2);
 			lifebar[i]->addKeyframe(FULL, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 0));
 			lifebar[i]->addKeyframe(EMPTY, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 0));
 			lifebar[i]->changeAnimation(EMPTY);
-			lifebar[i]->setPosition(glm::ivec2(float(tileMapDispl.x + 20 + 8 * i), float(tileMapDispl.y-10)));
+			lifebar[i]->setPosition(glm::ivec2(float(32 * i), float(448)));
 		}
 		else {
-			lifebar[i] = Sprite::createSprite(glm::vec2(8, 8), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
+			lifebar[i] = Sprite::createSprite(glm::vec2(32, 32), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 			lifebar[i]->setNumberAnimations(2);
 			lifebar[i]->addKeyframe(FULL, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 1));
 			lifebar[i]->addKeyframe(EMPTY, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 1));
 			lifebar[i]->changeAnimation(EMPTY);
-			lifebar[i]->setPosition(glm::ivec2(float(pos.x +20 + 8 * i), float(pos.y -10)));
+			lifebar[i]->setPosition(glm::ivec2(float(608-32*i), float(448)));
 		}
 	}	
 }
@@ -106,7 +106,3 @@ void HealthGUI::cure()
 	if (health < maxHealth) ++health;
 }
 
-void HealthGUI::setPosition(const glm::ivec2 &pos) 
-{
-	for (int i = 0; i < maxHealth; ++i) lifebar[i]->setPosition(glm::ivec2(pos.x + 20 + 8 * i, pos.y - 10));
-}
