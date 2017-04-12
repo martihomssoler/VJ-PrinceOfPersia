@@ -55,13 +55,15 @@ private:
 	int pjevent = 0;
 
 	// traps and activables
+
 	vector<glm::ivec2> powerPotion;
 	vector<glm::ivec2> healPotion;
 	vector<glm::ivec2> piercingTraps;
 	vector<glm::ivec2> fallingPlates;
 	vector<glm::ivec2> forcePlates;
 	vector<glm::ivec2> spikes;
-	vector<Activable*> potionAnimation;
+	vector<Activable*> powerPotionAnimation;
+	vector<Activable*> healPotionAnimation;
 	vector<Activable*> spikeAnimation;
 	vector<Activable*> piercingTrapAnimation;
 	vector<Activable*> fallingPlatesAnimation;
@@ -74,6 +76,7 @@ private:
 	Image *credits;
 	bool bShowCredits;
 	int loseTime;
+	int poweredTime;
 	glm::ivec2 door0, door1, door2, windoor;
 };
 

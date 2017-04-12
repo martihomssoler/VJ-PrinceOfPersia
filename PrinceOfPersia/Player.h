@@ -50,7 +50,7 @@ private:
 	bool bFalling;
 	bool bAlive;
 	int bPowered;
-	bool pick_sword, pick_potion;
+	bool pick_sword, pick_potion, pick_cure_potion;
 	int orientation;
 	string nextLevel;
 	glm::ivec2 tileMapDispl, posPlayer;
