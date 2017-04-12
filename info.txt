@@ -1,0 +1,49 @@
+---Integrants:
+
+Homs Soler, Martí
+Calle Valdelvira, Albert
+
+---Funcionalitats:
+
+Estructura Bàsica:
+ En aquesta funcionalitat ens hem volgut explaiar més en la part creativa i fer un nivell
+ que és el "menú principal". En aquest nivell es pot accedit a dues portes, una d'elles porta
+ al primer nivell (esquerra) i l'altre porta al segon nivell (dreta, amunt), a més si es prem
+ la tecla "i" surtiràn les instruccions del joc, altrement si es prem la tecla "c" sortira una
+ pantalla amb els crèdits.
+
+So:
+ Hem usat Windows.h i sons baixats del web freesound.org per crear afectes especials i
+ donar més vida al nostre joc.
+
+Enemics a les Trampes!:
+ En el nostre joc es pot fer que els enemics trepitjin les trampes i les accionin, causan
+ la seva mort instantania sense haver de recòrrer al combat cos a cos.
+
+
+---Part Creativa:
+
+Super-Poció:
+ Ens hem basat en la estrella del conegut personatge Mario, el qual després d'aconseguir-la
+ es torna invulnerable a tot el mal durant un temps límitat. En el nostre cas hem implementat
+ una poció de color blava que torna la vestimenta del nostre personatge en color blau, fent que
+ sigui impossible rebre mal mentre l'efecte està actiu.
+
+---Instruccions del Joc:
+
+Moviment:
+ Utilitzarem les fletxes per poder-nos desplaçar per el mapa, seguint la lògica de: fletxa dreta
+ desplaça el peronatge cap a la dreta, esquerra a l'esquerra, amunt fa saltar cap amunt i avall s'ajup.
+ Per poder saltar cap endevant utilitzarem la barra d'espai, si la premem quan estiguem queits el Príncep
+ realitzarà un petit salt, mentre que si la premem mentre estiguem corrents es realitzarà un salt llarg.
+ De la mateixa forma si estant quiets premem la tecla "d" o "a", depenent de en quina direcció tinguem el
+ Príncep mirant, es realitzarà un pas endevant.
+
+Combat:
+ Per poder entrar en el mode de combat haurem de premer la tecla "s", un cop fet això el Príncep
+ treurà l'espasa i es posarà en posicó ofensiva. Seguidament podrem premer la tecla "a" per atacar o
+ bé la tecla "d" per defensar-nos.
+
+Usas:
+ Per poder utilitzar les pocions que ens trobem o per avançar de nivell un cop haguem arribat a la porta
+ adequada haurem de premer la tecla "e".
