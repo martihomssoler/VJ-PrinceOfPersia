@@ -138,9 +138,10 @@ void Scene::update(int deltaTime)
 	{
 		 if (events[i] != -1 && pjevent != -1) // l'enemic segueix viu i el personatge també
 		{
-			string action = "";
+			string action = "STAND";
 			int r = rand() % 300 + 1;
 			glm::ivec2 enemyPos = enemies[i].getPosition();
+			bShowEnemyLifebar = true;
 			// Afegir la logica aplicada al enemics
 			// ara per ara el codi dels enemics esta buid!!!
 			// si events[i] és igual a (-1) significa que l'enemic ha mort
@@ -149,29 +150,25 @@ void Scene::update(int deltaTime)
 				if (enemyPos.x - TILE_X > playerPos.x && playerPos.x > enemyPos.x - 8 * TILE_X) // si el jugador esta entre 1 a 4 blocks de distància a l'ESQUERRA
 				{
 					action = "MOVE_LEFT";
-					bShowEnemyLifebar = true;
 				}
 				else if (r > ATTACK_300 && playerPos.x >= enemyPos.x - TILE_X && enemyPos.x >= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a l'ESQUERRA
 				{
 					action = "ATTACK_LEFT";
-					bShowEnemyLifebar = true;
+					
 				}
 				else if (playerPos.x < enemyPos.x + 8 * TILE_X && enemyPos.x + TILE_X < playerPos.x) // si el jugador esta entre 1 a 4 blocks de distància a la DRETA
 				{
 					action = "MOVE_RIGHT";
-					bShowEnemyLifebar = true;
 				}
 				else if (r > ATTACK_300 && playerPos.x <= enemyPos.x + TILE_X && enemyPos.x <= playerPos.x) // si el jugador esta entre 1 a 8 blocks de distància a la DRETA
 				{
 					action = "ATTACK_RIGHT";
-					bShowEnemyLifebar = true;
 				}
 				
 			}
-			else
-			{
-				action = "STAND";
-			}
+
+			cout << "enemy nb: " << i << " tries to: " << action << endl;
+
 			enemies[i].update(deltaTime, action, events[i]);
 			enemyLifebars[i]->update(deltaTime);
 		}
@@ -570,8 +567,6 @@ glm::vec3 Scene::getTranslationMap()
 	{
 		up = map->getHeight() - SCREEN_HEIGHT;
 	}
-
-	cout << left << " , " << up << endl;
 
 	return glm::vec3(-left, -up, 0);
 }

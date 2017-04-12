@@ -26,6 +26,7 @@ void Enemy::init(const glm::ivec2 & tileMapPos, ShaderProgram & shaderProgram, i
 	this->direction = direction;
 	bAlive = true;
 	bFalling = false;
+	startY = posEnemy.y;
 	spritesheet.loadFromFile("images/sprite-enemies.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(NB_ANIMATIONS);
@@ -58,92 +59,94 @@ void Enemy::update(int deltaTime, string action, int &events)
 			else sprite->changeAnimation(FALL_L);
 		}
 		// The Enemy has collided with the floor
-		else
+		else if (sprite->animation() == FALL_L || sprite->animation() == FALL_R)
 		{
-			if (!damage((posEnemy.y - startY / 64) - 1))
+			bFalling = false;
+			if (posEnemy.y - startY > 64 * 3) bAlive = lifebar->damage(3);
+			else if (posEnemy.y - startY > 64) bAlive = lifebar->damage(1);
+		}
+
+		// Event Handler
+		if (sprite->animation() == ATTACK_L || sprite->animation() == ATTACK_R)
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
+			{
+				events = 1;
+			}
+		}
+		else if (sprite->animation() == DIE_L || sprite->animation() == DIE_R)
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(DIE_L) || sprite->keyFrame() == sprite->numberKeyFrames(DIE_R))
 			{
 				events = -1; // problema amb el events -1, de tant en tant no funciona correctament
 			}
+		}
+		else
+		{
+			events = 0;
+		}
 
-			// Event Handler
-			if (sprite->animation() == ATTACK_L || sprite->animation() == ATTACK_R)
+		// Action Handler
+		if (action == "MOVE_LEFT" && !wallMap->collisionMoveLeft(posEnemy, glm::ivec2(32, 64)))
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
 			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_L) || sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R))
-				{
-					events = 1;
-				}
+				direction = -1;
+				sprite->changeAnimation(MOVE_L);
 			}
-			else if (sprite->animation() == DIE_L || sprite->animation() == DIE_R)
+			--posEnemy.x;
+		}
+		else if (action == "MOVE_RIGHT" && !wallMap->collisionMoveRight(posEnemy, glm::ivec2(32, 64)))
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
 			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(DIE_L) || sprite->keyFrame() == sprite->numberKeyFrames(DIE_R))
-				{
-					events = -1; // problema amb el events -1, de tant en tant no funciona correctament
-				}
+				direction = 1;
+				sprite->changeAnimation(MOVE_R);
 			}
-			else
+			++posEnemy.x;
+		}
+		else if (action == "ATTACK_LEFT" && !wallMap->collisionMoveLeft(posEnemy, glm::ivec2(32, 64)))
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
 			{
-				events = 0;
-			}
-
-			// Action Handler
-			if (action == "MOVE_LEFT" && !wallMap->collisionMoveLeft(posEnemy, glm::ivec2(32, 64)))
-			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
-				{
-					direction = -1;
-					sprite->changeAnimation(MOVE_L);
-				}
-				--posEnemy.x;
-			}
-			else if (action == "MOVE_RIGHT" && !wallMap->collisionMoveRight(posEnemy, glm::ivec2(32, 64)))
-			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
-				{
-					direction = 1;
-					sprite->changeAnimation(MOVE_R);
-				}
-				++posEnemy.x;
-			}
-			else if (action == "ATTACK_LEFT" && !wallMap->collisionMoveLeft(posEnemy, glm::ivec2(32, 64)))
-			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
-				{
-					direction = -1;
-					sprite->changeAnimation(ATTACK_L);
-				}
-			}
-			else if (action == "ATTACK_RIGHT" && !wallMap->collisionMoveRight(posEnemy, glm::ivec2(32, 64)))
-			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
-				{
-					direction = 1;
-					sprite->changeAnimation(ATTACK_R);
-				}
-			}
-			else if (action == "STAND" && sprite->animation() != DIE_L && sprite->animation() != DIE_R)
-			{
-				if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
-				{
-					if (direction == -1)
-						sprite->changeAnimation(STAND_L);
-					else
-						sprite->changeAnimation(STAND_R);
-				}
-			}
-			else if (action == "DEAD")
-			{
-				bAlive = false;
-				if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
-				{
-					if (direction == -1)
-						sprite->changeAnimation(DIE_L);
-					else
-						sprite->changeAnimation(DIE_R);
-				}
+				direction = -1;
+				sprite->changeAnimation(ATTACK_L);
 			}
 		}
+		else if (action == "ATTACK_RIGHT" && !wallMap->collisionMoveRight(posEnemy, glm::ivec2(32, 64)))
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				direction = 1;
+				sprite->changeAnimation(ATTACK_R);
+			}
+		}
+		else if (action == "STAND" && sprite->animation() != DIE_L && sprite->animation() != DIE_R)
+		{
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				if (direction == -1)
+					sprite->changeAnimation(STAND_L);
+				else
+					sprite->changeAnimation(STAND_R);
+			}
+		}
+		else if (action == "DEAD")
+		{
+			bAlive = false;
+			if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation()))
+			{
+				if (direction == -1)
+					sprite->changeAnimation(DIE_L);
+				else
+					sprite->changeAnimation(DIE_R);
+			}
+		}
+
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 	}
+	else 
+		events = -1;
 }
 
 void Enemy::render()
@@ -221,7 +224,7 @@ int Enemy::swordHit()
 		return 0;
 }
 
-bool Enemy::hit()
+void Enemy::hit()
 {
 	// the enemy has been hit
 	bAlive = this->damage(1);
@@ -250,5 +253,4 @@ bool Enemy::hit()
 			sprite->changeAnimation(STAND_R);
 		}
 	}
-	return bAlive;
 }
