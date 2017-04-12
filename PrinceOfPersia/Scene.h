@@ -54,7 +54,8 @@ private:
 	int pjevent = 0;
 
 	// traps and activables
-	vector<glm::ivec2> potion;
+	vector<glm::ivec2> powerPotion;
+	vector<glm::ivec2> healPotion;
 	vector<glm::ivec2> piercingTraps;
 	vector<glm::ivec2> fallingPlates;
 	vector<glm::ivec2> forcePlates;

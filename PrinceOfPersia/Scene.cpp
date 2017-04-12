@@ -568,7 +568,8 @@ void Scene::initActivables(const string & activablesFile)
 	sstream.str(line);
 	sstream >> mapSizex >> mapSizey;
 
-	potion.clear();
+	powerPotion.clear();
+	heal_Potion.clear();
 	piercingTraps.clear();
 	piercingTrapAnimation.clear();
 	spikes.clear();
@@ -588,8 +589,8 @@ void Scene::initActivables(const string & activablesFile)
 			int aux = atoi(value.c_str()) + 1;
 			switch (aux)
 			{
-				case 1: //POTION
-					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+				case 1: // POWER POTION
+					powerPotion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 2: // PIERCING TRAP
 					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
@@ -601,8 +602,8 @@ void Scene::initActivables(const string & activablesFile)
 					spikeAnimation.push_back(new Activable());
 					spikeAnimation.back()->init(spikes.back(), texProgram, 0);
 					break;
-				case 4: // FORCE PLATE
-					forcePlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+				case 4: // HEAL POTION
+					healPotion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
 					break;
 				case 5: // FALLING PLATE
 					fallingPlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
