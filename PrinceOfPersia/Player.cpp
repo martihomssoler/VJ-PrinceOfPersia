@@ -87,7 +87,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	pick_potion = false;
 	pick_sword = false;
 	bFalling = false;
-	bPowered = 0;
+	bPowered = 1;
 	spritesheet.loadFromFile("images/onelinesprites.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(NB_ANIMATIONS);
@@ -158,7 +158,7 @@ void Player::update(int deltaTime, int &events)
 			else {
 				if (pick_potion) {
 					pick_potion = false;
-					bPowered = true;
+					bPowered = true; 
 					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
 				}
 				else sprite->changeAnimation(GET_UP_L + POWERED*bPowered);
@@ -203,12 +203,12 @@ void Player::update(int deltaTime, int &events)
 	}
 	//JUMP_FORWARD
 	else if (sprite->animation() == JUMP_FORWARD_R + POWERED*bPowered || sprite->animation() == JUMP_FORWARD_L + POWERED*bPowered) { 
-		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) 
+		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)) && sprite->animation() % 2 == 1)
 		{
 			if (sprite->animation() % 2 == 1) sprite->changeAnimation(STAND_L + POWERED*bPowered);
 			bJumping = false;
 		}
-		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
+		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)) && sprite->animation() % 2 == 0)
 		{
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R + POWERED*bPowered);
 			bJumping = false;
@@ -403,7 +403,7 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == STAIRS_R + POWERED*bPowered || sprite->animation() == STAIRS_L + POWERED*bPowered) { //STAIRS
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())){
-			Game::instance().init("level02"); 
+			Game::instance().init(nextLevel); 
 		}
 
 	}
@@ -465,14 +465,14 @@ void Player::update(int deltaTime, int &events)
 				sprite->changeAnimation(DRAW_R + POWERED*bPowered);
 			}
 			else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
-				sprite->changeAnimation(JUMP_R + POWERED*bPowered);
 				bJumping = true;
+				sprite->changeAnimation(JUMP_R + POWERED*bPowered);
 				startY = posPlayer.y;
 			}
 			else if (Game::instance().getKey(KEY_J)) {
 				PlaySound(TEXT("media/short-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				sprite->changeAnimation(JUMP_FORWARD_R + POWERED*bPowered);
 				bJumping = true;
+				sprite->changeAnimation(JUMP_FORWARD_R + POWERED*bPowered);
 				startY = posPlayer.y;
 			}
 			else if (Game::instance().getKey(KEY_D)) {
@@ -502,14 +502,14 @@ void Player::update(int deltaTime, int &events)
 				sprite->changeAnimation(DRAW_L + POWERED*bPowered);
 			}
 			else if (Game::instance().getSpecialKey(GLUT_KEY_UP)) {
-				sprite->changeAnimation(JUMP_L + POWERED*bPowered);
 				bJumping = true;
+				sprite->changeAnimation(JUMP_L + POWERED*bPowered);
 				startY = posPlayer.y;
 			}
 			else if (Game::instance().getKey(KEY_J)) {
 				PlaySound(TEXT("media/short-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				sprite->changeAnimation(JUMP_FORWARD_L + POWERED*bPowered);
 				bJumping = true;
+				sprite->changeAnimation(JUMP_FORWARD_L + POWERED*bPowered);
 				startY = posPlayer.y;
 			}
 			else if (Game::instance().getKey(KEY_A)) {
@@ -547,8 +547,8 @@ void Player::update(int deltaTime, int &events)
 			if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) sprite->changeAnimation(STAND_R + POWERED*bPowered);
 			else if (Game::instance().getKey(KEY_J)) {
 				PlaySound(TEXT("media/long-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				sprite->changeAnimation(JUMP_RUNNING_R + POWERED*bPowered);
 				bJumping = true;
+				sprite->changeAnimation(JUMP_RUNNING_R + POWERED*bPowered);
 				startY = posPlayer.y;
 				hold = false;
 			}
@@ -563,8 +563,8 @@ void Player::update(int deltaTime, int &events)
 			if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64))) sprite->changeAnimation(STAND_L + POWERED*bPowered);
 			else if (Game::instance().getKey(KEY_J)) {
 				PlaySound(TEXT("media/long-jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				sprite->changeAnimation(JUMP_RUNNING_L + POWERED*bPowered);
 				bJumping = true;
+				sprite->changeAnimation(JUMP_RUNNING_L + POWERED*bPowered);
 				startY = posPlayer.y;
 				hold = false;
 			}
@@ -587,12 +587,12 @@ void Player::update(int deltaTime, int &events)
 		}
 	}
 	else if (sprite->animation() == JUMP_RUNNING_R + POWERED*bPowered || sprite->animation() == JUMP_RUNNING_L + POWERED*bPowered) { //JUMP_RUNNING
-		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)))
+		if (wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)) && sprite->animation() % 2 == 1)
 		{
 			if (sprite->animation() % 2 == 1) sprite->changeAnimation(STAND_L + POWERED*bPowered);
 			bJumping = false;
 		}
-		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)))
+		else if (wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64)) && sprite->animation() % 2 == 0)
 		{
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R + POWERED*bPowered);
 			bJumping = false;
@@ -811,8 +811,9 @@ void Player::cure() {
 	lifebar->cure();
 }
 
-void Player::enterDoor() {
+void Player::enterDoor(string level) {
 	sprite->changeAnimation(STAIRS_R + POWERED*bPowered);
+	nextLevel = level;
 }
 
 void Player::spikes() {

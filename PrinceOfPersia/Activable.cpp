@@ -28,24 +28,32 @@ void Activable::init(const glm::ivec2 &pos, ShaderProgram &shaderProgram, int ty
 	this->type = type;
 	spritesheet.loadFromFile("images/Activables.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::vec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(4);
-	sprite->setAnimationSpeed(0, 8);
-	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
-	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
-	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
-	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
-	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
-	sprite->setAnimationSpeed(1, 8);
-	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
-	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
-	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
-	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
-	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
-	sprite->setAnimationSpeed(2, 8);
-	sprite->addKeyframe(2, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
-	sprite->setAnimationSpeed(3, 8);
-	sprite->addKeyframe(3, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y*type));
-	sprite->changeAnimation(3);
+	if (type > 2) 
+	{
+		sprite->setNumberAnimations(1);
+		if (type == 3) sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*3));
+		else sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 3));
+	}
+	else {
+		sprite->setNumberAnimations(4);
+		sprite->setAnimationSpeed(0, 8);
+		sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
+		sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
+		sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
+		sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
+		sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+		sprite->setAnimationSpeed(1, 8);
+		sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+		sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
+		sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
+		sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
+		sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
+		sprite->setAnimationSpeed(2, 8);
+		sprite->addKeyframe(2, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+		sprite->setAnimationSpeed(3, 8);
+		sprite->addKeyframe(3, glm::vec2(SPRITESHEET_X * 5, SPRITESHEET_Y*type));
+		sprite->changeAnimation(3);
+	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x), float(tileMapDispl.y)));
 	
 }
@@ -92,6 +100,10 @@ void Activable::update(int deltaTime) {
 					sprite->changeAnimation(3);
 				}
 			}
+			break;
+		case 3:
+			break;
+		case 4:
 			break;
 		}
 		sprite->update(deltaTime);

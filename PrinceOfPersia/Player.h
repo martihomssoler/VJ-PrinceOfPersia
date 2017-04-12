@@ -31,7 +31,7 @@ public:
 	int getDirection();
 	int swordHit();
 	void hit();
-	void enterDoor();
+	void enterDoor(string level);
 	void spikes();
 	void slice();
 	bool isJumping();
@@ -51,6 +51,7 @@ private:
 	int bPowered;
 	bool pick_sword, pick_potion;
 	int orientation;
+	string nextLevel;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY;
 	Texture spritesheet;
