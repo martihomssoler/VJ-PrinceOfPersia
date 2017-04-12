@@ -24,7 +24,7 @@
 #define KEY_S 115
 #define KEY_D 100
 #define KEY_E 101
-#define KEY_J 106
+#define KEY_J 32
 
 
 enum PlayerAnims
@@ -418,7 +418,7 @@ void Player::update(int deltaTime, int &events)
 		else if (sprite->keyFrame() >= 0 && sprite->keyFrame() <= 3)
 			posPlayer.y = startY - 32;
 		else posPlayer.y = startY - 64;
-		if (sprite->keyFrame() > 4 ) {
+		if (sprite->keyFrame() > 4 && sprite->keyFrame() <= 7) {
 			if (sprite->animation() % 2 == 0 && !wallMap->collisionMoveRight(posPlayer, glm::ivec2(32, 64))) posPlayer.x += 1;
 			else if (!wallMap->collisionMoveLeft(posPlayer, glm::ivec2(32, 64)))posPlayer.x -= 1;
 			
@@ -441,7 +441,7 @@ void Player::update(int deltaTime, int &events)
 		{
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_SWORD_R + POWERED*bPowered);
 		}
-		if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R + POWERED*bPowered)) {
+		else if (sprite->keyFrame() == sprite->numberKeyFrames(ATTACK_R + POWERED*bPowered)) {
 			if (sprite->animation() % 2 == 0) {
 				sprite->changeAnimation(STAND_SWORD_R + POWERED*bPowered);
 				// COMBAT
