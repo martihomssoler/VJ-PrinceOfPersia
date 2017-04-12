@@ -59,46 +59,52 @@ void Activable::init(const glm::ivec2 &pos, ShaderProgram &shaderProgram, int ty
 }
 
 void Activable::update(int deltaTime) {
-		switch (type) {
-		default:
-			if (active && sprite->animation() == 3) {
-				sprite->changeAnimation(0);
-				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	if (blocked)
+	{
+		// Posar la tampa al últim keyframe de la seva animació
+		sprite->setKeyFrame(sprite->numberKeyFrames(sprite->animation()));
+		return;
+	}
+
+	switch (type) {
+	default:
+		if (active && sprite->animation() == 3) {
+			sprite->changeAnimation(0);
+			PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		}
+		else if (!active && sprite->animation() == 2) {
+			sprite->changeAnimation(1);
+		}
+		if (sprite->animation() == 0) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
+				sprite->changeAnimation(2);
 			}
-			else if (!active && sprite->animation() == 2) {
-				sprite->changeAnimation(1);
+		}
+		if (sprite->animation() == 1) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
+				sprite->changeAnimation(3);
 			}
-			if (sprite->animation() == 0) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
-					sprite->changeAnimation(2);
-				}
+		}
+		break;
+	case 2:
+		if (sprite->animation() == 3 && auxCounter >= 80) {
+			sprite->changeAnimation(0);
+			PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			auxCounter = 0;
+		}
+		else if (sprite->animation() == 3) ++auxCounter;
+		else if (sprite->animation() == 2 && !blocked) {
+			sprite->changeAnimation(1);
+			PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		}
+		else if (sprite->animation() == 0) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
+				sprite->changeAnimation(2);
 			}
-			if (sprite->animation() == 1) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
-					sprite->changeAnimation(3);
-				}
-			}
-			break;
-		case 2:
-			if (sprite->animation() == 3 && auxCounter >= 80) {
-				sprite->changeAnimation(0);
-				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				auxCounter = 0;
-			}
-			else if (sprite->animation() == 3) ++auxCounter;
-			else if (sprite->animation() == 2 && !blocked) {
-				sprite->changeAnimation(1);
-				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
-			}
-			else if (sprite->animation() == 0) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
-					sprite->changeAnimation(2);
-				}
-			}
-			else if (sprite->animation() == 1) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
-					sprite->changeAnimation(3);
-				}
+		}
+		else if (sprite->animation() == 1) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
+				sprite->changeAnimation(3);
 			}
 			break;
 		case 3:
@@ -106,7 +112,9 @@ void Activable::update(int deltaTime) {
 		case 4:
 			break;
 		}
-		sprite->update(deltaTime);
+		break;
+	}
+	sprite->update(deltaTime);
 }
 
 void Activable::render() {

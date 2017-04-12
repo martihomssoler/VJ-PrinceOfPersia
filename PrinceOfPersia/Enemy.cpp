@@ -172,6 +172,15 @@ void Enemy::setPosition(const glm::vec2 & pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
+void Enemy::spikes()
+{
+	bAlive = lifebar->damage(10);
+	if (!bAlive) {
+		if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_R);
+		else sprite->changeAnimation(SPEARS_L);
+	}
+}
+
 void Enemy::setHealthGUI(HealthGUI * lifebar)
 {
 	this->lifebar = lifebar;

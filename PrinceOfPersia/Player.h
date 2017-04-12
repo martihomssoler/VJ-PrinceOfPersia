@@ -27,7 +27,7 @@ public:
 	void setHealthGUI(HealthGUI *lifebar);
 	void cure();
 	bool damage(int amount);
-	glm::ivec2 getPostion();
+	glm::ivec2 getPosition();
 	int getDirection();
 	int swordHit();
 	void hit();
@@ -43,6 +43,7 @@ public:
 private:
 
 	void createAnimation(int r_animation, int l_animation, int x, int y, int size, int speed);
+	void pierdeTiempo(int secs);
 
 	bool bJumping;
 	bool blocked;

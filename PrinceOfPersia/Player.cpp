@@ -130,6 +130,17 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	startY = posPlayer.y;
 }
 
+void Player::pierdeTiempo(int secs) {
+	for (int k = 0; k < secs; ++k) {
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 100000000; ++i);
+		for (int i = 0; i < 10000000; ++i);
+	}
+}
+
 void Player::update(int deltaTime, int &events)
 {
 	sprite->update(deltaTime);
@@ -403,7 +414,7 @@ void Player::update(int deltaTime, int &events)
 	}
 	else if (sprite->animation() == STAIRS_R + POWERED*bPowered || sprite->animation() == STAIRS_L + POWERED*bPowered) { //STAIRS
 		if (sprite->keyFrame() == sprite->numberKeyFrames(sprite->animation())){
-			Game::instance().init(nextLevel); 
+			Game::instance().init(nextLevel);
 		}
 
 	}
@@ -751,7 +762,7 @@ bool Player::damage(int amount) {
 	return lifebar->damage(amount);
 }
 
-glm::ivec2 Player::getPostion()
+glm::ivec2 Player::getPosition()
 {
 	return posPlayer;
 }
@@ -818,7 +829,7 @@ void Player::enterDoor(string level) {
 
 void Player::spikes() {
 	if (!bPowered) {
-		bAlive = lifebar->damage(3);
+		bAlive = lifebar->damage(10);
 		if (!bAlive) {
 			if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R + POWERED*bPowered);
 			else sprite->changeAnimation(SPEARS_DEATH_L + POWERED*bPowered);
@@ -854,3 +865,5 @@ void Player::powerDown() {
 bool Player::isPowered() {
 	return bPowered;
 }
+
+

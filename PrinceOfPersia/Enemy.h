@@ -20,6 +20,7 @@ public:
 	void setTileWallMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
 
+	void spikes();
 	void setHealthGUI(HealthGUI *lifebar);
 	bool damage(int amount);
 	glm::ivec2 getPosition();

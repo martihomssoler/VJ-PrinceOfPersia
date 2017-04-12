@@ -35,6 +35,7 @@ public:
 	int numberKeyFrames(int animation) const;
 	
 	void setPosition(const glm::vec2 &pos);
+	void setKeyFrame(int keyframe);
 
 private:
 	Texture *texture;

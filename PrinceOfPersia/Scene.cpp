@@ -63,7 +63,7 @@ void Scene::init(string level)
 	pjevent = 0;
 	
 	playerHealth = new HealthGUI();
-	playerHealth->init(player->getPostion(), 3, texProgram, PRINCE);
+	playerHealth->init(player->getPosition(), 3, texProgram, PRINCE);
 	player->setHealthGUI(playerHealth);
 	initEnemies("levels/" + level + "Enemies.txt");
 	initActivables("levels/" + level + "Activables.txt");
@@ -77,20 +77,22 @@ void Scene::init(string level)
 	
 	initScreen = new Image();
 	initScreen->init("images/InitScreen.png", glm::ivec2(640, 480), texProgram);
-	bShowInitScreen = (level == "level0");
+	bShowInitScreen = false;
 
 	instructions = new Image();
 	instructions->init("images/instructions.png", glm::ivec2(640, 480), texProgram);
-	bShowInstructions = (level != "level0");
+	bShowInstructions = false;
 
 	credits = new Image();
 	credits->init("images/credits.png", glm::ivec2(640, 480), texProgram);
 	bShowCredits = false;
 
 	gameOver = new Image();
-	gameOver->init("images/GameOver.png", glm::ivec2(640, 320), texProgram);
+	gameOver->init("images/GameOver.png", glm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), texProgram);
 	bShowGameOver = false;
 	loseTime = 0;
+
+	if (level == "level0") bShowInitScreen = true;
 }
 
 void pierdeTiempo(int secs) {
@@ -108,17 +110,18 @@ void Scene::update(int deltaTime)
 {
 	
 	currentTime += deltaTime;
-	glm::ivec2 playerPos = player->getPostion();
+	glm::ivec2 playerPos = player->getPosition();
 	player->update(deltaTime,pjevent);
 	if (bShowInitScreen) {
 		pierdeTiempo(3);
 		bShowInitScreen = false;
 	}
-	else if (bShowInstructions) {
-		pierdeTiempo(3);
-		bShowInstructions = false;
+	if (Game::instance().getKey(105)) 
+	{
+		bShowInstructions = !bShowInstructions;
+		pierdeTiempo(1);
 	}
-	else if (bShowCredits) {
+	if (bShowCredits) {
 		pierdeTiempo(5);
 		bShowCredits = false;
 	}
@@ -167,33 +170,53 @@ void Scene::update(int deltaTime)
 	
 	eventHandler();
 	/*for (unsigned int i = 0; i < forcePlates.size(); ++i){
-		if (player->getPostion().x + 32 > forcePlates[i].x && player->getPostion().x + 32 < forcePlates[i].x + 64 && player->getPostion().y == forcePlates[i].y) {
+		if (player->getPosition().x + 32 > forcePlates[i].x && player->getPosition().x + 32 < forcePlates[i].x + 64 && player->getPosition().y == forcePlates[i].y) {
 			map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 1);
 		}
-		else if (player->getPostion().x + 32 <= forcePlates[i].x || player->getPostion().x + 32 >= forcePlates[i].x + 64) map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 4);
+		else if (player->getPosition().x + 32 <= forcePlates[i].x || player->getPosition().x + 32 >= forcePlates[i].x + 64) map->changeTile(forcePlates[i].x / TILE_X, forcePlates[i].y / TILE_Y, 4);
 	}*/
 
-
+	// PLAYER - SPIKE TRAP LOGIC
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
-		if (player->getPostion().x + 32 > spikes[i].x && player->getPostion().x + 32 < spikes[i].x + 64 && player->getPostion().y <= spikes[i].y && spikes[i].y - player->getPostion().y <= TILE_Y*2) {
+		if (player->getPosition().x + 32 > spikes[i].x && player->getPosition().x + 32 < spikes[i].x + 64 && player->getPosition().y <= spikes[i].y && spikes[i].y - player->getPosition().y <= TILE_Y*2) 
+		{
 			spikeAnimation[i]->activate();
-			if (player->getPostion().x + 32 > spikes[i].x + 16 && player->getPostion().x + 32 < spikes[i].x + 48 && player->getPostion().y == spikes[i].y && !player->isJumping()) {
+			if (player->getPosition().x + 32 > spikes[i].x + 16 && player->getPosition().x + 32 < spikes[i].x + 48 && player->getPosition().y == spikes[i].y && !player->isJumping()) 
+			{
 				if (!player->isPowered())
 				{
 					player->setPosition(spikes[i]);
 					player->spikes();
+					spikeAnimation[i]->block();
 				}
 			}
 		}
-		else if (player->getPostion().x + 32 <= spikes[i].x || player->getPostion().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
+		else if (player->getPosition().x + 32 <= spikes[i].x || player->getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
 		spikeAnimation[i]->update(deltaTime);
 	}
+	// ENEMY - SPIKE TRAP LOGIC
+	for (unsigned int i = 0; i < spikeAnimation.size(); ++i) 
+	{
+		for (unsigned int j = 0; j < enemies.size(); ++j) {
+			if (enemies[j].getPosition().x + 32 > spikes[i].x && enemies[j].getPosition().x + 32 < spikes[i].x + 64 && enemies[j].getPosition().y <= spikes[i].y && spikes[i].y - enemies[j].getPosition().y <= TILE_Y * 2) 
+			{
+				spikeAnimation[i]->activate();
+				if (enemies[j].getPosition().x + 32 > spikes[i].x + 16 && enemies[j].getPosition().x + 32 < spikes[i].x + 48 && enemies[j].getPosition().y == spikes[i].y) 
+				{
+					enemies[j].setPosition(spikes[i]);
+					enemies[j].spikes();
+					spikeAnimation[i]->block();
+				}
+			}
+			else if (enemies[j].getPosition().x + 32 <= spikes[i].x || enemies[j].getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
+			spikeAnimation[i]->update(deltaTime);
+		}
+	}
 
-
-
+	// OTHERS
 	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i){
-		if (player->getPostion().y == piercingTraps[i].y) {
-			if (piercingTrapAnimation[i]->isActive() && player->getPostion().x + 32 > piercingTraps[i].x && player->getPostion().x + 32 < piercingTraps[i].x + 64) {
+		if (player->getPosition().y == piercingTraps[i].y) {
+			if (piercingTrapAnimation[i]->isActive() && player->getPosition().x + 32 > piercingTraps[i].x && player->getPosition().x + 32 < piercingTraps[i].x + 64) {
 				if (!player->isPowered())
 				{
 					player->setPosition(glm::ivec2(piercingTraps[i].x - 32, piercingTraps[i].y));
@@ -206,7 +229,7 @@ void Scene::update(int deltaTime)
 	}
 
 	for (unsigned int i = 0; i < fallingPlatesAnimation.size(); ++i){
-		if (player->getPostion().x + 32 > fallingPlates[i].x && player->getPostion().x + 32 < fallingPlates[i].x + 64 && player->getPostion().y == fallingPlates[i].y) {
+		if (player->getPosition().x + 32 > fallingPlates[i].x && player->getPosition().x + 32 < fallingPlates[i].x + 64 && player->getPosition().y == fallingPlates[i].y) {
 			map->changeTile(fallingPlates[i].x / TILE_X, fallingPlates[i].y / TILE_Y, 0);
 			fallingPlatesAnimation[i]->activate();
 		}
@@ -217,7 +240,7 @@ void Scene::update(int deltaTime)
 
 void Scene::eventHandler()
 {
-	glm::ivec2 playerPos = player->getPostion();
+	glm::ivec2 playerPos = player->getPosition();
 	int direction = player->getDirection();
 	switch (pjevent)
 	{
@@ -279,15 +302,18 @@ void Scene::eventHandler()
 			if ((playerPos.x >= door.x  && door.x + 64 >= playerPos.x) && (playerPos.y >= door.y - 5 && door.y + 5 >= playerPos.y))
 			{	
 				string level = "level" + to_string(levelNB+1);
-				player->enterDoor("level0");				
+				player->enterDoor(level);
 			}
 			//else {
 			//	player->powerUp();
 			//}
 			break;
 		case -1:
+
 			if (loseTime >= 50)
 			{
+				if (!bShowGameOver)
+					PlaySound(TEXT("media/game-over.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				bShowGameOver = true;
 				loseTime = 0;
 			}
@@ -295,6 +321,7 @@ void Scene::eventHandler()
 			if (Game::instance().getKey(114)) //R 
 			{
 				Game::instance().init(currentLevel);
+				PlaySound(NULL, 0, 0); // To stop playing the Game-Over sound
 			}
 			break;
 		default:
@@ -440,6 +467,11 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
+		
+	if (bShowGameOver)
+	{
+		gameOver->render();
+	}
 
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
@@ -479,8 +511,8 @@ void Scene::render()
 
 glm::vec3 Scene::getTranslationMap()
 {
-	int left = player->getPostion().x - SCREEN_WIDTH / 2;
-	int up = player->getPostion().y - SCREEN_HEIGHT / 2;
+	int left = player->getPosition().x - SCREEN_WIDTH / 2;
+	int up = player->getPosition().y - SCREEN_HEIGHT / 2;
 
 	if (left < 0)
 	{
@@ -500,7 +532,7 @@ glm::vec3 Scene::getTranslationMap()
 		up = map->getHeight() - SCREEN_HEIGHT;
 	}
 
-	//cout << left << " , " << up << endl;
+	cout << left << " , " << up << endl;
 
 	return glm::vec3(-left, -up, 0);
 }
