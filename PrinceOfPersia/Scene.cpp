@@ -331,7 +331,7 @@ void Scene::eventHandler()
 	}
 	
 
-	for (int i = 0; i < events.size(); ++i) // des de 0 fins a events.size()-2 hi ha enemics, l'event del princep és el events.size()-1
+	for (unsigned int i = 0; i < events.size(); ++i) // des de 0 fins a events.size()-2 hi ha enemics, l'event del princep és el events.size()-1
 	{
 		glm::ivec2 enemyPos = enemies[i].getPosition();
 		int direction = enemies[i].getDirection();
@@ -397,6 +397,14 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
 
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	player->render();
+
 	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i)
 	{
 		texProgram.use();
@@ -407,16 +415,7 @@ void Scene::render()
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 		//if (piercingTrapAnimation[i]->isActive()) 
 		piercingTrapAnimation[i]->render();
-
 	}
-
-	texProgram.use();
-	texProgram.setUniformMatrix4f("projection", projection);
-	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	player->render();
 
 	for (unsigned int i = 0; enemies.size() > i; ++i)
 	{
