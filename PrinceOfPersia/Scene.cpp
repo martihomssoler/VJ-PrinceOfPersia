@@ -36,7 +36,7 @@ using namespace std;
 #define MOVEMENT_300 150
 #define ATTACK_300 295
 
-#define MAX_POWER_TIME 1000
+#define MAX_POWER_TIME 2000
 
 Scene::Scene()
 {
@@ -56,8 +56,17 @@ Scene::~Scene()
 void Scene::init(string level)
 {
 	initShaders();
+	bShowFinalScreen = false;
+	bShowInitScreen = false;
+	if (level == "level0") bShowInitScreen = true;
+	if (level == "level3")
+	{
+		level = "level0";
+		bShowFinalScreen = true;
+
+	}
 	currentLevel = level;
-	if (level == "level0") levelNB = 0;
+	if (level == "level0" ) levelNB = 0;
 	else if (level == "level1") levelNB = 1;
 	else levelNB = 2;
 	backMap = TileMap::createTileMap("levels/" + level + "Back.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -89,7 +98,7 @@ void Scene::init(string level)
 	
 	initScreen = new Image();
 	initScreen->init("images/InitScreen.png", glm::ivec2(640, 480), texProgram);
-	bShowInitScreen = false;
+	
 
 	instructions = new Image();
 	instructions->init("images/instructions.png", glm::ivec2(640, 480), texProgram);
@@ -99,13 +108,16 @@ void Scene::init(string level)
 	credits->init("images/credits.png", glm::ivec2(640, 480), texProgram);
 	bShowCredits = false;
 
+	finalScreen = new Image();
+	finalScreen->init("images/YouWin.png", glm::ivec2(640, 480), texProgram);
+
 	gameOver = new Image();
 	gameOver->init("images/GameOver.png", glm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), texProgram);
 	bShowGameOver = false;
 	loseTime = 0;
 	poweredTime = 0;
 
-	if (level == "level0") bShowInitScreen = true;
+	
 }
 
 void pierdeTiempo(int secs) {
@@ -143,6 +155,12 @@ void Scene::update(int deltaTime)
 	if (Game::instance().getKey(99)) {
 		bShowCredits = !bShowCredits;
 		pierdeTiempo(1);
+	}
+	if (bShowFinalScreen)
+	{
+		if (Game::instance().getKey(114)) {
+			bShowFinalScreen = false;
+		}
 	}
 	for (unsigned int i = 0; i < events.size(); ++i)
 	{
@@ -312,17 +330,25 @@ void Scene::eventHandler()
 		case 3:
 			pjevent = 0;
 			// E pressed MAYBE AT THE DOOR
-			if ((playerPos.x >= door2.x - 32  && door2.x + 32 >= playerPos.x) && (playerPos.y == door2.y))
+			if ((playerPos.x >= door2.x - 32  && door2.x + 16 >= playerPos.x) && (playerPos.y == door2.y))
 			{
+				player->setPosition(door2);
 				player->enterDoor("level2");				
 			}
-			else if ((playerPos.x >= door1.x - 32  && door1.x + 32 >= playerPos.x) && (playerPos.y == door1.y))
+			else if ((playerPos.x >= door1.x - 32  && door1.x + 16 >= playerPos.x) && (playerPos.y == door1.y))
 			{
+				player->setPosition(door1);
 				player->enterDoor("level1");
 			}
-			else if ((playerPos.x >= door0.x - 32  && door0.x + 32 >= playerPos.x) && (playerPos.y == door0.y))
+			else if ((playerPos.x >= door0.x - 32  && door0.x + 16 >= playerPos.x) && (playerPos.y == door0.y))
 			{
+				player->setPosition(door0);
 				player->enterDoor("level0");
+			}
+			else if ((playerPos.x >= windoor.x - 32 && windoor.x + 16 >= playerPos.x) && (playerPos.y == windoor.y))
+			{
+				player->setPosition(windoor);
+				player->enterDoor("level3");
 			}
 			else {
 				for (int i = 0; i < powerPotion.size(); ++i) {
@@ -559,6 +585,14 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	if (bShowCredits) credits->render();
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f));
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	if (bShowFinalScreen) finalScreen->render();
 
 	//glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPostion().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPostion().y, 0);
 	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), getTranslationMap());

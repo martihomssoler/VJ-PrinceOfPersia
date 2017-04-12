@@ -75,6 +75,8 @@ private:
 	bool bShowInstructions;
 	Image *credits;
 	bool bShowCredits;
+	Image *finalScreen;
+	bool bShowFinalScreen;
 	int loseTime;
 	int poweredTime;
 	glm::ivec2 door0, door1, door2, windoor;
