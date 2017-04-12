@@ -145,8 +145,19 @@ void Enemy::update(int deltaTime, string action, int &events)
 
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 	}
-	else 
-		events = -1;
+	else
+	{
+		if (sprite->animation() == DIE_L && sprite->keyFrame() != sprite->numberKeyFrames(DIE_L))
+			sprite->update(deltaTime);
+		else if (sprite->animation() == DIE_R && sprite->keyFrame() != sprite->numberKeyFrames(DIE_R))
+			sprite->update(deltaTime);
+		else if (sprite->animation() == SPEARS_R && sprite->keyFrame() != sprite->numberKeyFrames(SPEARS_R))
+			sprite->update(deltaTime);
+		else if (sprite->animation() == SPEARS_L && sprite->keyFrame() != sprite->numberKeyFrames(SPEARS_L))
+			sprite->update(deltaTime);
+		else
+			events = -1;
+	}
 }
 
 void Enemy::render()

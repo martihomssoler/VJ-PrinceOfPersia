@@ -238,6 +238,24 @@ void Player::update(int deltaTime, int &events)
 			if (sprite->animation() % 2 == 0)sprite->changeAnimation(STAND_R + POWERED*bPowered);
 			bJumping = false;
 		}
+		else if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 64)) && sprite->keyFrame() == sprite->numberKeyFrames(JUMP_FORWARD_R) - 4)
+		{
+			// If there is nothing under the player, he will fall
+			bJumping = false;
+			if (!bFalling) startY = posPlayer.y;
+			posPlayer.y += FALL_STEP;
+			bFalling = true;
+			if (sprite->animation() % 2 == 0)
+			{
+				++posPlayer.x;
+				sprite->changeAnimation(FALL_R + POWERED*bPowered);
+			}
+			else
+			{
+				--posPlayer.x;
+				sprite->changeAnimation(FALL_L + POWERED*bPowered);
+			}
+		}
 		else if (sprite->keyFrame() == sprite->numberKeyFrames(JUMP_FORWARD_R)) {
 			bJumping = false;
 			if (sprite->animation() % 2 == 0) sprite->changeAnimation(STAND_R + POWERED*bPowered);
