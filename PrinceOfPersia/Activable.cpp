@@ -31,8 +31,9 @@ void Activable::init(const glm::ivec2 &pos, ShaderProgram &shaderProgram, int ty
 	if (type > 2) 
 	{
 		sprite->setNumberAnimations(1);
-		if (type == 3) sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*3));
+		if (type == 3) sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y * 3));
 		else sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y * 3));
+		sprite->changeAnimation(0);
 	}
 	else {
 		sprite->setNumberAnimations(4);

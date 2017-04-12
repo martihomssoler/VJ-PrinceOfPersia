@@ -91,6 +91,7 @@ void Scene::init(string level)
 	gameOver->init("images/GameOver.png", glm::ivec2(SCREEN_WIDTH, SCREEN_HEIGHT), texProgram);
 	bShowGameOver = false;
 	loseTime = 0;
+	poweredTime = 0;
 
 	if (level == "level0") bShowInitScreen = true;
 }
@@ -112,6 +113,12 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	glm::ivec2 playerPos = player->getPosition();
 	player->update(deltaTime,pjevent);
+	if (player->isPowered() && poweredTime >= 500)
+	{
+		player->powerDown();
+		poweredTime = 0;
+	}
+	else if (player->isPowered())++poweredTime;
 	if (bShowInitScreen) {
 		pierdeTiempo(3);
 		bShowInitScreen = false;
@@ -194,25 +201,6 @@ void Scene::update(int deltaTime)
 		else if (player->getPosition().x + 32 <= spikes[i].x || player->getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
 		spikeAnimation[i]->update(deltaTime);
 	}
-	// ENEMY - SPIKE TRAP LOGIC
-	for (unsigned int i = 0; i < spikeAnimation.size(); ++i) 
-	{
-		for (unsigned int j = 0; j < enemies.size(); ++j) {
-			if (enemies[j].getPosition().x + 32 > spikes[i].x && enemies[j].getPosition().x + 32 < spikes[i].x + 64 && enemies[j].getPosition().y <= spikes[i].y && spikes[i].y - enemies[j].getPosition().y <= TILE_Y * 2) 
-			{
-				spikeAnimation[i]->activate();
-				if (enemies[j].getPosition().x + 32 > spikes[i].x + 16 && enemies[j].getPosition().x + 32 < spikes[i].x + 48 && enemies[j].getPosition().y == spikes[i].y) 
-				{
-					enemies[j].setPosition(spikes[i]);
-					enemies[j].spikes();
-					spikeAnimation[i]->block();
-				}
-			}
-			else if (enemies[j].getPosition().x + 32 <= spikes[i].x || enemies[j].getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();
-			spikeAnimation[i]->update(deltaTime);
-		}
-	}
-
 	// OTHERS
 	for (unsigned int i = 0; i < piercingTrapAnimation.size(); ++i){
 		if (player->getPosition().y == piercingTraps[i].y) {
@@ -304,9 +292,22 @@ void Scene::eventHandler()
 				string level = "level" + to_string(levelNB+1);
 				player->enterDoor(level);
 			}
-			//else {
-			//	player->powerUp();
-			//}
+			else {
+				for (int i = 0; i < potion.size(); ++i) {
+					if (playerPos.x >= potion[i].x - 32 && playerPos.x <= potion[i].x + 32 && playerPos.y == potion[i].y)
+					{
+						player->powerUp();
+						potionAnimation[i]->deactivate();
+					}
+				}
+				for (int i = 0; i < curePotion.size(); ++i) {
+					if (playerPos.x >= curePotion[i].x - 32 && playerPos.x <= curePotion[i].x + 32 && playerPos.y == curePotion[i].y)
+					{
+						player->cure();
+						curePotionAnimation[i]->deactivate();
+					}
+				}
+			}
 			break;
 		case -1:
 
@@ -436,6 +437,29 @@ void Scene::render()
 		texProgram.setUniformMatrix4f("modelview", modelview);
 		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 		if (spikeAnimation[i]->isActive()) spikeAnimation[i]->render();
+
+	}
+	for (unsigned int i = 0; i < potionAnimation.size(); ++i)
+	{
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", projection);
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		if (potionAnimation[i]->isActive()) potionAnimation[i]->render();
+
+	}
+
+	for (unsigned int i = 0; i < curePotionAnimation.size(); ++i)
+	{
+		texProgram.use();
+		texProgram.setUniformMatrix4f("projection", projection);
+		texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		modelview = glm::mat4(1.0f);
+		texProgram.setUniformMatrix4f("modelview", modelview);
+		texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+		if (curePotionAnimation[i]->isActive()) curePotionAnimation[i]->render();
 
 	}
 		
@@ -664,6 +688,9 @@ void Scene::initActivables(const string & activablesFile)
 			{
 				case 1: //POTION
 					potion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					potionAnimation.push_back(new Activable());
+					potionAnimation.back()->init(potion.back(), texProgram, 4);
+					potionAnimation.back()->activate();
 					break;
 				case 2: // PIERCING TRAP
 					piercingTraps.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
@@ -676,7 +703,10 @@ void Scene::initActivables(const string & activablesFile)
 					spikeAnimation.back()->init(spikes.back(), texProgram, 0);
 					break;
 				case 4: // FORCE PLATE
-					forcePlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					curePotion.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));
+					curePotionAnimation.push_back(new Activable());
+					curePotionAnimation.back()->init(curePotion.back(), texProgram, 3);
+					curePotionAnimation.back()->activate();
 					break;
 				case 5: // FALLING PLATE
 					fallingPlates.push_back(glm::ivec2(i * TILE_X, j * TILE_Y));

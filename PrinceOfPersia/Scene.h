@@ -56,12 +56,14 @@ private:
 
 	// traps and activables
 	vector<glm::ivec2> potion;
+	vector<glm::ivec2> curePotion;
 	vector<glm::ivec2> piercingTraps;
 	vector<glm::ivec2> fallingPlates;
 	vector<glm::ivec2> forcePlates;
 	vector<glm::ivec2> barredDoors;
 	vector<glm::ivec2> spikes;
 	vector<Activable*> potionAnimation;
+	vector<Activable*> curePotionAnimation;
 	vector<Activable*> spikeAnimation;
 	vector<Activable*> piercingTrapAnimation;
 	vector<Activable*> fallingPlatesAnimation;
@@ -74,6 +76,7 @@ private:
 	Image *credits;
 	bool bShowCredits;
 	int loseTime;
+	int poweredTime;
 	glm::ivec2 door;
 };
 

@@ -87,7 +87,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	pick_potion = false;
 	pick_sword = false;
 	bFalling = false;
-	bPowered = 1;
+	bPowered = 0;
 	spritesheet.loadFromFile("images/onelinesprites.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(NB_ANIMATIONS);
@@ -164,12 +164,22 @@ void Player::update(int deltaTime, int &events)
 					bPowered = true;
 					sprite->changeAnimation(DRINK_R + POWERED*bPowered);	
 				}
+				else if (pick_cure_potion) 
+				{
+					pick_cure_potion = false;
+					sprite->changeAnimation(DRINK_R + POWERED*bPowered);
+				}
 				else sprite->changeAnimation(GET_UP_R + POWERED*bPowered);
 			}
 			else {
 				if (pick_potion) {
 					pick_potion = false;
 					bPowered = true; 
+					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
+				}
+				else if (pick_cure_potion)
+				{
+					pick_cure_potion = false;
 					sprite->changeAnimation(DRINK_L + POWERED*bPowered);
 				}
 				else sprite->changeAnimation(GET_UP_L + POWERED*bPowered);
@@ -818,7 +828,9 @@ void Player::hit()
 }
 
 void Player::cure() {
-	pick_potion = true;
+	pick_cure_potion = true;
+	if (sprite->animation() % 2 == 0)sprite->changeAnimation(DUCK_R + POWERED*bPowered);
+	else sprite->changeAnimation(DUCK_L + POWERED*bPowered);
 	lifebar->cure();
 }
 
@@ -854,12 +866,15 @@ bool Player::isJumping(){
 
 void Player::powerUp() {
 	pick_potion = true;
-	if (sprite->animation() % 2 == 0)sprite->changeAnimation(DUCK_R);
-	else sprite->changeAnimation(DUCK_L);
+	if (sprite->animation() % 2 == 0)sprite->changeAnimation(DUCK_R + POWERED*bPowered);
+	else sprite->changeAnimation(DUCK_L + POWERED*bPowered);
 }
 
 void Player::powerDown() {
 	bPowered = 0;
+	int keyFrame = sprite->keyFrame();
+	sprite->changeAnimation(sprite->animation() - POWERED);
+	sprite->setKeyFrame(keyFrame);
 }
 
 bool Player::isPowered() {
