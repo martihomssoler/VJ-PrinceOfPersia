@@ -139,13 +139,16 @@ void Scene::update(int deltaTime)
 
 	// PLAYER - SPIKE TRAP LOGIC
 	for (unsigned int i = 0; i < spikeAnimation.size(); ++i){
-		if (player->getPosition().x + 32 > spikes[i].x && player->getPosition().x + 32 < spikes[i].x + 64 && player->getPosition().y <= spikes[i].y && spikes[i].y - player->getPosition().y <= TILE_Y*2) {
+		if (player->getPosition().x + 32 > spikes[i].x && player->getPosition().x + 32 < spikes[i].x + 64 && player->getPosition().y <= spikes[i].y && spikes[i].y - player->getPosition().y <= TILE_Y*2) 
+		{
 			spikeAnimation[i]->activate();
-			if (player->getPosition().x + 32 > spikes[i].x + 16 && player->getPosition().x + 32 < spikes[i].x + 48 && player->getPosition().y == spikes[i].y && !player->isJumping()) {
+			if (player->getPosition().x + 32 > spikes[i].x + 16 && player->getPosition().x + 32 < spikes[i].x + 48 && player->getPosition().y == spikes[i].y && !player->isJumping()) 
+			{
 				if (!player->isPowered())
 				{
 					player->setPosition(spikes[i]);
 					player->spikes();
+					spikeAnimation[i]->block();
 				}
 			}
 		}
@@ -153,13 +156,17 @@ void Scene::update(int deltaTime)
 		spikeAnimation[i]->update(deltaTime);
 	}
 	// ENEMY - SPIKE TRAP LOGIC
-	for (unsigned int i = 0; i < spikeAnimation.size(); ++i) {
+	for (unsigned int i = 0; i < spikeAnimation.size(); ++i) 
+	{
 		for (unsigned int j = 0; j < enemies.size(); ++j) {
-			if (enemies[j].getPosition().x + 32 > spikes[i].x && enemies[j].getPosition().x + 32 < spikes[i].x + 64 && enemies[j].getPosition().y <= spikes[i].y && spikes[i].y - enemies[j].getPosition().y <= TILE_Y * 2) {
+			if (enemies[j].getPosition().x + 32 > spikes[i].x && enemies[j].getPosition().x + 32 < spikes[i].x + 64 && enemies[j].getPosition().y <= spikes[i].y && spikes[i].y - enemies[j].getPosition().y <= TILE_Y * 2) 
+			{
 				spikeAnimation[i]->activate();
-				if (enemies[j].getPosition().x + 32 > spikes[i].x + 16 && enemies[j].getPosition().x + 32 < spikes[i].x + 48 && enemies[j].getPosition().y == spikes[i].y) {
+				if (enemies[j].getPosition().x + 32 > spikes[i].x + 16 && enemies[j].getPosition().x + 32 < spikes[i].x + 48 && enemies[j].getPosition().y == spikes[i].y) 
+				{
 					enemies[j].setPosition(spikes[i]);
 					enemies[j].spikes();
+					spikeAnimation[i]->block();
 				}
 			}
 			else if (enemies[j].getPosition().x + 32 <= spikes[i].x || enemies[j].getPosition().x + 32 >= spikes[i].x + 64) spikeAnimation[i]->deactivate();

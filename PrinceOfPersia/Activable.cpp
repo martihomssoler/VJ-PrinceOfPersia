@@ -29,18 +29,21 @@ void Activable::init(const glm::ivec2 &pos, ShaderProgram &shaderProgram, int ty
 	spritesheet.loadFromFile("images/Activables.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::vec2(64, 64), glm::vec2(SPRITESHEET_X, SPRITESHEET_Y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(4);
+	// Piercing
 	sprite->setAnimationSpeed(0, 8);
 	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
 	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
 	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
 	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
 	sprite->addKeyframe(0, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
+	// Falling
 	sprite->setAnimationSpeed(1, 8);
 	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
 	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 3, SPRITESHEET_Y*type));
 	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 2, SPRITESHEET_Y*type));
 	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 1, SPRITESHEET_Y*type));
 	sprite->addKeyframe(1, glm::vec2(SPRITESHEET_X * 0, SPRITESHEET_Y*type));
+	// Potions
 	sprite->setAnimationSpeed(2, 8);
 	sprite->addKeyframe(2, glm::vec2(SPRITESHEET_X * 4, SPRITESHEET_Y*type));
 	sprite->setAnimationSpeed(3, 8);
@@ -51,50 +54,57 @@ void Activable::init(const glm::ivec2 &pos, ShaderProgram &shaderProgram, int ty
 }
 
 void Activable::update(int deltaTime) {
-		switch (type) {
-		default:
-			if (active && sprite->animation() == 3) {
-				sprite->changeAnimation(0);
-				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
-			}
-			else if (!active && sprite->animation() == 2) {
-				sprite->changeAnimation(1);
-			}
-			if (sprite->animation() == 0) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
-					sprite->changeAnimation(2);
-				}
-			}
-			if (sprite->animation() == 1) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
-					sprite->changeAnimation(3);
-				}
-			}
-			break;
-		case 2:
-			if (sprite->animation() == 3 && auxCounter >= 80) {
-				sprite->changeAnimation(0);
-				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				auxCounter = 0;
-			}
-			else if (sprite->animation() == 3) ++auxCounter;
-			else if (sprite->animation() == 2 && !blocked) {
-				sprite->changeAnimation(1);
-				PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
-			}
-			else if (sprite->animation() == 0) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
-					sprite->changeAnimation(2);
-				}
-			}
-			else if (sprite->animation() == 1) {
-				if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
-					sprite->changeAnimation(3);
-				}
-			}
-			break;
+	if (blocked)
+	{
+		// Posar la tampa al últim keyframe de la seva animació
+		sprite->setKeyFrame(sprite->numberKeyFrames(sprite->animation()));
+		return;
+	}
+
+	switch (type) {
+	default:
+		if (active && sprite->animation() == 3) {
+			sprite->changeAnimation(0);
+			PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		}
-		sprite->update(deltaTime);
+		else if (!active && sprite->animation() == 2) {
+			sprite->changeAnimation(1);
+		}
+		if (sprite->animation() == 0) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
+				sprite->changeAnimation(2);
+			}
+		}
+		if (sprite->animation() == 1) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
+				sprite->changeAnimation(3);
+			}
+		}
+		break;
+	case 2:
+		if (sprite->animation() == 3 && auxCounter >= 80) {
+			sprite->changeAnimation(0);
+			PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			auxCounter = 0;
+		}
+		else if (sprite->animation() == 3) ++auxCounter;
+		else if (sprite->animation() == 2 && !blocked) {
+			sprite->changeAnimation(1);
+			PlaySound(TEXT("media/slice.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		}
+		else if (sprite->animation() == 0) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(0)) {
+				sprite->changeAnimation(2);
+			}
+		}
+		else if (sprite->animation() == 1) {
+			if (sprite->keyFrame() == sprite->numberKeyFrames(1)) {
+				sprite->changeAnimation(3);
+			}
+		}
+		break;
+	}
+	sprite->update(deltaTime);
 }
 
 void Activable::render() {
