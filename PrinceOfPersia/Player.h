@@ -27,7 +27,7 @@ public:
 	void setHealthGUI(HealthGUI *lifebar);
 	void cure();
 	bool damage(int amount);
-	glm::ivec2 getPostion();
+	glm::ivec2 getPosition();
 	int getDirection();
 	int swordHit();
 	void hit();

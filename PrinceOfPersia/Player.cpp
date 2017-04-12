@@ -751,7 +751,7 @@ bool Player::damage(int amount) {
 	return lifebar->damage(amount);
 }
 
-glm::ivec2 Player::getPostion()
+glm::ivec2 Player::getPosition()
 {
 	return posPlayer;
 }
@@ -817,7 +817,7 @@ void Player::enterDoor() {
 
 void Player::spikes() {
 	if (!bPowered) {
-		bAlive = lifebar->damage(3);
+		bAlive = lifebar->damage(10);
 		if (!bAlive) {
 			if (sprite->animation() % 2 == 0) sprite->changeAnimation(SPEARS_DEATH_R + POWERED*bPowered);
 			else sprite->changeAnimation(SPEARS_DEATH_L + POWERED*bPowered);

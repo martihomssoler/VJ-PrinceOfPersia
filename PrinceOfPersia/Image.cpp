@@ -5,10 +5,6 @@
 #include "Image.h"
 #include "Game.h"
 
-
-
-
-
 void Image::init(string file, const glm::ivec2 &size, ShaderProgram &shaderProgram)
 {
 
