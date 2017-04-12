@@ -25,4 +25,3 @@ void Image::render()
 {
 	sprite->render();
 }
-

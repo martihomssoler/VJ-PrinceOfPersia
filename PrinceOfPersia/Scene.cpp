@@ -427,16 +427,12 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	playerHealth->render();
+		
+	if (bShowGameOver)
+	{
+		gameOver->render();
+	}
 
-	texProgram.use();
-	texProgram.setUniformMatrix4f("projection", projection);
-	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	if (bShowGameOver) gameOver->render();
-
-	//glm::vec3 translation = glm::vec3(2 * TILE_X*INIT_PLAYER_X_TILES - player->getPosition().x, TILE_Y*INIT_PLAYER_Y_TILES - player->getPosition().y, 0);
 	projection = glm::translate(glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f), getTranslationMap());
 }
 
@@ -463,7 +459,7 @@ glm::vec3 Scene::getTranslationMap()
 		up = map->getHeight() - SCREEN_HEIGHT;
 	}
 
-	//cout << left << " , " << up << endl;
+	cout << left << " , " << up << endl;
 
 	return glm::vec3(-left, -up, 0);
 }
